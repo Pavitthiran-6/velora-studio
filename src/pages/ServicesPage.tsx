@@ -1,0 +1,517 @@
+"use client";
+
+import React, { useState, useEffect, useRef } from "react";
+import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion";
+import { Link } from "react-router-dom";
+import { ArrowUpRight, RotateCcw } from "lucide-react";
+import { Layout } from "../components/layout/Layout";
+import { Footer } from "../components/Footer";
+import { SmoothScrollProvider } from "../components/SmoothScrollProvider";
+import { useTransition } from "../components/TransitionProvider";
+import { WaveMenu } from "../components/WaveMenu";
+import { CinematicText } from "../components/CinematicText";
+import { cn } from "@/lib/utils";
+
+/* --- ASSET IMPORTS (Generated) --- */
+import valaclavaImg from "../assets/projects/valaclava_project_hero_1778243074252.png";
+import oceanImg from "../assets/projects/ocean_agency_hero_1778243090443.png";
+import yogiImg from "../assets/projects/hoboken_yogi_hero_1778243105729.png";
+import mdImg from "../assets/projects/modern_md_hero_1778243119932.png";
+
+const ROTATING_TITLES = [
+  "RESULTS-DRIVEN",
+  "COMPELLING",
+  "GOAL-ORIENTED",
+  "CREATIVE"
+];
+
+const SERVICES = [
+  "Website design", "Motion design", "Front-end development",
+  "Back-end development", "Shopify development", "Website support",
+  "Paid search advertising", "Social media advertising", "Email marketing", "SEO"
+];
+
+const PROCESS_STEPS = [
+  {
+    id: "01",
+    title: "PROJECT STRATEGY",
+    desc: "Every project is a canvas where we blend creative vision with strategic foresight. From the initial spark of an idea to the final flourish of execution, our seasoned strategists work hand-in-hand with your team to define goals, streamline processes, and chart a course to success."
+  },
+  {
+    id: "02",
+    title: "DESIGN & MOTION",
+    desc: "Our team is a collective of artists, visionaries, and technophiles, all dedicated to creating immersive experiences that transcend boundaries. We blend cutting-edge technology with artistic finesse to create visuals that not only captivate but also communicate messages with impact."
+  },
+  {
+    id: "03",
+    title: "SMOOTH DEVELOPMENT",
+    desc: "We transform complex designs into high-performance digital realities. Our engineering team focuses on speed, accessibility, and scalability, ensuring your platform remains robust and responsive across all devices and environments."
+  },
+  {
+    id: "04",
+    title: "POWERFUL MARKETING",
+    desc: "We're not just marketers; we're storytellers, data analysts, and strategists who thrive on creating connections that drive results. With our arsenal of tools, insights, and creativity, we build campaigns that resonate with your audience."
+  },
+  {
+    id: "05",
+    title: "ONGOING SUPPORT",
+    desc: "In the ever-evolving digital landscape, your website isn't a static entity; it's a living, breathing representation of your brand. At Buzzworthy, we understand that consistent, reliable support is essential to ensure your online presence remains dynamic."
+  },
+  {
+    id: "06",
+    title: "FUTURE EVOLUTION",
+    desc: "From immersive user experiences to AI-driven personalization, we're your digital architects for the future. Embracing change is key, and we're here to guide you. With Buzzworthy, it's not just a website; it's an evolution that keeps your brand relevant and remarkable."
+  },
+  {
+    id: "07",
+    title: "SCALABLE GROWTH",
+    desc: "We don't just build for today; we engineer for a decade. Our growth phase focuses on continuous performance scaling, emerging market integration, and systematic brand expansion to ensure your digital ecosystem becomes a global leader."
+  }
+];
+
+const RESULTS = [
+  { name: "VALACLAVA", metric: "+126%", label: "ENGAGEMENT", img: valaclavaImg },
+  { name: "OCEAN AGENCY", metric: "+224%", label: "SESSIONS", img: oceanImg },
+  { name: "HOBOKEN YOGI", metric: "+62%", label: "CONVERSIONS", img: yogiImg },
+  { name: "MODERN MD", metric: "120 sec", label: "AVG. VISIT DUR.", img: mdImg }
+];
+
+export default function ServicesPage() {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const { isTransitioning, triggerLogoTransition } = useTransition();
+  const [isWaveOpen, setIsWaveOpen] = useState(false);
+
+  return (
+    <SmoothScrollProvider containerRef={containerRef} ease={0.09}>
+      <div className="h-screen bg-[#ef4444] p-2 md:p-3 lg:p-4 font-sans select-none transition-colors duration-700">
+
+        {/* WAVE MENU OVERLAY */}
+        <WaveMenu isOpen={isWaveOpen} onClose={() => setIsWaveOpen(false)} />
+
+        <div className="relative w-full h-full rounded-[16px] md:rounded-[28px] lg:rounded-[40px] overflow-hidden bg-[#1f2547] flex flex-col border border-white/5 shadow-[0_20px_50px_rgba(0,0,0,0.4)]">
+          <div ref={containerRef} className="h-full overflow-y-auto overflow-x-hidden scrollbar-hide">
+
+            {/* HEADER LAYER */}
+            <div className="sticky top-0 left-0 right-0 z-[200] h-0 overflow-visible pointer-events-none">
+              <div className="px-6 md:px-12 lg:px-16 py-8 md:py-12 flex justify-between items-start">
+                {/* Logo (Left) */}
+                <button onClick={() => triggerLogoTransition()} className="pointer-events-auto group">
+                  <div className="w-10 h-10 md:w-14 md:h-14 bg-[#ef4444] rounded-full flex items-center justify-center p-2 md:p-3 group-hover:scale-110 transition-transform">
+                    <svg viewBox="0 0 24 24" className="w-full h-full fill-white" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M12 21c-4.97 0-9-4.03-9-9s4.03-9 9-9 9 4.03 9 9-4.03 9-9 9zm0-16.5c-4.14 0-7.5 3.36-7.5 7.5s3.36 7.5 7.5 7.5 7.5-3.36 7.5-7.5-3.36-7.5-7.5-7.5zm.75 12c-1.24 0-2.25-1.01-2.25-2.25v-4.5c0-.41.34-.75.75-.75s.75.34.75.75v4.5c0 .41.34.75.75.75h.75c.41 0 .75.34.75.75s-.34.75-.75.75h-1.5zZ" />
+                    </svg>
+                  </div>
+                </button>
+
+                {/* Settings Icon (Right) */}
+                <button
+                  onClick={() => setIsWaveOpen(!isWaveOpen)}
+                  className="relative z-[100] flex gap-3 md:gap-4 h-14 md:h-20 items-center cursor-pointer group pointer-events-auto"
+                >
+                  <div className="flex flex-col items-center h-10 md:h-14 w-px bg-white/30 relative">
+                    <motion.div
+                      animate={{ y: isWaveOpen ? 24 : 0, opacity: isWaveOpen ? 0 : 1 }}
+                      className="absolute top-0 w-2.5 md:w-3.5 h-2.5 md:h-3.5 border-2 border-white/60 rounded-full bg-[#1f2547] -translate-x-1/2 left-1/2"
+                    />
+                  </div>
+                  <div className="flex flex-col items-center h-6 md:h-10 w-px bg-white/50 relative">
+                    <motion.div
+                      animate={{ opacity: isWaveOpen ? 0 : 1 }}
+                      className="absolute inset-0 bg-white/80"
+                    />
+                  </div>
+                  <div className="flex flex-col items-center h-10 md:h-14 w-px bg-white/30 relative">
+                    <motion.div
+                      animate={{ y: isWaveOpen ? -24 : 0, opacity: isWaveOpen ? 0 : 1 }}
+                      className="absolute bottom-0 w-2.5 md:w-3.5 h-2.5 md:h-3.5 border-2 border-white/60 rounded-full bg-[#1f2547] -translate-x-1/2 left-1/2"
+                    />
+                  </div>
+                </button>
+              </div>
+            </div>
+
+            {/* 1. HERO SECTION */}
+            <ServicesHero />
+
+            {/* 2. WHAT WE DO */}
+            <WhatWeDo />
+
+            {/* 3. WORKFLOW */}
+            <WorkflowSection />
+
+            {/* 4. RESULTS DRIVEN */}
+            <ResultsDriven />
+
+            {/* FOOTER */}
+            <Footer />
+          </div>
+        </div>
+      </div>
+    </SmoothScrollProvider>
+  );
+}
+
+/* --- SECTION 1: SERVICES HERO --- */
+
+function ServicesHero() {
+  const [index, setIndex] = useState(0);
+  const [isAnimating, setIsAnimating] = useState(false);
+
+  const rotateHero = () => {
+    if (isAnimating) return;
+    setIsAnimating(true);
+    setTimeout(() => {
+      setIndex((prev) => (prev + 1) % ROTATING_TITLES.length);
+      setIsAnimating(false);
+    }, 600);
+  };
+
+  return (
+    <section className="h-screen relative flex flex-col justify-center overflow-hidden">
+      <div className="absolute top-[10%] left-20 md:left-32 lg:left-40 z-10 flex items-center gap-2">
+        <span className="text-[10px] font-black tracking-[0.3em] uppercase opacity-40">BUZZWORTHY</span>
+        <div className="w-1.5 h-1.5 bg-[#ef3b5d] rotate-45" />
+        <span className="text-[10px] font-black tracking-[0.3em] uppercase text-[#ef3b5d]">SERVICES</span>
+      </div>
+
+      <Layout className="relative h-full flex flex-col justify-center">
+        <div className="w-full flex flex-col pt-20">
+          <div className="flex flex-col w-full">
+            <div className="overflow-hidden h-[10vw] md:h-[8.5vw] flex justify-start">
+              <AnimatePresence mode="wait">
+                <motion.h1
+                  key={index}
+                  className="text-[10vw] md:text-[8.5vw] font-display font-black tracking-[-0.04em] uppercase leading-[0.8] text-[#ef3b5d] flex overflow-hidden"
+                >
+                  {ROTATING_TITLES[index].split("").map((char, i) => (
+                    <motion.span
+                      key={`${index}-${i}`}
+                      initial={{ y: "100%" }}
+                      animate={{ y: 0 }}
+                      exit={{ y: "-100%" }}
+                      transition={{
+                        duration: 0.5,
+                        ease: [0.16, 1, 0.3, 1],
+                        delay: i * 0.02
+                      }}
+                      className="inline-block"
+                    >
+                      {char === " " ? "\u00A0" : char}
+                    </motion.span>
+                  ))}
+                </motion.h1>
+              </AnimatePresence>
+            </div>
+
+            <div className="flex items-center gap-6 md:gap-10 pl-[5vw] md:pl-[10vw]">
+              <div className="relative group shrink-0">
+                <div className="absolute inset-0 bg-[#ef3b5d]/20 rounded-full animate-ping" />
+                <motion.button
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={rotateHero}
+                  className="w-16 h-16 md:w-24 md:h-24 rounded-full bg-[#ef3b5d] flex items-center justify-center relative z-10 shadow-[0_0_30px_rgba(239,59,93,0.3)]"
+                >
+                  <RotateCcw className={`text-white w-6 h-6 md:w-10 md:h-10 transition-transform duration-700 ${isAnimating ? "rotate-180" : "group-hover:rotate-45"}`} />
+                </motion.button>
+              </div>
+
+              <div className="overflow-hidden h-[10vw] md:h-[8.5vw]">
+                <h1 className="text-[10vw] md:text-[8.5vw] font-display font-black tracking-[-0.04em] uppercase leading-[0.8] text-white">
+                  WEBSITES
+                </h1>
+              </div>
+            </div>
+
+            <div className="overflow-hidden h-[10vw] md:h-[8.5vw] flex justify-center">
+              <h1 className="text-[10vw] md:text-[8.5vw] font-display font-black tracking-[-0.04em] uppercase leading-[0.8] text-white">
+                THAT HELP YOUR
+              </h1>
+            </div>
+
+            <div className="overflow-hidden h-[10vw] md:h-[8.5vw] flex justify-end">
+              <h1 className="text-[10vw] md:text-[8.5vw] font-display font-black tracking-[-0.04em] uppercase leading-[0.8] text-white">
+                BUSINESS
+              </h1>
+            </div>
+          </div>
+        </div>
+      </Layout>
+    </section>
+  );
+}
+
+/* --- SECTION 2: WHAT WE DO --- */
+
+function WhatWeDo() {
+  return (
+    <section className="min-h-screen py-32 md:py-48 border-t border-white/5 bg-[#1a1f40]">
+      <Layout>
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-12 md:gap-24">
+          <div className="md:col-span-4 flex flex-col items-start gap-12">
+            <CinematicText className="text-[10px] font-black tracking-[0.3em] uppercase opacity-40">WHAT WE DO</CinematicText>
+            <p className="text-xl md:text-2xl font-display font-black tracking-[-0.04em] leading-relaxed opacity-60 uppercase">
+              At Buzzworthy, we craft immersive digital ecosystems that merge design, storytelling, motion, and engineering into memorable brand experiences.
+            </p>
+          </div>
+
+          <motion.div
+            initial="hidden"
+            whileInView="show"
+            viewport={{ once: false, amount: 0 }}
+            variants={{
+              hidden: { opacity: 0 },
+              show: {
+                opacity: 1,
+                transition: {
+                  staggerChildren: 0.2,
+                  delayChildren: 0.1
+                }
+              }
+            }}
+            className="md:col-span-8 flex flex-col pt-12"
+          >
+            {SERVICES.map((service) => (
+              <motion.div
+                key={service}
+                variants={{
+                  hidden: { opacity: 0, y: 40 },
+                  show: {
+                    opacity: 1,
+                    y: 0,
+                    transition: {
+                      duration: 1.2,
+                      ease: [0.16, 1, 0.3, 1]
+                    }
+                  }
+                }}
+                className="group flex flex-col"
+              >
+                <div className="w-full h-px bg-white/10 group-hover:bg-[#ef3b5d] transition-colors duration-500 scale-x-0 group-hover:scale-x-100 origin-left" />
+                <div className="w-full h-px bg-white/5" />
+                <div className="py-6 md:py-8 flex items-center justify-between cursor-pointer group">
+                  <h3 className="text-2xl md:text-5xl font-display font-black tracking-[-0.04em] uppercase transition-all duration-300 group-hover:translate-x-4 group-hover:text-white">
+                    {service}
+                  </h3>
+                  <ArrowUpRight className="w-6 h-6 md:w-8 md:h-8 opacity-0 group-hover:opacity-100 transition-all group-hover:translate-x-[-10px]" />
+                </div>
+              </motion.div>
+            ))}
+            <div className="w-full h-px bg-white/5" />
+          </motion.div>
+        </div>
+      </Layout>
+    </section>
+  );
+}
+
+/* --- SECTION 3: WORKFLOW SECTION --- */
+
+function WorkflowSection() {
+  const [activeStep, setActiveStep] = useState(0);
+
+  return (
+    <section className="bg-[#1f2547] py-24 md:py-32 overflow-hidden">
+      <Layout>
+        <div className="mb-20">
+          <CinematicText className="text-[10px] font-black tracking-[0.3em] uppercase opacity-40 mb-6">THE BUZZ PROCESS</CinematicText>
+          <CinematicText as="h2" className="text-5xl md:text-8xl font-display font-black tracking-[-0.04em] uppercase leading-none text-white">
+            HOW WE <span className="text-[#ef3b5d]">WORK.</span>
+          </CinematicText>
+        </div>
+
+        <div className="flex h-[500px] md:h-[650px] w-full overflow-x-auto md:overflow-visible pb-8 scrollbar-hide rounded-[20px] md:rounded-[32px] overflow-hidden border border-white/5">
+          {PROCESS_STEPS.map((step, idx) => {
+            const isExpanded = activeStep === idx;
+            return (
+              <motion.div
+                key={step.id}
+                onClick={() => setActiveStep(idx)}
+                onMouseEnter={() => setActiveStep(idx)}
+                initial={false}
+                animate={{
+                  flex: isExpanded ? 12 : 1,
+                  scaleY: isExpanded ? 0.98 : 1,
+                  scaleX: isExpanded ? 1.01 : 1,
+                }}
+                transition={{
+                  type: "spring",
+                  stiffness: 150,
+                  damping: 20,
+                  mass: 1.2
+                }}
+                className={cn(
+                  "relative h-full cursor-pointer overflow-hidden transition-colors duration-500",
+                  isExpanded ? "bg-[#f3f4f6]" : "bg-[#f3f4f6]/95 hover:bg-white"
+                )}
+                style={{
+                  boxShadow: "-20px 0 40px rgba(0,0,0,0.15)"
+                }}
+              >
+                {/* Number & Dot Indicator */}
+                {/* Number & Dot Indicator - Always Visible */}
+                <div className={cn(
+                  "absolute top-8 flex items-center gap-3 z-20 transition-all duration-500",
+                  isExpanded ? "left-12" : "left-1/2 -translate-x-1/2"
+                )}>
+                  <div className="w-2.5 h-2.5 rounded-full border border-[#ef3b5d]/30 flex items-center justify-center">
+                    <div className="w-1 h-1 bg-[#ef3b5d] rounded-full" />
+                  </div>
+                  <span className="text-[10px] md:text-xs font-display font-black tracking-widest text-[#1f2547]/40">
+                    {step.id}
+                  </span>
+                </div>
+
+                {/* Vertical Identifier (Collapsed State) - Centered Vertically */}
+                <AnimatePresence>
+                  {!isExpanded && (
+                    <motion.div
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      className="absolute inset-0 flex items-center justify-center pointer-events-none"
+                    >
+                      <h3 className="rotate-[-90deg] whitespace-nowrap text-xl md:text-2xl font-display font-black tracking-[-0.04em] uppercase text-[#1f2547] opacity-80">
+                        {step.title}
+                      </h3>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+
+                {/* Expanded Content */}
+                <AnimatePresence mode="wait">
+                  {isExpanded && (
+                    <motion.div
+                      key={step.id}
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: 0 }}
+                      transition={{
+                        duration: 0.4,
+                        delay: isExpanded ? 0.3 : 0,
+                        ease: "easeOut"
+                      }}
+                      className="absolute inset-0 p-10 md:p-16 lg:p-20 flex flex-col justify-center overflow-hidden"
+                    >
+                      {/* Fluid but Stable Container */}
+                      <div className="w-full max-w-[75vw] md:max-w-[60vw] lg:max-w-[45vw] shrink-0">
+                        <h3 className="text-3xl md:text-5xl lg:text-[5vw] font-display font-black tracking-[-0.04em] uppercase text-[#1f2547] leading-[0.9] mb-6 md:mb-8">
+                          {step.title.split(" & ").map((part, i) => (
+                            <React.Fragment key={i}>
+                              {part}
+                              {i === 0 && step.title.includes(" & ") && <><br />& </>}
+                            </React.Fragment>
+                          ))}
+                        </h3>
+                        <p className="text-sm md:text-lg lg:text-xl text-[#1f2547]/80 font-medium leading-relaxed">
+                          {step.desc}
+                        </p>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+
+                <div className="absolute inset-y-0 left-0 w-12 bg-gradient-to-r from-black/5 to-transparent pointer-events-none" />
+              </motion.div>
+            );
+          })}
+        </div>
+      </Layout>
+    </section>
+  );
+}
+
+/* --- SECTION 4: RESULTS DRIVEN --- */
+
+function ResultsDriven() {
+  return (
+    <section className="min-h-screen py-32 bg-[#1a1f40] flex flex-col items-center text-center">
+      <Layout>
+        <div className="max-w-4xl mb-32 mx-auto">
+          <CinematicText className="text-[10px] font-black tracking-[0.3em] uppercase opacity-40 block mb-6">RESULTS DRIVEN</CinematicText>
+          <CinematicText as="h2" className="text-5xl md:text-8xl lg:text-[7vw] font-display font-black tracking-[-0.04em] uppercase leading-[0.85] mb-12 text-white">
+            DRIVING SUCCESS,<br />
+            <span className="text-[#ef3b5d]">DELIVERING RESULTS.</span>
+          </CinematicText>
+          <p className="text-sm md:text-xl font-display font-black tracking-[-0.02em] uppercase opacity-40 max-w-2xl mx-auto leading-relaxed text-white">
+            We don't just build websites; we build performance engines. Every pixel and line of code is optimized for maximum conversion and brand equity.
+          </p>
+        </div>
+
+        <div className="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {RESULTS.map((res, i) => (
+            <ResultCard key={res.name} res={res} delay={i * 0.1} />
+          ))}
+        </div>
+      </Layout>
+    </section>
+  );
+}
+
+function ResultCard({ res, delay }: any) {
+  const [isHovered, setIsHovered] = useState(false);
+  const cardRef = useRef(null);
+
+  const { scrollYProgress } = useScroll({
+    target: cardRef,
+    offset: ["start end", "end start"]
+  });
+
+  const yParallax = useTransform(scrollYProgress, [0, 1], [60, -60]);
+
+  return (
+    <motion.div
+      ref={cardRef}
+      initial={{ opacity: 0, y: 150 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      transition={{
+        duration: 0.8,
+        delay: delay * 1.5, // Increased stagger for "one by one" feel
+        ease: [0.16, 1, 0.3, 1]
+      }}
+      viewport={{ once: false, margin: "-50px" }}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      className="relative group cursor-pointer"
+    >
+      <motion.div
+        style={{ y: yParallax }}
+        animate={{
+          height: isHovered ? "510px" : "480px",
+          translateY: isHovered ? 24 : 0,
+          scaleY: isHovered ? 0.94 : 1,
+          scaleX: isHovered ? 1.04 : 1,
+        }}
+        transition={{
+          type: "spring",
+          stiffness: 400,
+          damping: 12,
+          mass: 1.2
+        }}
+        className="w-full bg-white/5 rounded-[30px] overflow-hidden flex flex-col relative"
+      >
+        {/* Project Image */}
+        <div className="flex-1 overflow-hidden">
+          <motion.img
+            src={res.img}
+            animate={{ scale: isHovered ? 1.1 : 1 }}
+            transition={{ duration: 0.8 }}
+            className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700"
+          />
+        </div>
+
+        {/* Content Area */}
+        <div className="p-8 flex flex-col items-start text-left bg-gradient-to-t from-black/80 to-transparent absolute bottom-0 left-0 right-0 h-1/2 justify-end">
+          <span className="text-[10px] font-black tracking-[0.3em] uppercase opacity-40 mb-2">{res.name}</span>
+          <div className="flex flex-col gap-1 items-start">
+            <span className="text-3xl md:text-5xl font-display font-black tracking-[-0.04em] text-[#ef3b5d] leading-none">{res.metric}</span>
+            <span className="text-[10px] font-black tracking-[0.2em] opacity-40">{res.label}</span>
+          </div>
+          <div className="text-left">
+            <h3 className="text-2xl md:text-3xl font-display font-black tracking-[-0.04em] uppercase leading-none">{res.name}</h3>
+          </div>
+        </div>
+      </motion.div>
+    </motion.div>
+  );
+}
