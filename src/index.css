@@ -29,8 +29,17 @@
     @apply bg-studio-navy-dark text-studio-white;
     -ms-overflow-style: none;
     scrollbar-width: none;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow-x: hidden;
   }
   body::-webkit-scrollbar {
     display: none;
+  }
+
+  .transform-gpu {
+    transform: translate3d(0, 0, 0);
+    backface-visibility: hidden;
+    perspective: 1000px;
   }
 }

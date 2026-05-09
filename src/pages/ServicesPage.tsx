@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
-import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion";
+import { motion, AnimatePresence, useScroll, useTransform } from "motion/react";
 import { Link } from "react-router-dom";
 import { ArrowUpRight, RotateCcw } from "lucide-react";
 import { Layout } from "../components/layout/Layout";
@@ -11,6 +11,7 @@ import { useTransition } from "../components/TransitionProvider";
 import { WaveMenu } from "../components/WaveMenu";
 import { CinematicText } from "../components/CinematicText";
 import { cn } from "@/lib/utils";
+import HexIcon from "../components/HexIcon";
 
 /* --- ASSET IMPORTS (Generated) --- */
 import valaclavaImg from "../assets/projects/valaclava_project_hero_1778243074252.png";
@@ -78,27 +79,26 @@ const RESULTS = [
 
 export default function ServicesPage() {
   const containerRef = useRef<HTMLDivElement>(null);
-  const { isTransitioning, triggerLogoTransition } = useTransition();
+  const { isTransitioning, triggerLogoTransition, triggerPageTransition } = useTransition();
   const [isWaveOpen, setIsWaveOpen] = useState(false);
 
   return (
     <SmoothScrollProvider containerRef={containerRef} ease={0.09}>
       <div className="h-screen bg-[#ef4444] p-2 md:p-3 lg:p-4 font-sans select-none transition-colors duration-700">
 
-        {/* WAVE MENU OVERLAY */}
-        <WaveMenu isOpen={isWaveOpen} onClose={() => setIsWaveOpen(false)} />
-
         <div className="relative w-full h-full rounded-[16px] md:rounded-[28px] lg:rounded-[40px] overflow-hidden bg-[#1f2547] flex flex-col border border-white/5 shadow-[0_20px_50px_rgba(0,0,0,0.4)]">
+          {/* WAVE MENU OVERLAY */}
+          <WaveMenu isOpen={isWaveOpen} onClose={() => setIsWaveOpen(false)} />
           <div ref={containerRef} className="h-full overflow-y-auto overflow-x-hidden scrollbar-hide">
 
             {/* HEADER LAYER */}
             <div className="sticky top-0 left-0 right-0 z-[200] h-0 overflow-visible pointer-events-none">
               <div className="px-6 md:px-12 lg:px-16 py-8 md:py-12 flex justify-between items-start">
                 {/* Logo (Left) */}
-                <button onClick={() => triggerLogoTransition()} className="pointer-events-auto group">
+                <button onClick={() => triggerPageTransition("/")} className="pointer-events-auto group">
                   <div className="w-10 h-10 md:w-14 md:h-14 bg-[#ef4444] rounded-full flex items-center justify-center p-2 md:p-3 group-hover:scale-110 transition-transform">
                     <svg viewBox="0 0 24 24" className="w-full h-full fill-white" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M12 21c-4.97 0-9-4.03-9-9s4.03-9 9-9 9 4.03 9 9-4.03 9-9 9zm0-16.5c-4.14 0-7.5 3.36-7.5 7.5s3.36 7.5 7.5 7.5 7.5-3.36 7.5-7.5-3.36-7.5-7.5-7.5zm.75 12c-1.24 0-2.25-1.01-2.25-2.25v-4.5c0-.41.34-.75.75-.75s.75.34.75.75v4.5c0 .41.34.75.75.75h.75c.41 0 .75.34.75.75s-.34.75-.75.75h-1.5zZ" />
+                      <path d="M12 21c-4.97 0-9-4.03-9-9s4.03-9 9-9 9 4.03 9 9-4.03 9-9 9zm0-16.5c-4.14 0-7.5 3.36-7.5 7.5s3.36 7.5 7.5 7.5 7.5-3.36 7.5-7.5-3.36-7.5-7.5-7.5zm.75 12c-1.24 0-2.25-1.01-2.25-2.25v-4.5c0-.41.34-.75.75-.75s.75.34.75.75v4.5c0 .41.34.75.75.75h.75c.41 0 .75.34.75.75s-.34.75-.75.75h-1.5z" />
                     </svg>
                   </div>
                 </button>
@@ -154,6 +154,7 @@ export default function ServicesPage() {
 /* --- SECTION 1: SERVICES HERO --- */
 
 function ServicesHero() {
+  const { triggerLogoTransition, triggerPageTransition } = useTransition();
   const [index, setIndex] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
 
@@ -168,10 +169,20 @@ function ServicesHero() {
 
   return (
     <section className="h-screen relative flex flex-col justify-center overflow-hidden">
-      <div className="absolute top-[10%] left-20 md:left-32 lg:left-40 z-10 flex items-center gap-2">
-        <span className="text-[10px] font-black tracking-[0.3em] uppercase opacity-40">BUZZWORTHY</span>
-        <div className="w-1.5 h-1.5 bg-[#ef3b5d] rotate-45" />
-        <span className="text-[10px] font-black tracking-[0.3em] uppercase text-[#ef3b5d]">SERVICES</span>
+      <div className="absolute top-[10%] left-20 md:left-32 lg:left-40 z-10 flex items-center gap-2 pointer-events-auto">
+        <button
+          onClick={() => triggerPageTransition("/")}
+          className="text-[10px] font-black tracking-[0.3em] uppercase opacity-40 hover:opacity-100 transition-opacity cursor-pointer"
+        >
+          BUZZWORTHY
+        </button>
+        <HexIcon className="w-2.5 h-2.5" fill="#ef3b5d" />
+        <span
+          onClick={() => triggerPageTransition("/services")}
+          className="text-[10px] font-black tracking-[0.3em] uppercase text-[#ef3b5d] hover:text-white transition-colors cursor-pointer"
+        >
+          SERVICES
+        </span>
       </div>
 
       <Layout className="relative h-full flex flex-col justify-center">
@@ -315,8 +326,8 @@ function WorkflowSection() {
       <Layout>
         <div className="mb-20">
           <CinematicText className="text-[10px] font-black tracking-[0.3em] uppercase opacity-40 mb-6">THE BUZZ PROCESS</CinematicText>
-          <CinematicText as="h2" className="text-5xl md:text-8xl font-display font-black tracking-[-0.04em] uppercase leading-none text-white">
-            HOW WE <span className="text-[#ef3b5d]">WORK.</span>
+          <CinematicText as="h2" className="text-5xl md:text-8xl font-display font-black tracking-[-0.04em] uppercase leading-none text-white flex items-baseline gap-4">
+            HOW WE <span className="text-[#ef3b5d]">WORK</span><HexIcon className="w-[3vw] h-[3vw]" fill="#ef3b5d" />
           </CinematicText>
         </div>
 
@@ -354,9 +365,7 @@ function WorkflowSection() {
                   "absolute top-8 flex items-center gap-3 z-20 transition-all duration-500",
                   isExpanded ? "left-12" : "left-1/2 -translate-x-1/2"
                 )}>
-                  <div className="w-2.5 h-2.5 rounded-full border border-[#ef3b5d]/30 flex items-center justify-center">
-                    <div className="w-1 h-1 bg-[#ef3b5d] rounded-full" />
-                  </div>
+                  <HexIcon className="w-3 h-3" fill="#ef3b5d" />
                   <span className="text-[10px] md:text-xs font-display font-black tracking-widest text-[#1f2547]/40">
                     {step.id}
                   </span>

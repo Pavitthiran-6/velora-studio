@@ -1,7 +1,7 @@
 "use client";
 
 import React, { createContext, useContext, useState, useRef, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence } from "motion/react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Pencil } from "lucide-react";
 
@@ -9,6 +9,7 @@ interface TransitionContextType {
   isTransitioning: boolean;
   isLoading: boolean;
   triggerLogoTransition: () => void;
+  triggerPageTransition: (path: string) => void;
   heroKey: number;
 }
 
@@ -57,104 +58,149 @@ export const TransitionProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       if (container) {
         container.scrollTo({ top: 0, behavior: 'instant' });
       }
-    }, 1200);
+    }, 600);
 
     // End of transition
     setTimeout(() => {
       setIsTransitioning(false);
-    }, 2300);
+    }, 1400);
+  };
+
+  const triggerPageTransition = (path: string) => {
+    if (isTransitioning) return;
+    
+    setIsTransitioning(true);
+    
+    setTimeout(() => {
+      navigate(path);
+      setHeroKey(prev => prev + 1);
+      
+      // Scroll top
+      window.scrollTo(0, 0);
+      const container = document.querySelector(".overflow-y-auto");
+      if (container) {
+        container.scrollTo({ top: 0, behavior: 'instant' });
+      }
+    }, 600);
+
+    setTimeout(() => {
+      setIsTransitioning(false);
+    }, 1400);
   };
 
   return (
-    <TransitionContext.Provider value={{ isTransitioning, isLoading, triggerLogoTransition, heroKey }}>
-      {children}
-      
-      {/* Global Floating Contact Button */}
-      <motion.button
-        initial={{ opacity: 0, x: 20 }}
-        animate={{ 
-          opacity: (isTransitioning || location.pathname === "/contact") ? 0 : 1, 
-          x: (isTransitioning || location.pathname === "/contact") ? 20 : 0 
-        }}
-        whileHover={{ scale: 1.1 }}
-        whileTap={{ scale: 0.9 }}
-        onClick={() => navigate("/contact")}
-        className="fixed bottom-8 md:bottom-12 right-6 md:right-16 z-[150] w-12 h-12 md:w-16 md:h-16 bg-[#ef4444] rounded-full flex items-center justify-center shadow-[0_10px_30px_rgba(239,68,68,0.3)] pointer-events-auto cursor-pointer"
-      >
-        <Pencil className="text-white w-5 h-5 md:w-7 md:h-7" />
-      </motion.button>
+    <TransitionContext.Provider value={{ isTransitioning, isLoading, triggerLogoTransition, triggerPageTransition, heroKey }}>
+      <div className="relative w-full h-full">
+        {/* Main Content: Hidden during transition to ensure a clean reveal */}
+        <motion.div
+          className="w-full h-full"
+        >
+          {children}
+        </motion.div>
+        
+        {/* Global Floating Contact Button */}
+        <motion.button
+          initial={{ opacity: 0, x: 20 }}
+          animate={{ 
+            opacity: (isTransitioning || location.pathname === "/contact") ? 0 : 1, 
+            x: (isTransitioning || location.pathname === "/contact") ? 20 : 0 
+          }}
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
+          onClick={() => navigate("/contact")}
+          className="fixed bottom-8 md:bottom-12 right-6 md:right-16 z-[150] w-12 h-12 md:w-16 md:h-16 bg-[#ef4444] rounded-full flex items-center justify-center shadow-[0_10px_30px_rgba(239,68,68,0.3)] pointer-events-auto cursor-pointer"
+        >
+          <Pencil className="text-white w-5 h-5 md:w-7 md:h-7" />
+        </motion.button>
+      </div>
 
-      {/* Global Cinematic Portal */}
-      <CinematicWarpTransition isActive={isTransitioning} />
+      {/* Global Geometric Shutter Transition */}
+      <GeometricShutterTransition isActive={isTransitioning} />
     </TransitionContext.Provider>
   );
 };
 
-/* --- GLOBAL WARP TRANSITION COMPONENT --- */
-const CinematicWarpTransition = ({ isActive }: { isActive: boolean }) => {
+/* --- ALTERNATIVE: GEOMETRIC SHUTTER TRANSITION --- */
+const GeometricShutterTransition = ({ isActive }: { isActive: boolean }) => {
   return (
     <AnimatePresence>
       {isActive && (
         <motion.div
-          initial={{ opacity: 0 }}
+          initial={{ opacity: 1 }}
           animate={{ opacity: 1 }}
-          exit={{ opacity: 0, transition: { duration: 0.4, delay: 0 } }}
-          transition={{ duration: 0.3 }}
-          className="fixed top-2 md:top-3 lg:top-4 bottom-2 md:bottom-3 lg:bottom-4 left-2 md:left-3 lg:left-4 right-2 md:right-3 lg:right-4 z-[9000] pointer-events-none overflow-hidden rounded-[16px] md:rounded-[28px] lg:rounded-[40px]"
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.4, delay: 1.2 }}
+          className="fixed inset-0 z-[9000] pointer-events-none overflow-hidden"
         >
-          {/* Temporary Background Shield */}
+          {/* White Cover: Solid background that obscures everything until the end */}
           <motion.div
             initial={{ opacity: 1 }}
-            animate={{ opacity: [1, 1, 0] }}
-            transition={{ duration: 1.6, times: [0, 0.85, 1], ease: "linear" }}
-            className="absolute inset-0 bg-[#1f2547] z-0"
+            animate={{ opacity: 1 }}
+            className="absolute inset-0 bg-white z-0"
           />
 
-          {/* Droplet Descent */}
+          {/* Top-Right Panel (Red) */}
           <motion.div
-            initial={{ x: 88, y: 88, scale: 0.2, opacity: 1 }}
-            animate={{ 
-              x: [88, typeof window !== 'undefined' ? window.innerWidth / 2 : 0], 
-              y: [88, typeof window !== 'undefined' ? window.innerHeight / 2 : 0],
-              scale: [0.2, 1.6, 0.8],
-              opacity: [1, 1, 0]
-            }}
-            transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
-            className="absolute z-50 w-16 h-16 bg-white rounded-full blur-[1px] shadow-[0_0_25px_white]"
-            style={{ top: 0, left: 0 }}
+            initial={{ x: "120%", y: "-120%", skewX: -20 }}
+            animate={{ x: "-120%", y: "120%" }}
+            exit={{ x: "-220%", y: "220%" }}
+            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+            className="absolute inset-0 bg-[#ef4444] z-20 origin-center scale-150"
           />
 
-          {/* Ripples */}
-          {[
-            { scale: 10, color: "#ef3b5d", delay: 1.1, duration: 0.7, z: 10 },
-            { scale: 12, color: "#ffffff", delay: 1.2, duration: 0.8, z: 20 },
-            { scale: 14, color: "#1f2547", delay: 1.3, duration: 0.9, z: 30 }
-          ].map((r, i) => (
-            <motion.div
-              key={i}
-              initial={{ scale: 0, opacity: 0 }}
-              animate={{ scale: r.scale, opacity: [0, 1, 0] }}
-              transition={{ duration: r.duration, delay: r.delay, ease: [0.16, 1, 0.3, 1] }}
-              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] rounded-full"
-              style={{ backgroundColor: r.color, zIndex: r.z }}
-            />
-          ))}
+          {/* Bottom-Left Panel (Dark Blue) */}
+          <motion.div
+            initial={{ x: "-120%", y: "120%", skewX: -20 }}
+            animate={{ x: "120%", y: "-120%" }}
+            exit={{ x: "220%", y: "-220%" }}
+            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1], delay: 0.05 }}
+            className="absolute inset-0 bg-[#1f2547] z-10 origin-center scale-150"
+          />
 
-          {/* Splash Particles */}
-          <div className="absolute top-1/2 left-1/2 z-40">
-            {[...Array(20)].map((_, i) => (
-              <motion.div
-                key={i}
-                initial={{ scale: 0, x: 0, y: 0 }}
-                animate={{ 
-                  scale: [0, 1.5, 0],
-                  x: (Math.random() - 0.5) * 1200,
-                  y: (Math.random() - 0.5) * 1200
-                }}
-                transition={{ duration: 0.8, delay: 1.2 }}
-                className={`absolute w-2 h-2 rounded-full blur-[1px] ${i % 2 === 0 ? "bg-[#ef4444]" : "bg-white"}`}
-              />
-            ))}
+          {/* Central Logo Flash */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.5, rotate: -20 }}
+            animate={{ 
+              opacity: [0, 1, 1, 0],
+              scale: [0.5, 1.2, 1, 1.5],
+              rotate: [20, 0, 0, -20]
+            }}
+            transition={{ duration: 1.0, times: [0, 0.3, 0.7, 1], ease: "easeInOut" }}
+            className="absolute inset-0 flex items-center justify-center z-30"
+          >
+            <div className="w-48 h-48 bg-white rounded-full flex items-center justify-center shadow-[0_0_100px_rgba(255,255,255,0.4)]">
+              <svg viewBox="0 0 24 24" className="w-24 h-24 fill-[#ef4444]" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 21c-4.97 0-9-4.03-9-9s4.03-9 9-9 9 4.03 9 9-4.03 9-9 9zm0-16.5c-4.14 0-7.5 3.36-7.5 7.5s3.36 7.5 7.5 7.5 7.5-3.36 7.5-7.5-3.36-7.5-7.5-7.5zm.75 12c-1.24 0-2.25-1.01-2.25-2.25v-4.5c0-.41.34-.75.75-.75s.75.34.75.75v4.5c0 .41.34.75.75.75h.75c.41 0 .75.34.75.75s-.34.75-.75.75h-1.5z" />
+              </svg>
+            </div>
+          </motion.div>
+
+          {/* Particle Burst on Exit */}
+          <div className="absolute inset-0 z-40">
+            <AnimatePresence>
+              {isActive && (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  className="absolute inset-0"
+                >
+                  {[...Array(15)].map((_, i) => (
+                    <motion.div
+                      key={i}
+                      initial={{ scale: 0, x: "50%", y: "50%" }}
+                      animate={{ 
+                        scale: [0, 1.5, 0],
+                        x: `${50 + (Math.random() - 0.5) * 100}%`,
+                        y: `${50 + (Math.random() - 0.5) * 100}%`
+                      }}
+                      transition={{ duration: 1, delay: 0.6 + Math.random() * 0.4 }}
+                      className={`absolute w-3 h-3 rounded-full blur-[2px] ${i % 2 === 0 ? "bg-white" : "bg-[#ef4444]"}`}
+                    />
+                  ))}
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
         </motion.div>
       )}

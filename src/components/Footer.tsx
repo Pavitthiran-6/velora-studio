@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { motion } from "motion/react";
 import { ArrowRight } from "lucide-react";
 import { Layout } from "./layout/Layout";
+import { useTransition } from "./TransitionProvider";
 
 const SERVICES = [
   { label: "WEBSITE DESIGN", href: "/services" },
@@ -25,10 +26,14 @@ const SOCIALS = [
   { label: "Dribbble", href: "https://dribbble.com" },
 ];
 
-const RedDot = ({ size = "md" }: { size?: "sm" | "md" | "lg" }) => {
+const RedHex = ({ size = "md" }: { size?: "sm" | "md" | "lg" }) => {
   const s =
     size === "sm" ? "w-2 h-2" : size === "lg" ? "w-5 h-5" : "w-3 h-3 md:w-4 md:h-4";
-  return <div className={`${s} bg-[#ef4444] rotate-45 shrink-0`} />;
+  return (
+    <svg viewBox="0 0 24 24" className={`${s} shrink-0`} xmlns="http://www.w3.org/2000/svg">
+      <path d="M12 2l9.5 5.5v11L12 24l-9.5-5.5v-11z" fill="#ef4444" />
+    </svg>
+  );
 };
 
 const BlueprintLine = () => (
@@ -39,7 +44,7 @@ const BlueprintLine = () => (
 );
 
 export const Footer = () => {
-  const navigate = useNavigate();
+  const { triggerPageTransition } = useTransition();
   const [email, setEmail] = useState("");
 
   return (
@@ -68,12 +73,12 @@ export const Footer = () => {
           <motion.div
             className="flex items-center gap-2 md:gap-4 cursor-pointer group"
             whileHover={{ scale: 1.01 }}
-            onClick={() => navigate("/contact")}
+            onClick={() => triggerPageTransition("/contact")}
           >
             <h2 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-display font-black tracking-[-0.04em] uppercase leading-none group-hover:text-[#ef4444] transition-colors duration-300">
               LET'S TALK
             </h2>
-            <RedDot size="md" />
+            <RedHex size="md" />
           </motion.div>
         </div>
 
@@ -84,17 +89,16 @@ export const Footer = () => {
         <div className="grid grid-cols-12 gap-4 items-start">
           {/* STUDIO */}
           <div className="col-span-4 flex flex-col items-start">
-            <Link to="/studio">
-              <motion.div
-                className="flex items-center gap-2 md:gap-3 mb-3 cursor-pointer group"
-                whileHover={{ x: 4 }}
-              >
-                <h3 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-display font-black tracking-[-0.04em] uppercase leading-none group-hover:text-[#ef4444] transition-colors duration-300">
-                  STUDIO
-                </h3>
-                <RedDot size="sm" />
-              </motion.div>
-            </Link>
+            <motion.div
+              onClick={() => triggerPageTransition("/studio")}
+              className="flex items-center gap-2 md:gap-3 mb-3 cursor-pointer group"
+              whileHover={{ x: 4 }}
+            >
+              <h3 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-display font-black tracking-[-0.04em] uppercase leading-none group-hover:text-[#ef4444] transition-colors duration-300">
+                STUDIO
+              </h3>
+              <RedHex size="sm" />
+            </motion.div>
             <p className="text-white text-[11px] md:text-[13px] font-display font-black tracking-[-0.02em] uppercase leading-relaxed">
               81 PROSPECT ST, SUITE 9069,<br />
               BROOKLYN, NY 11201
@@ -104,31 +108,30 @@ export const Footer = () => {
           {/* Services List */}
           <div className="col-start-5 col-span-4 flex flex-col gap-[3px] pt-1">
             {SERVICES.map((s) => (
-              <Link key={s.label} to={s.href}>
-                <motion.span
-                  whileHover={{ x: 4, color: "#ef4444" }}
-                  transition={{ duration: 0.1 }}
-                  className="text-white text-[11px] md:text-[13px] font-display font-black tracking-[-0.02em] uppercase cursor-pointer leading-snug block transition-all"
-                >
-                  {s.label}
-                </motion.span>
-              </Link>
+              <motion.span
+                key={s.label}
+                onClick={() => triggerPageTransition(s.href)}
+                whileHover={{ x: 4, color: "#ef4444" }}
+                transition={{ duration: 0.1 }}
+                className="text-white text-[11px] md:text-[13px] font-display font-black tracking-[-0.02em] uppercase cursor-pointer leading-snug block transition-all"
+              >
+                {s.label}
+              </motion.span>
             ))}
           </div>
 
           {/* SERVICES big word */}
           <div className="col-start-9 col-span-4 flex items-center justify-end gap-2 md:gap-3 self-end">
-            <Link to="/services">
-              <motion.div
-                className="flex items-center gap-2 group cursor-pointer"
-                whileHover={{ x: -4 }}
-              >
-                <h3 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-display font-black tracking-[-0.04em] uppercase leading-none text-right group-hover:text-[#ef4444] transition-colors duration-300">
-                  SERVICES
-                </h3>
-                <RedDot size="sm" />
-              </motion.div>
-            </Link>
+            <motion.div
+              onClick={() => triggerPageTransition("/services")}
+              className="flex items-center gap-2 group cursor-pointer"
+              whileHover={{ x: -4 }}
+            >
+              <h3 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-display font-black tracking-[-0.04em] uppercase leading-none text-right group-hover:text-[#ef4444] transition-colors duration-300">
+                SERVICES
+              </h3>
+              <RedHex size="sm" />
+            </motion.div>
           </div>
         </div>
 
@@ -136,17 +139,16 @@ export const Footer = () => {
         <BlueprintLine />
 
         {/* ── ROW 3: WORK big word ── */}
-        <Link to="/work">
-          <motion.div
-            className="flex items-center gap-3 md:gap-5 cursor-pointer group w-fit"
-            whileHover={{ x: 6 }}
-          >
-            <h2 className="text-5xl sm:text-6xl md:text-8xl lg:text-9xl font-display font-black tracking-[-0.04em] uppercase leading-none group-hover:text-[#ef4444] transition-colors duration-300">
-              WORK
-            </h2>
-            <RedDot size="lg" />
-          </motion.div>
-        </Link>
+        <motion.div
+          onClick={() => triggerPageTransition("/work")}
+          className="flex items-center gap-3 md:gap-5 cursor-pointer group w-fit"
+          whileHover={{ x: 6 }}
+        >
+          <h2 className="text-5xl sm:text-6xl md:text-8xl lg:text-9xl font-display font-black tracking-[-0.04em] uppercase leading-none group-hover:text-[#ef4444] transition-colors duration-300">
+            WORK
+          </h2>
+          <RedHex size="lg" />
+        </motion.div>
 
         {/* ── ROW 4: Newsletter / Copyright / Socials ── */}
         <div className="grid grid-cols-12 items-end gap-6 pt-4 border-t border-white/5">

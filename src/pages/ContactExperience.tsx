@@ -1,9 +1,10 @@
 "use client";
 
 import React, { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence } from "motion/react";
 import { MoveLeft, X, ArrowRight } from "lucide-react";
 import { useTransition } from "../components/TransitionProvider";
+import HexIcon from "../components/HexIcon";
 
 type ContactStep = "intro" | "projectType" | "budget" | "hearAbout" | "form" | "success";
 
@@ -36,146 +37,146 @@ export const ContactExperience: React.FC<{ isOpen: boolean; onClose: () => void 
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 z-[5000] bg-[#1f2547] text-[#f4f4f4] font-sans selection:bg-[#ef3b5d] selection:text-white overflow-hidden flex flex-col p-8 md:p-12 lg:p-16"
+      className="fixed inset-0 z-[5000] bg-[#ef4444] p-2 md:p-3 lg:p-4 font-sans select-none overflow-hidden"
     >
-      {/* TOP LAYER: LOGO + TAGS + DECO */}
-      <div className="flex justify-between items-start z-10">
-        {/* Logo with Red Circle - Clickable (Global Transition) */}
-        <button
-          onClick={() => triggerLogoTransition()}
-          className="flex items-center gap-4 group"
-        >
-          <div className="w-12 h-12 md:w-16 md:h-16 bg-[#ef3b5d] rounded-full flex items-center justify-center p-2 md:p-3 group-hover:scale-110 transition-transform duration-300">
-            <svg viewBox="0 0 24 24" className="w-full h-full fill-white" xmlns="http://www.w3.org/2000/svg">
-              <path d="M12 21c-4.97 0-9-4.03-9-9s4.03-9 9-9 9 4.03 9 9-4.03 9-9 9zm0-16.5c-4.14 0-7.5 3.36-7.5 7.5s3.36 7.5 7.5 7.5 7.5-3.36 7.5-7.5-3.36-7.5-7.5-7.5zm.75 12c-1.24 0-2.25-1.01-2.25-2.25v-4.5c0-.41.34-.75.75-.75s.75.34.75.75v4.5c0 .41.34.75.75.75h.75c.41 0 .75.34.75.75s-.34.75-.75.75h-1.5zZ" />
-            </svg>
-          </div>
-        </button>
+      <div className="relative w-full h-full rounded-[16px] md:rounded-[28px] lg:rounded-[40px] overflow-hidden bg-[#1f2547] flex flex-col border border-white/5 shadow-[0_20px_50px_rgba(0,0,0,0.4)] p-8 md:p-12 lg:p-16 text-[#f4f4f4] selection:bg-[#ef3b5d] selection:text-white">
+        {/* TOP LAYER: LOGO + TAGS + DECO */}
+        <div className="flex justify-between items-start z-10">
+          {/* Logo with Red Circle - Clickable (Global Transition) */}
+          <button
+            onClick={() => triggerLogoTransition()}
+            className="flex items-center gap-4 group"
+          >
+            <div className="w-12 h-12 md:w-16 md:h-16 bg-[#ef3b5d] rounded-full flex items-center justify-center p-2 md:p-3 group-hover:scale-110 transition-transform duration-300">
+              <svg viewBox="0 0 24 24" className="w-full h-full fill-white" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 21c-4.97 0-9-4.03-9-9s4.03-9 9-9 9 4.03 9 9-4.03 9-9 9zm0-16.5c-4.14 0-7.5 3.36-7.5 7.5s3.36 7.5 7.5 7.5 7.5-3.36 7.5-7.5-3.36-7.5-7.5-7.5zm.75 12c-1.24 0-2.25-1.01-2.25-2.25v-4.5c0-.41.34-.75.75-.75s.75.34.75.75v4.5c0 .41.34.75.75.75h.75c.41 0 .75.34.75.75s-.34.75-.75.75h-1.5zZ" />
+              </svg>
+            </div>
+          </button>
 
-        {/* Selected Tags Capsules */}
-        <div className="flex gap-2">
-          <AnimatePresence>
-            {[selections.projectType, selections.budget, selections.hearAbout].map((tag, i) => tag && (
-              <motion.div
-                key={`${tag}-${i}`}
-                initial={{ opacity: 0, y: -20, scale: 0.8 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                className="px-5 py-2 md:py-3 rounded-full bg-white/5 border border-white/10 text-[9px] md:text-[10px] font-display font-black tracking-[0.2em] uppercase text-white/40 whitespace-nowrap flex items-center gap-3"
-              >
-                <div className="w-1.5 h-1.5 rounded-full border border-white/20 flex items-center justify-center p-[1px]">
-                  <div className="w-full h-full rounded-full bg-[#ef3b5d]" />
-                </div>
-                {tag}
-              </motion.div>
-            ))}
+          {/* Selected Tags Capsules */}
+          <div className="flex gap-2">
+            <AnimatePresence>
+              {[selections.projectType, selections.budget, selections.hearAbout].map((tag, i) => tag && (
+                  <motion.div
+                    key={`${tag}-${i}`}
+                    initial={{ opacity: 0, y: -20, scale: 0.8 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    className="px-5 py-2 md:py-3 rounded-full bg-white/5 border border-white/10 text-[9px] md:text-[10px] font-display font-black tracking-[0.2em] uppercase text-white/40 whitespace-nowrap flex items-center gap-3"
+                  >
+                    <HexIcon className="w-2.5 h-2.5" fill="#ef3b5d" />
+                    {tag}
+                  </motion.div>
+              ))}
+            </AnimatePresence>
+          </div>
+
+          {/* Close Button */}
+          <div className="flex items-center gap-8">
+            <button onClick={onClose} className="opacity-40 hover:opacity-100 transition-opacity">
+              <X className="w-6 h-6 md:w-8 md:h-8" />
+            </button>
+          </div>
+        </div>
+
+        {/* MIDDLE LAYER: CENTERED CONTENT */}
+        <div className="flex-1 flex flex-col justify-center items-center text-center">
+          <AnimatePresence mode="wait">
+            {step === "intro" && (
+              <StepContent
+                key="intro"
+                title={<>HOW CAN WE <span className="text-[#ef3b5d]">HELP?</span></>}
+                options={["START A PROJECT", "JOIN OUR TEAM", "DROP US A LINE"]}
+                onSelect={(val) => {
+                  if (val === "START A PROJECT") {
+                    setSelections(s => ({ ...s, path: val }));
+                    nextStep("projectType");
+                  } else {
+                    window.location.href = "mailto:pavitthiran66@gmail.com";
+                  }
+                }}
+              />
+            )}
+            {step === "projectType" && (
+              <StepContent
+                key="projectType"
+                title={<>WHAT TYPE OF <span className="text-[#ef3b5d]">PROJECT?</span></>}
+                options={["FULL WEBSITE", "UX/UI DESIGN", "WEB DEVELOPMENT", "BRANDING", "MARKETING"]}
+                onSelect={(val) => { setSelections(s => ({ ...s, projectType: val })); nextStep("budget"); }}
+              />
+            )}
+            {step === "budget" && (
+              <StepContent
+                key="budget"
+                title={<>BUDGET <span className="text-[#ef3b5d]">RANGE</span></>}
+                options={["15K–30K", "30K–50K", "50K–75K", "75K–100K", "100K+"]}
+                onSelect={(val) => { setSelections(s => ({ ...s, budget: val })); nextStep("hearAbout"); }}
+              />
+            )}
+            {step === "hearAbout" && (
+              <StepContent
+                key="hearAbout"
+                title={<>HOW DID YOU <span className="text-[#ef3b5d]">HEAR ABOUT US?</span></>}
+                options={["AWWWARDS", "FRIEND REFERRAL", "WE DID A PROJECT", "GOOGLE", "ARTICLE"]}
+                onSelect={(val) => { setSelections(s => ({ ...s, hearAbout: val })); nextStep("form"); }}
+              />
+            )}
+            {step === "form" && (
+              <StepFinalForm
+                onSelect={() => nextStep("success")}
+                selections={selections}
+              />
+            )}
+            {step === "success" && (
+              <StepSuccess onClose={onClose} />
+            )}
           </AnimatePresence>
         </div>
 
-        {/* Close Button */}
-        <div className="flex items-center gap-8">
-          <button onClick={onClose} className="opacity-40 hover:opacity-100 transition-opacity">
-            <X className="w-6 h-6 md:w-8 md:h-8" />
-          </button>
-        </div>
-      </div>
-
-      {/* MIDDLE LAYER: CENTERED CONTENT */}
-      <div className="flex-1 flex flex-col justify-center items-center text-center">
-        <AnimatePresence mode="wait">
-          {step === "intro" && (
-            <StepContent
-              key="intro"
-              title={<>HOW CAN WE <span className="text-[#ef3b5d]">HELP?</span></>}
-              options={["START A PROJECT", "JOIN OUR TEAM", "DROP US A LINE"]}
-              onSelect={(val) => {
-                if (val === "START A PROJECT") {
-                  setSelections(s => ({ ...s, path: val }));
-                  nextStep("projectType");
-                } else {
-                  window.location.href = "mailto:pavitthiran66@gmail.com";
+        {/* BOTTOM LAYER: BACK + PROGRESS */}
+        <div className="flex justify-between items-center z-10 h-24">
+          {step !== "intro" && step !== "success" ? (
+            <button
+              onClick={() => {
+                if (step === "projectType") {
+                  setSelections(s => ({ ...s, path: "" }));
+                  prevStep("intro");
+                } else if (step === "budget") {
+                  setSelections(s => ({ ...s, projectType: "" }));
+                  prevStep("projectType");
+                } else if (step === "hearAbout") {
+                  setSelections(s => ({ ...s, budget: "" }));
+                  prevStep("budget");
+                } else if (step === "form") {
+                  setSelections(s => ({ ...s, hearAbout: "" }));
+                  prevStep("hearAbout");
                 }
               }}
-            />
-          )}
-          {step === "projectType" && (
-            <StepContent
-              key="projectType"
-              title={<>WHAT TYPE OF <span className="text-[#ef3b5d]">PROJECT?</span></>}
-              options={["FULL WEBSITE", "UX/UI DESIGN", "WEB DEVELOPMENT", "BRANDING", "MARKETING"]}
-              onSelect={(val) => { setSelections(s => ({ ...s, projectType: val })); nextStep("budget"); }}
-            />
-          )}
-          {step === "budget" && (
-            <StepContent
-              key="budget"
-              title={<>BUDGET <span className="text-[#ef3b5d]">RANGE</span></>}
-              options={["15K–30K", "30K–50K", "50K–75K", "75K–100K", "100K+"]}
-              onSelect={(val) => { setSelections(s => ({ ...s, budget: val })); nextStep("hearAbout"); }}
-            />
-          )}
-          {step === "hearAbout" && (
-            <StepContent
-              key="hearAbout"
-              title={<>HOW DID YOU <span className="text-[#ef3b5d]">HEAR ABOUT US?</span></>}
-              options={["AWWWARDS", "FRIEND REFERRAL", "WE DID A PROJECT", "GOOGLE", "ARTICLE"]}
-              onSelect={(val) => { setSelections(s => ({ ...s, hearAbout: val })); nextStep("form"); }}
-            />
-          )}
-          {step === "form" && (
-            <StepFinalForm
-              onSelect={() => nextStep("success")}
-              selections={selections}
-            />
-          )}
-          {step === "success" && (
-            <StepSuccess onClose={onClose} />
-          )}
-        </AnimatePresence>
-      </div>
+              className="w-16 h-16 md:w-20 md:h-20 rounded-full border border-white/10 flex items-center justify-center hover:bg-white/5 transition-colors group"
+            >
+              <MoveLeft className="w-6 h-6 md:w-8 md:h-8 opacity-40 group-hover:opacity-100 transition-opacity" />
+            </button>
+          ) : <div className="w-20" />}
 
-      {/* BOTTOM LAYER: BACK + PROGRESS */}
-      <div className="flex justify-between items-center z-10 h-24">
-        {step !== "intro" && step !== "success" ? (
-          <button
-            onClick={() => {
-              if (step === "projectType") {
-                setSelections(s => ({ ...s, path: "" }));
-                prevStep("intro");
-              } else if (step === "budget") {
-                setSelections(s => ({ ...s, projectType: "" }));
-                prevStep("projectType");
-              } else if (step === "hearAbout") {
-                setSelections(s => ({ ...s, budget: "" }));
-                prevStep("budget");
-              } else if (step === "form") {
-                setSelections(s => ({ ...s, hearAbout: "" }));
-                prevStep("hearAbout");
-              }
-            }}
-            className="w-16 h-16 md:w-20 md:h-20 rounded-full border border-white/10 flex items-center justify-center hover:bg-white/5 transition-colors group"
-          >
-            <MoveLeft className="w-6 h-6 md:w-8 md:h-8 opacity-40 group-hover:opacity-100 transition-opacity" />
-          </button>
-        ) : <div className="w-20" />}
+          {/* PROGRESS INDICATOR */}
+          <div className="flex flex-col items-center gap-6 w-full max-w-sm md:max-w-md mx-auto">
+            <div className="flex justify-between items-center w-full px-2">
+              <span className="text-[10px] md:text-xs font-black tracking-[0.2em] opacity-40">01</span>
+              <span className="text-[10px] md:text-xs font-black tracking-[0.2em] opacity-40">05</span>
+            </div>
+            <div className="w-full h-0.5 bg-white/10 relative">
+              <HexIcon className="absolute top-1/2 left-0 -translate-y-1/2 w-3 h-3" fill="#ef3b5d" />
+              <motion.div
+                initial={{ width: "20%" }}
+                animate={{ width: `${(progress / 5) * 100}%` }}
+                className="absolute h-full bg-[#ef3b5d] left-0 top-0 transition-all duration-500"
+              />
+              <HexIcon className="absolute top-1/2 right-0 -translate-y-1/2 w-3 h-3" fill="#1f2547" />
+            </div>
+          </div>
 
-        {/* PROGRESS INDICATOR */}
-        <div className="flex flex-col items-center gap-6 w-full max-w-sm md:max-w-md mx-auto">
-          <div className="flex justify-between items-center w-full px-2">
-            <span className="text-[10px] md:text-xs font-black tracking-[0.2em] opacity-40">01</span>
-            <span className="text-[10px] md:text-xs font-black tracking-[0.2em] opacity-40">05</span>
-          </div>
-          <div className="w-full h-0.5 bg-white/10 relative">
-            <div className="absolute top-1/2 left-0 -translate-y-1/2 w-2 h-2 rounded-full bg-[#ef3b5d]" />
-            <motion.div
-              initial={{ width: "20%" }}
-              animate={{ width: `${(progress / 5) * 100}%` }}
-              className="absolute h-full bg-[#ef3b5d] left-0 top-0 transition-all duration-500"
-            />
-            <div className="absolute top-1/2 right-0 -translate-y-1/2 w-2 h-2 rounded-full border border-white/20 bg-[#1f2547]" />
-          </div>
+          <div className="w-20 hidden md:block" />
         </div>
-
-        <div className="w-20 hidden md:block" />
       </div>
     </motion.div>
   );
@@ -207,9 +208,7 @@ const StepContent: React.FC<{ title: React.ReactNode; options: string[]; onSelec
           onClick={() => onSelect(opt)}
           className="px-8 md:px-12 py-5 md:py-7 rounded-[4rem] bg-white/5 border border-white/10 flex items-center gap-4 group transition-colors duration-300"
         >
-          <div className="w-2 h-2 rounded-full border border-white/20 flex items-center justify-center p-[2px]">
-            <div className="w-full h-full rounded-full bg-white/20 group-hover:bg-[#ef3b5d] transition-colors" />
-          </div>
+          <HexIcon className="w-3 h-3" fill={i === 0 ? "rgba(255,255,255,0.2)" : "currentColor"} />
           <span className="text-[10px] md:text-xs font-display font-black tracking-[0.2em] uppercase whitespace-nowrap">{opt}</span>
         </motion.button>
       ))}
@@ -264,8 +263,9 @@ const StepSuccess: React.FC<{ onClose: () => void }> = ({ onClose }) => (
         initial={{ scale: 0 }}
         animate={{ scale: 1 }}
         transition={{ delay: 0.3, type: "spring" }}
-        className="w-12 h-12 bg-[#ef3b5d] rounded-full"
-      />
+      >
+        <HexIcon className="w-12 h-12" fill="#ef3b5d" />
+      </motion.div>
     </div>
     <h1 className="text-4xl md:text-7xl lg:text-[8vw] font-display font-black tracking-[-0.04em] uppercase leading-[0.85] mb-8">
       MESSAGE <br /> <span className="text-[#ef3b5d]">RECEIVED.</span>

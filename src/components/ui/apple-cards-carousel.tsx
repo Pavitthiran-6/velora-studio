@@ -198,7 +198,7 @@ export const Card: React.FC<CardProps> = ({
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="fixed inset-0 h-full w-full bg-black/80 backdrop-blur-lg"
+              className="fixed inset-0 h-full w-full bg-[#0a0a0a]/95"
             />
             <motion.div
               initial={{ opacity: 0 }}
@@ -244,12 +244,19 @@ export const Card: React.FC<CardProps> = ({
           >
             {card.category}
           </motion.p>
-          <motion.p
-            layoutId={layout ? `title-${card.title}` : undefined}
-            className="mt-2 max-w-xs text-left font-display font-black tracking-[-0.04em] uppercase [text-wrap:balance] text-white text-xl md:text-4xl"
-          >
-            {card.title}
-          </motion.p>
+          <div className="flex items-center gap-4 mt-2">
+            <motion.p
+              layoutId={layout ? `title-${card.title}` : undefined}
+              className="max-w-xs text-left font-display font-black tracking-[-0.04em] uppercase [text-wrap:balance] text-white text-xl md:text-4xl"
+            >
+              {card.title}
+            </motion.p>
+            <div className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-white/10 flex items-center justify-center backdrop-blur-md border border-white/10 shrink-0">
+              <svg viewBox="0 0 24 24" className="w-5 h-5 md:w-6 md:h-6 fill-none stroke-white stroke-[2.5]" xmlns="http://www.w3.org/2000/svg">
+                <path d="M7 17L17 7M17 7H7M17 7V17" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </div>
+          </div>
         </div>
         <BlurImage
           src={card.src}

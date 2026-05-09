@@ -4,7 +4,9 @@ import { motion, useScroll } from "motion/react";
 import { IconArrowNarrowRight } from "@tabler/icons-react";
 import { useRef } from "react";
 import { Layout } from "./layout/Layout";
+import { useTransition } from "./TransitionProvider";
 import { CinematicText } from "./CinematicText";
+import HexIcon from "./HexIcon";
 
 const DummyContent = () => {
   return (
@@ -88,6 +90,7 @@ export const RecentWork = ({ containerRef }: { containerRef: React.RefObject<HTM
   // Map horizontal motion to the middle part of the vertical scroll
   // We start the horizontal move after the title has likely scrolled up (approx 0.1 progress)
   // and finish before the section unpins (approx 0.9 progress)
+  const { triggerPageTransition } = useTransition();
   const cards = [
     ...data.map((card, index) => (
       <Card key={card.src} card={card} index={index} />
@@ -95,6 +98,7 @@ export const RecentWork = ({ containerRef }: { containerRef: React.RefObject<HTM
     <motion.div
       key="view-all"
       whileHover={{ x: 10 }}
+      onClick={() => triggerPageTransition("/work")}
       className="flex flex-col items-center justify-center gap-4 cursor-pointer group transition-all duration-300 px-12 md:px-20 h-full self-center"
     >
       <div className="w-16 h-16 md:w-20 md:h-20 flex items-center justify-center">
@@ -112,9 +116,7 @@ export const RecentWork = ({ containerRef }: { containerRef: React.RefObject<HTM
       <Layout className="py-20 md:py-32">
         <div className="flex flex-col gap-6">
           <div className="flex items-center gap-3">
-            <div className="w-3 h-3 rounded-full border border-[#ef4444] flex items-center justify-center">
-              <div className="w-1.5 h-1.5 bg-[#ef4444] rounded-full" />
-            </div>
+            <HexIcon className="w-3.5 h-3.5" fill="#ef4444" />
             <span className="text-white text-[10px] md:text-xs font-black tracking-[0.3em] uppercase whitespace-nowrap">PROJECTS</span>
           </div>
           <div className="flex flex-col">

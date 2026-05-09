@@ -21,33 +21,26 @@ const CinematicChar: React.FC<{
   char: string;
   index: number;
   total: number;
-  scrollProgress: MotionValue<number>;
+  smoothProgress: MotionValue<number>;
   intensity: number;
-}> = ({ char, index, total, scrollProgress, intensity: I }) => {
+}> = ({ char, index, total, smoothProgress, intensity: I }) => {
   const pct = index / Math.max(total - 1, 1);
   
-  // Force numeric type to bypass inference bugs in motion/react
-  const smoothP = useSpring(scrollProgress as any, { 
-    stiffness: 50, 
-    damping: 35,
-    mass: 1.0
-  }) as unknown as MotionValue<number>;
-
-  // 1. Subtle Vertical Rise (Professional distance)
-  const y = useTransform<number, number>(smoothP, [0, 0.45], [24 * I, 0]);
+  // 1. Subtle Vertical Rise
+  const y = useTransform(smoothProgress, [0, 0.45], [24 * I, 0]);
   
-  // 2. Tracking Compression (Subtle inward drift)
-  const x = useTransform<number, number>(smoothP, [0, 0.45], [(pct - 0.5) * 40 * I, 0]);
+  // 2. Tracking Compression
+  const x = useTransform(smoothProgress, [0, 0.45], [(pct - 0.5) * 40 * I, 0]);
   
   // 3. Opacity + Soft Focus
-  const opacity = useTransform<number, number>(smoothP, [0.05, 0.35], [0, 1]);
+  const opacity = useTransform(smoothProgress, [0.05, 0.35], [0, 1]);
   
-  // 4. Soft Focus (Refactored for strict type safety)
-  const blurValue = useTransform<number, number>(smoothP, [0, 0.35], [8 * I, 0]);
+  // 4. Soft Focus (GPU-friendly blur)
+  const blurValue = useTransform(smoothProgress, [0, 0.35], [8 * I, 0]);
   const blur = useTransform(blurValue, (v) => `blur(${v}px)`);
   
-  // 5. Scale (Subtle "breathing" into focus)
-  const scale = useTransform<number, number>(smoothP, [0, 0.45], [0.96, 1]);
+  // 5. Scale
+  const scale = useTransform(smoothProgress, [0, 0.45], [0.96, 1]);
 
   if (char === "\n") return <br />;
 
@@ -63,7 +56,7 @@ const CinematicChar: React.FC<{
         willChange: "transform, opacity, filter",
         transformOrigin: "center bottom",
       }}
-      className="select-none whitespace-pre"
+      className="select-none whitespace-pre translate-z-0"
     >
       {char === " " ? "\u00A0" : char}
     </motion.span>
@@ -95,6 +88,13 @@ export const CinematicText: React.FC<{
   });
 
   const scrollProgress = (progress ?? internalProgress) as unknown as MotionValue<number>;
+  
+  // Create a single, shared spring for the entire block
+  const smoothP = useSpring(scrollProgress, { 
+    stiffness: 50, 
+    damping: 35,
+    mass: 1.0
+  });
 
   if (intensity === 0) return <Tag className={className}>{children}</Tag>;
 
@@ -110,18 +110,19 @@ export const CinematicText: React.FC<{
             char={token}
             index={globalIndex}
             total={totalCount}
-            scrollProgress={scrollProgress}
+            smoothProgress={smoothP}
             intensity={intensity}
           />
         ) : (
           <motion.span
             key={globalIndex}
             style={{
-              opacity: useTransform<number, number>(scrollProgress, [0.1, 0.4], [0, 1]),
-              y: useTransform<number, number>(scrollProgress, [0, 0.4], [15 * intensity, 0]),
+              opacity: useTransform(smoothP, [0.1, 0.4], [0, 1]),
+              y: useTransform(smoothP, [0, 0.4], [15 * intensity, 0]),
               display: "inline-block",
               marginRight: "0.25em"
             }}
+            className="translate-z-0"
           >
             {token}
           </motion.span>

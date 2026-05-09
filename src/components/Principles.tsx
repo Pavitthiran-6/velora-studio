@@ -5,6 +5,7 @@ import { motion, useScroll, useTransform, useSpring } from "motion/react";
 import { Layout } from "./layout/Layout";
 import { cn } from "@/lib/utils";
 import { CinematicText } from "./CinematicText";
+import HexIcon from "./HexIcon";
 
 const principles = [
   {
@@ -183,14 +184,12 @@ export const Principles = ({ containerRef }: { containerRef: React.RefObject<HTM
                   <div
                     key={p.title}
                     className={cn(
-                      "principle-card flex-shrink-0 w-[85vw] md:w-[400px] min-h-[400px] md:h-[500px] rounded-[32px] bg-[#161b35]/90 backdrop-blur-md p-8 md:p-12 flex flex-col gap-6 shadow-2xl border border-white/5 transition-transform duration-500",
+                      "principle-card flex-shrink-0 w-[85vw] md:w-[400px] min-h-[400px] md:h-[500px] rounded-[24px] bg-[#1a1f3d] p-8 md:p-12 flex flex-col gap-6 shadow-2xl border border-white/5 transition-transform duration-500 transform-gpu will-change-transform",
                       shiftClass
                     )}
                   >
                     <div className="flex items-center gap-3">
-                      <div className="w-3 h-3 rounded-full bg-[#ef4444] shadow-[0_0_15px_#ef4444] flex items-center justify-center">
-                        <div className="w-1.5 h-1.5 bg-white rounded-full opacity-50" />
-                      </div>
+                      <HexIcon className="w-3.5 h-3.5 drop-shadow-[0_0_8px_rgba(239,68,68,0.5)]" fill="#ef4444" />
                       <span className="text-white/50 text-[10px] md:text-xs font-black tracking-[0.4em] uppercase">
                         {p.rule}
                       </span>

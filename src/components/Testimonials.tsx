@@ -2,6 +2,7 @@ import React, { useRef, useState, useEffect } from "react";
 import { motion, useMotionValue } from "motion/react";
 import { Layout } from "./layout/Layout";
 import { CinematicText } from "./CinematicText";
+import HexIcon from "./HexIcon";
 
 // Specific Graphoria Branding Content
 const TESTIMONIALS = [
@@ -98,7 +99,7 @@ export const Testimonials = () => {
           {/* Left Side: Title */}
           <div className="md:col-span-6 space-y-8">
             <div className="flex items-center gap-3">
-              <div className="w-2 h-2 bg-[#ef4444] rounded-full" />
+              <HexIcon className="w-2.5 h-2.5" fill="#ef4444" />
               <span className="text-white/40 text-[10px] md:text-xs font-black tracking-[0.4em] uppercase">CLIENT TRUST</span>
             </div>
             <h2 className="text-white text-5xl md:text-7xl lg:text-8xl font-black leading-[0.85] tracking-tighter uppercase cursor-default">
@@ -124,14 +125,17 @@ export const Testimonials = () => {
                 whileInView={{ opacity: 1, scale: 1 }}
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.1, duration: 0.8 }}
-                className="w-32 h-32 md:w-36 md:h-36 lg:w-44 lg:h-44 rounded-full border border-white/10 bg-white/[0.02] backdrop-blur-md flex flex-col items-center justify-center p-4 text-center group hover:border-[#ef4444]/30 transition-colors duration-500"
+                className="w-32 h-32 md:w-36 md:h-36 lg:w-44 lg:h-44 flex flex-col items-center justify-center relative group"
               >
-                <span className="text-2xl md:text-3xl lg:text-4xl font-display font-black tracking-[-0.04em] text-white group-hover:text-[#ef4444] transition-colors">
-                  {stat.value}
-                </span>
-                <span className="text-[8px] md:text-[9px] lg:text-[10px] font-display font-black tracking-[0.15em] uppercase text-white/40 mt-1 leading-tight px-2">
-                  {stat.label}
-                </span>
+                <HexIcon className="absolute inset-0 w-full h-full opacity-10 group-hover:opacity-30 transition-opacity duration-500" fill="white" />
+                <div className="relative z-10 flex flex-col items-center justify-center p-4 text-center">
+                  <span className="text-2xl md:text-3xl lg:text-4xl font-display font-black tracking-[-0.04em] text-white group-hover:text-[#ef4444] transition-colors">
+                    {stat.value}
+                  </span>
+                  <span className="text-[8px] md:text-[9px] lg:text-[10px] font-display font-black tracking-[0.15em] uppercase text-white/40 mt-1 leading-tight px-2">
+                    {stat.label}
+                  </span>
+                </div>
               </motion.div>
             ))}
           </div>
@@ -187,9 +191,7 @@ const ReviewCard: React.FC<{ data: ReviewData, index: number }> = ({ data, index
     >
       {/* Top Label: Red Dot + Name/Company */}
       <div className="flex items-center gap-3 mb-10 shrink-0">
-        <div className="w-4 h-4 rounded-full border border-white/10 flex items-center justify-center">
-          <div className="w-1.5 h-1.5 bg-[#ef4444] rounded-full" />
-        </div>
+        <HexIcon className="w-3.5 h-3.5" fill="#ef4444" />
         <span className="text-white font-display font-black text-[10px] md:text-xs tracking-[-0.02em] uppercase opacity-80">
           {data.name} / {data.role.split(" / ")[1] || data.role.split(" / ")[0]}
         </span>
@@ -198,7 +200,10 @@ const ReviewCard: React.FC<{ data: ReviewData, index: number }> = ({ data, index
       {/* Content Area: Side-by-side as per previously approved image style */}
       <div className="flex-1 flex flex-col justify-center gap-8">
         <div className="flex gap-6 items-start">
-          <div className="w-16 h-16 md:w-20 md:h-20 rounded-full border border-white/10 overflow-hidden shrink-0 bg-white/5">
+          <div 
+            className="w-16 h-16 md:w-20 md:h-20 border border-white/10 overflow-hidden shrink-0 bg-white/5"
+            style={{ clipPath: "polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%)" }}
+          >
             <img 
               src={data.avatar} 
               alt={data.name} 

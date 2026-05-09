@@ -2,6 +2,7 @@ import React, { useRef, useState, useEffect } from "react";
 import { motion, useScroll, useTransform, useSpring } from "motion/react";
 import { Layout } from "./layout/Layout";
 import { CinematicText } from "./CinematicText";
+import HexIcon from "./HexIcon";
 
 const partners = [
   { name: "ModernMD", sub: "URGENT CARE", stat: "20K+", label: "SIGN UPS", client: "ModernMD Urgent Care" },
@@ -99,9 +100,7 @@ export const Alliance = ({ containerRef }: { containerRef: React.RefObject<HTMLD
               <div className="flex flex-col gap-12">
                 {/* Label */}
                 <div className="flex items-center gap-3">
-                  <div className="w-3 h-3 rounded-full border border-[#ef4444] flex items-center justify-center">
-                    <div className="w-1.5 h-1.5 bg-[#ef4444] rounded-full" />
-                  </div>
+                  <HexIcon className="w-3.5 h-3.5" fill="#ef4444" />
                   <span className="text-white text-[10px] md:text-xs font-black tracking-[0.3em] uppercase whitespace-nowrap">
                     CREATIVE ALLIANCE
                   </span>
@@ -122,7 +121,7 @@ export const Alliance = ({ containerRef }: { containerRef: React.RefObject<HTMLD
                 <div className="flex items-baseline gap-4">
                   <CinematicText as="span" className="hover:text-[#ef4444] transition-colors duration-500" progress={textProgress}>EXPERIENCE</CinematicText>
                   {/* Red Hexagon Accent */}
-                  <div className="w-[2.5vw] h-[2.5vw] bg-[#ef4444] relative" style={{ clipPath: "polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%)" }} />
+                  <HexIcon className="w-[2.5vw] h-[2.5vw]" fill="#ef4444" />
                 </div>
               </h2>
             </div>
@@ -189,11 +188,14 @@ const PartnerCard = ({ partner, i }: PartnerProps) => (
       initial={{ opacity: 0, scale: 0.8, y: 20 }}
       className="absolute inset-0 flex items-center justify-center pointer-events-none z-20"
     >
-      <div className="w-32 h-32 md:w-40 md:h-40 bg-[#ef4444] rounded-full flex flex-col items-center justify-center text-white p-4 shadow-2xl">
-        <span className="text-xl md:text-4xl font-display font-black tracking-[-0.04em]">{partner.stat}</span>
-        <span className="text-[8px] md:text-[10px] font-display font-black tracking-[0.2em] uppercase text-center leading-tight mt-1 px-4">
-          {partner.label}
-        </span>
+      <div className="w-32 h-32 md:w-40 md:h-40 flex flex-col items-center justify-center text-white relative">
+        <HexIcon className="absolute inset-0 w-full h-full drop-shadow-[0_20px_40px_rgba(239,68,68,0.3)]" fill="#ef4444" />
+        <div className="relative z-10 flex flex-col items-center justify-center p-4">
+          <span className="text-xl md:text-4xl font-display font-black tracking-[-0.04em]">{partner.stat}</span>
+          <span className="text-[8px] md:text-[10px] font-display font-black tracking-[0.2em] uppercase text-center leading-tight mt-1 px-4">
+            {partner.label}
+          </span>
+        </div>
       </div>
     </motion.div>
   </motion.div>

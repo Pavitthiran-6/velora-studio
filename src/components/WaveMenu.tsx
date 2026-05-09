@@ -1,6 +1,8 @@
 import React, { useRef, useEffect } from "react";
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
 import { useNavigate } from "react-router-dom";
+import { useTransition } from "./TransitionProvider";
+import HexIcon from "./HexIcon";
 
 interface WaveMenuProps {
   isOpen: boolean;
@@ -21,6 +23,7 @@ export const WaveMenu: React.FC<WaveMenuProps> = ({ isOpen, onClose }) => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [isOpen, onClose]);
 
+  const { triggerLogoTransition, triggerPageTransition } = useTransition();
   const navItems = [
     { label: "WORK", path: "/work" },
     { label: "SERVICES", path: "/services" },
@@ -34,7 +37,7 @@ export const WaveMenu: React.FC<WaveMenuProps> = ({ isOpen, onClose }) => {
       initial={false}
       animate={{ y: isOpen ? "0%" : "100%" }}
       transition={{ type: "spring", stiffness: 35, damping: 10, mass: 1.2, restDelta: 0.001 }}
-      className="fixed inset-0 z-[1000] flex flex-col pointer-events-none"
+      className="absolute inset-0 z-[1000] flex flex-col pointer-events-none"
     >
       <div className="relative w-full h-[240px] -mb-1">
         <svg viewBox="0 0 1440 240" className="w-full h-full" preserveAspectRatio="none">
@@ -62,33 +65,43 @@ export const WaveMenu: React.FC<WaveMenuProps> = ({ isOpen, onClose }) => {
       </div>
       <div className="flex-1 bg-[#ffffff] pointer-events-auto px-6 md:px-16 py-8 md:py-12 flex flex-col justify-between -mt-10">
         <motion.div animate={{ opacity: isOpen ? 1 : 0, y: isOpen ? 0 : 20 }} transition={{ delay: 0.6, duration: 1 }} className="flex justify-between items-center w-full">
-          <div className="w-10 h-10 md:w-14 md:h-14 bg-[#ef4444] rounded-full flex items-center justify-center p-2 md:p-3">
+          <button 
+            onClick={() => {
+              onClose();
+              triggerLogoTransition();
+            }}
+            className="w-10 h-10 md:w-14 md:h-14 bg-[#ef4444] rounded-full flex items-center justify-center p-2 md:p-3 hover:scale-110 transition-transform cursor-pointer"
+          >
              <svg viewBox="0 0 24 24" className="w-full h-full fill-white" xmlns="http://www.w3.org/2000/svg">
                 <path d="M12 21c-4.97 0-9-4.03-9-9s4.03-9 9-9 9 4.03 9 9-4.03 9-9 9zm0-16.5c-4.14 0-7.5 3.36-7.5 7.5s3.36 7.5 7.5 7.5 7.5-3.36 7.5-7.5-3.36-7.5-7.5-7.5zm.75 12c-1.24 0-2.25-1.01-2.25-2.25v-4.5c0-.41.34-.75.75-.75s.75.34.75.75v4.5c0 .41.34.75.75.75h.75c.41 0 .75.34.75.75s-.34.75-.75.75h-1.5zZ" />
              </svg>
-          </div>
+          </button>
           <nav className="flex items-center gap-3 md:gap-6 lg:gap-8 flex-1 justify-center min-w-0">
             {navItems.map((item, index) => (
               <div key={item.label} className="flex items-center gap-3 md:gap-6 lg:gap-8">
                 <span 
                   onClick={() => {
                     onClose();
-                    navigate(item.path);
+                    triggerPageTransition(item.path);
                   }}
-                  className="text-xl md:text-3xl lg:text-[4.5vw] font-display font-black tracking-tighter cursor-pointer text-[#1f2547] hover:text-[#ef4444] transition-colors duration-300 whitespace-nowrap uppercase"
+                  className="text-xl md:text-3xl lg:text-[4.5vw] font-display font-black tracking-tighter cursor-pointer text-[#1f2547] hover:text-[#ef4444] transition-colors duration-300 whitespace-nowrap uppercase flex items-baseline gap-1"
                 >
-                  {item.label}.
+                  {item.label}<HexIcon className="w-[1vw] h-[1vw]" fill="#ef4444" />
                 </span>
-                {index < navItems.length - 1 && <div className="w-1.5 h-1.5 md:w-2.5 md:h-2.5 lg:w-3.5 lg:h-3.5 bg-[#ef4444] rotate-45 flex-shrink-0" />}
+                {index < navItems.length - 1 && <HexIcon className="w-1.5 h-1.5 md:w-2.5 md:h-2.5 lg:w-3.5 lg:h-3.5" fill="#ef4444" />}
               </div>
             ))}
           </nav>
           <button onClick={onClose} className="relative flex gap-2 md:gap-3 h-10 md:h-12 items-center cursor-pointer group">
             <div className="flex flex-col items-center h-8 md:h-10 w-px bg-black/20 relative">
-               <motion.div animate={{ y: isOpen ? 20 : 0 }} className="absolute top-0 w-1.5 md:w-2 h-1.5 md:h-2 border border-black/40 rounded-full bg-white -translate-x-1/2 left-1/2" />
+               <motion.div animate={{ y: isOpen ? 20 : 0 }} className="absolute top-0 -translate-x-1/2 left-1/2">
+                 <HexIcon className="w-1.5 md:w-2 h-1.5 md:h-2" fill="white" />
+               </motion.div>
             </div>
             <div className="flex flex-col items-center h-8 md:h-10 w-px bg-black/40 relative">
-               <motion.div animate={{ y: isOpen ? -20 : 0 }} className="absolute bottom-0 w-1.5 md:w-2 h-1.5 md:h-2 bg-[#ef4444] rounded-full shadow-[0_0_10px_#ef4444] -translate-x-1/2 left-1/2" />
+               <motion.div animate={{ y: isOpen ? -20 : 0 }} className="absolute bottom-0 -translate-x-1/2 left-1/2">
+                 <HexIcon className="w-1.5 md:w-2 h-1.5 md:h-2 shadow-[0_0_10px_#ef4444]" fill="#ef4444" />
+               </motion.div>
             </div>
             <div className="flex flex-col items-center h-8 md:h-10 w-px bg-black/20 relative" />
           </button>

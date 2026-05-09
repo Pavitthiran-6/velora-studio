@@ -26,6 +26,7 @@ import { WaveMenu } from "./components/WaveMenu";
 import globeImg from "./holographic_globe.png";
 import { cn } from "@/lib/utils";
 import { RecentWork } from "./components/RecentWork";
+import HexIcon from "./components/HexIcon";
 import { Principles } from "./components/Principles";
 import { Alliance } from "./components/Alliance";
 import { Milestones } from "./components/Milestones";
@@ -106,11 +107,10 @@ export default function App() {
     <SmoothScrollProvider containerRef={containerRef} ease={0.09}>
       {/* LOADING SCREEN & OVERLAYS */}
       <>
-        <WaveMenu isOpen={isWaveOpen} onClose={() => setIsWaveOpen(false)} />
-
         <div className={`h-screen bg-[#ef4444] p-2 md:p-3 lg:p-4 font-sans select-none transition-colors duration-700 ${isWaveOpen ? "wave-open" : ""}`}>
           {/* Main Container Wrapper - FIXED HEIGHT */}
           <div className="relative w-full h-full rounded-[16px] md:rounded-[28px] lg:rounded-[40px] overflow-hidden bg-[#1f2547] flex flex-col border border-white/5 shadow-[0_20px_50px_rgba(0,0,0,0.4)]">
+            <WaveMenu isOpen={isWaveOpen} onClose={() => setIsWaveOpen(false)} />
 
             {/* INTERNAL SCROLLABLE AREA */}
             <div ref={containerRef} className="flex-1 overflow-y-auto overflow-x-visible relative scrollbar-hide">
@@ -126,7 +126,7 @@ export default function App() {
                   >
                     <div className="w-10 h-10 md:w-14 md:h-14 bg-[#ef4444] rounded-full flex items-center justify-center p-2 md:p-3">
                       <svg viewBox="0 0 24 24" className="w-full h-full fill-white" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M12 21c-4.97 0-9-4.03-9-9s4.03-9 9-9 9 4.03 9 9-4.03 9-9 9zm0-16.5c-4.14 0-7.5 3.36-7.5 7.5s3.36 7.5 7.5 7.5 7.5-3.36 7.5-7.5-3.36-7.5-7.5-7.5zm.75 12c-1.24 0-2.25-1.01-2.25-2.25v-4.5c0-.41.34-.75.75-.75s.75.34.75.75v4.5c0 .41.34.75.75.75h.75c.41 0 .75.34.75.75s-.34.75-.75.75h-1.5zZ" />
+                        <path d="M12 21c-4.97 0-9-4.03-9-9s4.03-9 9-9 9 4.03 9 9-4.03 9-9 9zm0-16.5c-4.14 0-7.5 3.36-7.5 7.5s3.36 7.5 7.5 7.5 7.5-3.36 7.5-7.5-3.36-7.5-7.5-7.5zm.75 12c-1.24 0-2.25-1.01-2.25-2.25v-4.5c0-.41.34-.75.75-.75s.75.34.75.75v4.5c0 .41.34.75.75.75h.75c.41 0 .75.34.75.75s-.34.75-.75.75h-1.5z" />
                       </svg>
                     </div>
                   </motion.button>
@@ -297,9 +297,7 @@ export default function App() {
                   {/* Left Side: About Label (Col 1-2) */}
                   <div className="md:col-span-2 flex items-start pt-2 md:sticky md:top-40 z-20">
                     <div className="flex items-center gap-3">
-                      <div className="w-3 h-3 md:w-3.5 md:h-3.5 rounded-full border border-[#ef4444] flex items-center justify-center">
-                        <div className="w-1 md:w-1.5 h-1 md:h-1.5 bg-[#ef4444] rounded-full" />
-                      </div>
+                      <HexIcon className="w-3.5 h-3.5" fill="#ef4444" />
                       <span className="text-white text-[10px] md:text-[11px] font-black tracking-[0.3em] uppercase whitespace-nowrap">ABOUT</span>
                     </div>
                   </div>

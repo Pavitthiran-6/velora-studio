@@ -22,14 +22,18 @@ import { useEffect, RefObject } from "react";
  */
 export function useSmoothScroll(
   containerRef?: RefObject<HTMLDivElement | null>,
-  ease = 0.09
+  ease = 0.08
 ) {
   useEffect(() => {
-    // Resolve the scrollable element: custom container OR document body fallback
     const el: HTMLElement | null =
       containerRef?.current ?? document.documentElement;
 
     if (!el) return;
+
+    // Apply hardware acceleration hints to the container
+    el.style.willChange = "transform, scroll-position";
+    el.style.transform = "translateZ(0)";
+    el.style.backfaceVisibility = "hidden";
 
     let target = el.scrollTop;
     let current = el.scrollTop;
@@ -47,7 +51,8 @@ export function useSmoothScroll(
 
       const diff = target - current;
 
-      if (Math.abs(diff) < 0.3) {
+      // Use a slightly larger threshold to prevent tiny sub-pixel updates
+      if (Math.abs(diff) < 0.1) {
         current = target;
         el.scrollTop = target;
         isScrolling = false;
@@ -55,7 +60,7 @@ export function useSmoothScroll(
       }
 
       current = lerp(current, target, ease);
-      el.scrollTop = Math.round(current * 100) / 100; // sub-pixel precision
+      el.scrollTop = current; 
       raf = requestAnimationFrame(tick);
     };
 
@@ -64,17 +69,17 @@ export function useSmoothScroll(
         isScrolling = true;
         cancelAnimationFrame(raf);
         raf = requestAnimationFrame(tick);
-      } else {
-        // Already running — just let it continue
       }
     };
 
     const onWheel = (e: WheelEvent) => {
       e.preventDefault();
-      // Normalize delta across different devices/trackpads
       let delta = e.deltaY;
-      if (e.deltaMode === 1) delta *= 40;  // line mode
-      if (e.deltaMode === 2) delta *= 800; // page mode
+      
+      // Precision handling for different delta modes
+      if (e.deltaMode === 1) delta *= 40;  
+      if (e.deltaMode === 2) delta *= 800; 
+      
       target += delta;
       startTick();
     };
@@ -84,14 +89,14 @@ export function useSmoothScroll(
     };
 
     const onTouchMove = (e: TouchEvent) => {
+      // Don't prevent default if we want native behavior, but we want smooth
       e.preventDefault();
       const dy = touchStartY - e.touches[0].clientY;
       touchStartY = e.touches[0].clientY;
-      target += dy * 1.5; // slight multiplier for touch feel
+      target += dy * 1.8; // Increased sensitivity for mobile fluidity
       startTick();
     };
 
-    // Sync target if something else scrolls the container (e.g. anchor links)
     const onNativeScroll = () => {
       if (!isScrolling) {
         target = el.scrollTop;
@@ -105,6 +110,8 @@ export function useSmoothScroll(
     el.addEventListener("scroll", onNativeScroll, { passive: true });
 
     return () => {
+      el.style.willChange = "auto";
+      el.style.transform = "none";
       el.removeEventListener("wheel", onWheel);
       el.removeEventListener("touchstart", onTouchStart);
       el.removeEventListener("touchmove", onTouchMove);
