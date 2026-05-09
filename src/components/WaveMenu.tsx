@@ -42,6 +42,9 @@ export const WaveMenu: React.FC<WaveMenuProps> = ({ isOpen, onClose }) => {
       <div className="relative w-full h-[240px] -mb-1">
         <svg viewBox="0 0 1440 240" className="w-full h-full" preserveAspectRatio="none">
           <motion.path
+            d={isOpen
+              ? "M0,0 C240,-60 480,100 720,0 C960,-60 1200,100 1440,0 V240 H0 Z"
+              : "M0,240 C240,240 480,240 720,240 C960,240 1200,240 1440,240 V240 H0 Z"}
             animate={{
               d: isOpen
                 ? "M0,0 C240,-60 480,100 720,0 C960,-60 1200,100 1440,0 V240 H0 Z"
@@ -51,6 +54,9 @@ export const WaveMenu: React.FC<WaveMenuProps> = ({ isOpen, onClose }) => {
             fill="#ffffff"
           />
           <motion.path
+            d={isOpen
+              ? "M0,20 C360,-40 720,80 1080,20 C1440,-40 1800,80 2160,20 V240 H0 Z"
+              : "M0,240 C360,240 720,240 1080,240 C1440,240 1800,240 2160,240 V240 H0 Z"}
             animate={{
               x: [0, -60, 0],
               d: isOpen
@@ -73,7 +79,7 @@ export const WaveMenu: React.FC<WaveMenuProps> = ({ isOpen, onClose }) => {
             className="w-10 h-10 md:w-14 md:h-14 bg-[#ef4444] rounded-full flex items-center justify-center p-2 md:p-3 hover:scale-110 transition-transform cursor-pointer"
           >
              <svg viewBox="0 0 24 24" className="w-full h-full fill-white" xmlns="http://www.w3.org/2000/svg">
-                <path d="M12 21c-4.97 0-9-4.03-9-9s4.03-9 9-9 9 4.03 9 9-4.03 9-9 9zm0-16.5c-4.14 0-7.5 3.36-7.5 7.5s3.36 7.5 7.5 7.5 7.5-3.36 7.5-7.5-3.36-7.5-7.5-7.5zm.75 12c-1.24 0-2.25-1.01-2.25-2.25v-4.5c0-.41.34-.75.75-.75s.75.34.75.75v4.5c0 .41.34.75.75.75h.75c.41 0 .75.34.75.75s-.34.75-.75.75h-1.5zZ" />
+                <path d="M12 21c-4.97 0-9-4.03-9-9s4.03-9 9-9 9 4.03 9 9-4.03 9-9 9zm0-16.5c-4.14 0-7.5 3.36-7.5 7.5s3.36 7.5 7.5 7.5 7.5-3.36 7.5-7.5-3.36-7.5-7.5-7.5zm.75 12c-1.24 0-2.25-1.01-2.25-2.25v-4.5c0-.41.34-.75.75-.75s.75.34.75.75v4.5c0 .41.34.75.75.75h.75c.41 0 .75.34.75.75s-.34.75-.75.75h-1.5z" />
              </svg>
           </button>
           <nav className="flex items-center gap-3 md:gap-6 lg:gap-8 flex-1 justify-center min-w-0">

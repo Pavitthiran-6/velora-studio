@@ -285,7 +285,7 @@ export default function App() {
               </section>
 
               {/* SECTION 2: ABOUT */}
-              <section className="min-h-screen bg-[#1f2547] relative py-32 overflow-hidden shrink-0">
+              <section className="min-h-screen bg-[#1f2547] relative py-32 overflow-hidden shrink-0 transform-gpu translate-z-0">
                 <Layout className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-4 items-start h-full">
                   {/* Background red ambient glow */}
                   <motion.div

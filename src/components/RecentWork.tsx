@@ -1,143 +1,197 @@
-import React from "react";
-import { Carousel, Card } from "./ui/apple-cards-carousel";
-import { motion, useScroll } from "motion/react";
-import { IconArrowNarrowRight } from "@tabler/icons-react";
-import { useRef } from "react";
+import React, { useRef } from "react";
+import { motion, useScroll, useTransform } from "motion/react";
+import ReactLenis from "lenis/react";
 import { Layout } from "./layout/Layout";
 import { useTransition } from "./TransitionProvider";
 import { CinematicText } from "./CinematicText";
-import HexIcon from "./HexIcon";
 
-const DummyContent = () => {
-  return (
-    <>
-      {[...new Array(3).fill(1)].map((_, index) => {
-        return (
-          <div
-            key={"dummy-content" + index}
-            className="bg-[#F5F5F7] dark:bg-neutral-800 p-8 md:p-14 rounded-3xl mb-4"
-          >
-            <p className="text-neutral-600 dark:text-neutral-400 text-base md:text-2xl font-sans max-w-3xl mx-auto">
-              <span className="font-bold text-neutral-700 dark:text-neutral-200">
-                The first rule of Apple club is that you boast about Apple club.
-              </span>{" "}
-              Keep a journal, quickly jot down a grocery list, and take amazing
-              class notes. Want to convert those notes to text? No problem.
-              Langotiya jeetu ka mara hua yaar is ready to capture every
-              thought.
-            </p>
-            <img
-              src="https://assets.aceternity.com/macbook.png"
-              alt="Macbook mockup from Aceternity UI"
-              height="500"
-              width="500"
-              className="md:w-1/2 md:h-1/2 h-full w-full mx-auto object-contain"
-            />
-          </div>
-        );
-      })}
-    </>
-  );
-};
+// Local SVGs to avoid any external icon dependency crashes
+const HexIcon = ({ className = "", fill = "#ef4444" }) => (
+  <svg viewBox="0 0 24 24" className={className} xmlns="http://www.w3.org/2000/svg">
+    <path d="M12 2l9.5 5.5v11L12 24l-9.5-5.5v-11z" fill={fill} />
+  </svg>
+);
 
-const data = [
+const ArrowIcon = ({ className = "" }) => (
+  <svg viewBox="0 0 24 24" className={className} fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <line x1="5" y1="12" x2="19" y2="12"></line>
+    <polyline points="12 5 19 12 12 19"></polyline>
+  </svg>
+);
+
+// Robust Vite asset resolution
+const getAssetUrl = (path: string) => new URL(path, import.meta.url).href;
+
+const projects = [
   {
-    category: "Artificial Intelligence",
-    title: "You can do more with AI.",
-    src: "https://images.unsplash.com/photo-1593508512255-86ab42a8e620?q=80&w=3556&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    content: <DummyContent />,
+    title: "SLING SHOT",
+    services: ["UX/UI DESIGN", "DEVELOPMENT", "STRATEGY"],
+    src: "/src/assets/projects/valaclava_project_hero_1778243074252.png",
   },
   {
-    category: "Productivity",
-    title: "Enhance your productivity.",
-    src: "https://images.unsplash.com/photo-1531554694128-c4c6665f59c2?q=80&w=3387&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    content: <DummyContent />,
+    title: "OCEAN AGENCY",
+    services: ["BRANDING", "3D ANIMATION", "WEBGL"],
+    src: "/src/assets/projects/ocean_agency_hero_1778243090443.png",
   },
   {
-    category: "Product",
-    title: "Launching the new Apple Vision Pro.",
-    src: "https://images.unsplash.com/photo-1713869791518-a770879e60dc?q=80&w=2333&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    content: <DummyContent />,
+    title: "HOBOKEN YOGI",
+    services: ["MARKETING", "SEO", "E-COMMERCE"],
+    src: "/src/assets/projects/hoboken_yogi_hero_1778243105729.png",
   },
   {
-    category: "Product",
-    title: "Maps for your iPhone 15 Pro Max.",
-    src: "https://images.unsplash.com/photo-1599202860130-f600f4948364?q=80&w=2515&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    content: <DummyContent />,
-  },
-  {
-    category: "iOS",
-    title: "Photography just got better.",
-    src: "https://images.unsplash.com/photo-1602081957921-9137a5d6eaee?q=80&w=2793&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    content: <DummyContent />,
-  },
-  {
-    category: "Hiring",
-    title: "Hiring for a Staff Software Engineer",
-    src: "https://images.unsplash.com/photo-1511984804822-e16ba72f5848?q=80&w=2048&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    content: <DummyContent />,
+    title: "MODERN MD",
+    services: ["HEALTH-TECH", "UX DESIGN", "AI"],
+    src: "/src/assets/projects/modern_md_hero_1778243119932.png",
   },
 ];
 
-export const RecentWork = ({ containerRef }: { containerRef: React.RefObject<HTMLDivElement | null> }) => {
-  const targetRef = useRef<HTMLDivElement>(null);
-  const { scrollYProgress } = useScroll({
-    target: targetRef,
-    container: containerRef,
-    offset: ["start start", "end end"]
-  });
+const StickyCard_001 = ({
+  i,
+  title,
+  services,
+  src,
+  progress,
+  range,
+  targetScale,
+}: {
+  i: number;
+  title: string;
+  services: string[];
+  src: string;
+  progress: any;
+  range: [number, number];
+  targetScale: number;
+}) => {
+  const container = useRef<HTMLDivElement>(null);
 
-  // Map horizontal motion to the middle part of the vertical scroll
-  // We start the horizontal move after the title has likely scrolled up (approx 0.1 progress)
-  // and finish before the section unpins (approx 0.9 progress)
-  const { triggerPageTransition } = useTransition();
-  const cards = [
-    ...data.map((card, index) => (
-      <Card key={card.src} card={card} index={index} />
-    )),
-    <motion.div
-      key="view-all"
-      whileHover={{ x: 10 }}
-      onClick={() => triggerPageTransition("/work")}
-      className="flex flex-col items-center justify-center gap-4 cursor-pointer group transition-all duration-300 px-12 md:px-20 h-full self-center"
-    >
-      <div className="w-16 h-16 md:w-20 md:h-20 flex items-center justify-center">
-        <IconArrowNarrowRight className="w-12 h-12 md:w-16 md:h-16 text-[#ef4444] transition-colors duration-500 group-hover:text-white" />
-      </div>
-      <span className="text-white text-[10px] md:text-xs font-black tracking-[0.2em] uppercase opacity-40 group-hover:opacity-100 group-hover:text-[#ef4444] transition-all duration-500 whitespace-nowrap">
-        VIEW ALL WORK
-      </span>
-    </motion.div>
-  ];
+  const scale = useTransform(progress, range, [1, targetScale]);
 
   return (
-    <section ref={targetRef} className="relative h-[400vh] bg-[#1f2547]">
-      {/* Title Area - Scrolls naturally at the top */}
-      <Layout className="py-20 md:py-32">
-        <div className="flex flex-col gap-6">
-          <div className="flex items-center gap-3">
-            <HexIcon className="w-3.5 h-3.5" fill="#ef4444" />
-            <span className="text-white text-[10px] md:text-xs font-black tracking-[0.3em] uppercase whitespace-nowrap">PROJECTS</span>
+    <div
+      ref={container}
+      className="sticky top-0 flex items-center justify-center"
+    >
+      <motion.div
+        style={{
+          scale,
+          top: `calc(-5vh + ${i * 20 + 150}px)`,
+        }}
+        className="rounded-4xl relative -top-1/4 flex h-[400px] w-[600px] origin-top flex-col overflow-hidden"
+      >
+        <img src={src} alt={title} className="h-full w-full object-cover" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent flex flex-col justify-end p-8 md:p-10">
+          <div className="flex flex-wrap gap-2 mb-4">
+            {services.map((service, index) => (
+              <span 
+                key={index} 
+                className="text-[8px] md:text-[10px] font-black tracking-[0.2em] text-white/50 border border-white/10 px-2 py-1 rounded-sm uppercase backdrop-blur-sm"
+              >
+                {service}
+              </span>
+            ))}
           </div>
-          <div className="flex flex-col">
-            <h2 className="text-white text-6xl md:text-8xl lg:text-9xl font-black leading-[0.85] tracking-tighter uppercase cursor-default">
-              <CinematicText as="span" className="text-[#ef4444] hover:text-white transition-colors duration-500" intensity={1.0}>RECENT</CinematicText>
-              <br />
-              <div className="flex flex-row items-baseline">
-                <CinematicText as="span" className="hover:text-[#ef4444] transition-colors duration-500" intensity={1.0}>WORK</CinematicText>
-                <CinematicText as="span" className="hover:text-[#ef4444] transition-colors duration-500" intensity={1.0}>.</CinematicText>
+          <h3 className="text-white text-4xl md:text-5xl font-black uppercase leading-tight tracking-tighter">
+            <span className="text-[#ef4444]">{title.split(' ')[0]}</span>
+            {title.split(' ').length > 1 ? ` ${title.split(' ').slice(1).join(' ')}` : ''}
+          </h3>
+        </div>
+      </motion.div>
+    </div>
+  );
+};
+
+const Skiper16 = ({ scrollYProgress }: { scrollYProgress: any }) => {
+  return (
+    <div className="relative mx-auto flex flex-col items-center justify-center pt-[10vh]">
+      {projects.map((project, i) => {
+        const targetScale = Math.max(
+          0.6,
+          1 - (projects.length - i - 1) * 0.1,
+        );
+        return (
+          <StickyCard_001
+            key={`p_${i}`}
+            i={i}
+            title={project.title}
+            services={project.services}
+            src={project.src}
+            progress={scrollYProgress}
+            range={[i * 0.15, 1]}
+            targetScale={targetScale}
+          />
+        );
+      })}
+    </div>
+  );
+};
+
+export const RecentWork = ({ containerRef }: { containerRef: React.RefObject<HTMLDivElement | null> }) => {
+  const sectionRef = useRef<HTMLDivElement>(null);
+  const { triggerPageTransition } = useTransition();
+
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    container: containerRef,
+    offset: ["start start", "end end"],
+  });
+
+  return (
+    <section
+      ref={sectionRef}
+      className="relative w-full bg-[#1f2547] h-[350vh]"
+    >
+      <Layout className="relative h-full">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 h-full items-start">
+          
+          {/* Left Column: Fixed Title Area */}
+          <div className="lg:col-span-5 h-full pt-32 hidden lg:block">
+            <div className="sticky top-40 flex flex-col gap-6">
+              <div className="flex items-center gap-3">
+                <HexIcon className="w-3.5 h-3.5" fill="#ef4444" />
+                <span className="text-white text-[10px] md:text-xs font-black tracking-[0.3em] uppercase whitespace-nowrap opacity-60">SELECTED PROJECTS</span>
               </div>
-            </h2>
+              <h2 className="text-white text-5xl md:text-7xl lg:text-8xl font-black leading-[0.85] tracking-tighter uppercase cursor-default">
+                <CinematicText as="span" className="text-[#ef4444] hover:text-white transition-colors duration-500" intensity={1.0}>RECENT</CinematicText>
+                <br />
+                <CinematicText as="span" className="hover:text-[#ef4444] transition-colors duration-500" intensity={1.0}>WORK.</CinematicText>
+              </h2>
+
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => triggerPageTransition("/work")}
+                className="group flex items-center gap-6 cursor-pointer mt-12 w-fit"
+              >
+                <div className="w-14 h-14 rounded-full bg-[#ef4444] flex items-center justify-center shadow-[0_20px_50px_rgba(239,68,68,0.3)] group-hover:shadow-[0_25px_60px_rgba(239,68,68,0.5)] transition-all duration-500">
+                  <ArrowIcon className="w-7 h-7 text-white" />
+                </div>
+                <span className="text-white text-[10px] md:text-xs font-black tracking-[0.4em] uppercase opacity-40 group-hover:opacity-100 transition-opacity">
+                  EXPLORE ALL
+                </span>
+              </motion.button>
+            </div>
+          </div>
+
+          {/* Right Column: Stacking Cards */}
+          <div className="col-span-1 lg:col-span-7 relative h-full flex flex-col items-center justify-start">
+            <div className="lg:hidden pt-20 mb-12">
+              <h2 className="text-white text-6xl font-black uppercase leading-tight tracking-tighter">
+                RECENT<br/><span className="text-[#ef4444]">WORK.</span>
+              </h2>
+            </div>
+
+            <Skiper16 scrollYProgress={scrollYProgress} />
           </div>
         </div>
       </Layout>
 
-      {/* Carousel Sticky Area - Handles the horizontal movement */}
-      <div className="sticky top-0 h-screen flex flex-col justify-center overflow-hidden will-change-transform transform-gpu">
-        <Layout>
-          <Carousel items={cards} scrollYProgress={scrollYProgress} />
-        </Layout>
+      {/* Progress Line */}
+      <div className="absolute bottom-12 left-1/2 -translate-x-1/2 w-48 h-px bg-white/10 overflow-hidden z-50">
+        <motion.div 
+          style={{ scaleX: scrollYProgress }}
+          className="h-full bg-[#ef4444] origin-left"
+        />
       </div>
     </section>
   );
-}
+};

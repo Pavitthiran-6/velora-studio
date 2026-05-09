@@ -121,7 +121,7 @@ export default function WorkPage() {
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [isWaveOpen, setIsWaveOpen] = useState(false);
   const [isAllProjectsOpen, setIsAllProjectsOpen] = useState(false);
-  const { triggerLogoTransition } = useTransition();
+  const { triggerLogoTransition, triggerPageTransition } = useTransition();
   const lastScrollTime = useRef(0);
 
   // Event-Driven Stepping for absolute control
@@ -319,6 +319,7 @@ export default function WorkPage() {
                           />
                           {/* The arrow head that changes shape */}
                           <motion.path 
+                            d="M12 8H16V12"
                             variants={{
                               initial: { d: "M12 8H16V12" },
                               hovered: { d: "M14 7l5 5-5 5" }
@@ -364,7 +365,7 @@ export default function WorkPage() {
                     {/* Logo */}
                     <button onClick={() => setIsAllProjectsOpen(false)} className="w-14 h-14 bg-[#ef4444] rounded-full flex items-center justify-center p-3 group hover:scale-110 transition-transform">
                       <svg viewBox="0 0 24 24" className="w-full h-full fill-white" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M12 21c-4.97 0-9-4.03-9-9s4.03-9 9-9 9 4.03 9 9-4.03 9-9 9zm0-16.5c-4.14 0-7.5 3.36-7.5 7.5s3.36 7.5 7.5 7.5 7.5-3.36 7.5-7.5-3.36-7.5-7.5-7.5zm.75 12c-1.24 0-2.25-1.01-2.25-2.25v-4.5c0-.41.34-.75.75-.75s.75.34.75.75v4.5c0 .41.34.75.75.75h.75c.41 0 .75.34.75.75s-.34.75-.75.75h-1.5zZ" />
+                        <path d="M12 21c-4.97 0-9-4.03-9-9s4.03-9 9-9 9 4.03 9 9-4.03 9-9 9zm0-16.5c-4.14 0-7.5 3.36-7.5 7.5s3.36 7.5 7.5 7.5 7.5-3.36 7.5-7.5-3.36-7.5-7.5-7.5zm.75 12c-1.24 0-2.25-1.01-2.25-2.25v-4.5c0-.41.34-.75.75-.75s.75.34.75.75v4.5c0 .41.34.75.75.75h.75c.41 0 .75.34.75.75s-.34.75-.75.75h-1.5z" />
                       </svg>
                     </button>
 
@@ -484,8 +485,8 @@ export default function WorkPage() {
                               <svg viewBox="0 0 24 24" className="w-4 h-4 text-white" fill="none" stroke="currentColor" strokeWidth="1.5">
                                 <line x1="7" y1="17" x2="16" y2="8" strokeLinecap="round" />
                                 <path d="M12 8H16V12" strokeLinecap="round" strokeLinejoin="round" />
-                                <path 
-                                  d="M7 17l1 .5v1L7 19l-1-.5v-1L7 17z" 
+                                <motion.path 
+                                  d="M7 17l1.5.8v1.5L7 20l-1.5-.7v-1.5L7 17z" 
                                   fill="none" 
                                   stroke="currentColor" 
                                   strokeWidth="1"

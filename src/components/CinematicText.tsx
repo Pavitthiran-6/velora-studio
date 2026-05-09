@@ -1,12 +1,7 @@
 /**
- * CinematicText v6 — The Professional.
+ * CinematicText v7 — The Professional.
  * 
- * NEW STYLE:
- * - Refined Vertical Rise: Subtle 24px rise into position.
- * - Progressive Focus: Letters start slightly blurred and snap into sharpness.
- * - Tracking Compression: Sophisticated letter-spacing shift on entry.
- * - Balanced Spring: High-end, smooth physics with zero bounce.
- * - Gradient Opacity: Soft entry mask for a "fog-to-clear" feel.
+ * FIX: Moved hooks into separate components to follow Rules of Hooks.
  */
 
 "use client";
@@ -17,30 +12,19 @@ import { SmoothScrollContext } from "./SmoothScrollProvider";
 
 type AsElement = "h1" | "h2" | "h3" | "h4" | "h5" | "h6" | "p" | "span" | "div";
 
-const CinematicChar: React.FC<{
+const CinematicChar = React.memo(({ char, index, total, smoothProgress, intensity: I }: {
   char: string;
   index: number;
   total: number;
   smoothProgress: MotionValue<number>;
   intensity: number;
-}> = ({ char, index, total, smoothProgress, intensity: I }) => {
+}) => {
   const pct = index / Math.max(total - 1, 1);
   
-  // 1. Subtle Vertical Rise
-  const y = useTransform(smoothProgress, [0, 0.45], [24 * I, 0]);
-  
-  // 2. Tracking Compression
-  const x = useTransform(smoothProgress, [0, 0.45], [(pct - 0.5) * 40 * I, 0]);
-  
-  // 3. Opacity + Soft Focus
+  const y = useTransform(smoothProgress, [0, 0.45], [20 * I, 0]);
+  const x = useTransform(smoothProgress, [0, 0.45], [(pct - 0.5) * 30 * I, 0]);
   const opacity = useTransform(smoothProgress, [0.05, 0.35], [0, 1]);
-  
-  // 4. Soft Focus (GPU-friendly blur)
-  const blurValue = useTransform(smoothProgress, [0, 0.35], [8 * I, 0]);
-  const blur = useTransform(blurValue, (v) => `blur(${v}px)`);
-  
-  // 5. Scale
-  const scale = useTransform(smoothProgress, [0, 0.45], [0.96, 1]);
+  const scale = useTransform(smoothProgress, [0, 0.45], [0.98, 1]);
 
   if (char === "\n") return <br />;
 
@@ -50,18 +34,44 @@ const CinematicChar: React.FC<{
         y,
         x,
         opacity,
-        filter: blur,
         scale,
         display: "inline-block",
-        willChange: "transform, opacity, filter",
+        willChange: "transform, opacity",
         transformOrigin: "center bottom",
       }}
-      className="select-none whitespace-pre translate-z-0"
+      className="select-none whitespace-pre transform-gpu backface-hidden"
     >
       {char === " " ? "\u00A0" : char}
     </motion.span>
   );
-};
+});
+
+CinematicChar.displayName = "CinematicChar";
+
+const CinematicWord = React.memo(({ word, smoothProgress, intensity }: {
+  word: string;
+  smoothProgress: MotionValue<number>;
+  intensity: number;
+}) => {
+  const opacity = useTransform(smoothProgress, [0.1, 0.4], [0, 1]);
+  const y = useTransform(smoothProgress, [0, 0.4], [15 * intensity, 0]);
+
+  return (
+    <motion.span
+      style={{
+        opacity,
+        y,
+        display: "inline-block",
+        marginRight: "0.25em"
+      }}
+      className="translate-z-0"
+    >
+      {word}
+    </motion.span>
+  );
+});
+
+CinematicWord.displayName = "CinematicWord";
 
 export const CinematicText: React.FC<{
   as?: AsElement;
@@ -89,7 +99,6 @@ export const CinematicText: React.FC<{
 
   const scrollProgress = (progress ?? internalProgress) as unknown as MotionValue<number>;
   
-  // Create a single, shared spring for the entire block
   const smoothP = useSpring(scrollProgress, { 
     stiffness: 50, 
     damping: 35,
@@ -98,7 +107,6 @@ export const CinematicText: React.FC<{
 
   if (intensity === 0) return <Tag className={className}>{children}</Tag>;
 
-  // Recursive function to process text within children nodes
   const renderChildren = (node: React.ReactNode, startIndex: { value: number }, totalCount: number): React.ReactNode => {
     if (typeof node === "string") {
       const tokens = split === "char" ? node.split("") : node.split(" ");
@@ -114,18 +122,12 @@ export const CinematicText: React.FC<{
             intensity={intensity}
           />
         ) : (
-          <motion.span
+          <CinematicWord
             key={globalIndex}
-            style={{
-              opacity: useTransform(smoothP, [0.1, 0.4], [0, 1]),
-              y: useTransform(smoothP, [0, 0.4], [15 * intensity, 0]),
-              display: "inline-block",
-              marginRight: "0.25em"
-            }}
-            className="translate-z-0"
-          >
-            {token}
-          </motion.span>
+            word={token}
+            smoothProgress={smoothP}
+            intensity={intensity}
+          />
         );
       });
     }
@@ -133,7 +135,7 @@ export const CinematicText: React.FC<{
     if (React.isValidElement(node)) {
       return React.cloneElement(
         node as React.ReactElement,
-        { key: Math.random() },
+        { key: `node-${startIndex.value}` },
         renderChildren((node as any).props.children, startIndex, totalCount)
       );
     }
@@ -145,7 +147,6 @@ export const CinematicText: React.FC<{
     return node;
   };
 
-  // Pre-calculate total tokens for normalized animation progress
   const countTokens = (node: React.ReactNode): number => {
     if (typeof node === "string") return split === "char" ? node.split("").length : node.split(" ").length;
     if (Array.isArray(node)) return node.reduce((acc, child) => acc + countTokens(child), 0);
