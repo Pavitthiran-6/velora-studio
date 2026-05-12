@@ -33,6 +33,7 @@
     -moz-osx-font-smoothing: grayscale;
     overflow-x: hidden;
   }
+
   body::-webkit-scrollbar {
     display: none;
   }

@@ -255,13 +255,19 @@ function ServicesHero() {
 /* --- SECTION 2: WHAT WE DO --- */
 
 function WhatWeDo() {
+  const { triggerPageTransition } = useTransition();
   return (
     <section className="min-h-screen py-32 md:py-48 border-t border-white/5 bg-[#1a1f40]">
       <Layout>
         <div className="grid grid-cols-1 md:grid-cols-12 gap-12 md:gap-24">
-          <div className="md:col-span-4 flex flex-col items-start gap-12">
+          <div className="md:col-span-5 flex flex-col items-start gap-8">
             <CinematicText className="text-[10px] font-black tracking-[0.3em] uppercase opacity-40">WHAT WE DO</CinematicText>
-            <p className="text-xl md:text-2xl font-display font-black tracking-[-0.04em] leading-relaxed opacity-60 uppercase">
+            <CinematicText as="h2" className="text-5xl md:text-6xl font-display font-black tracking-[-0.04em] uppercase leading-[0.95] text-white">
+              <span className="whitespace-nowrap">WE DESIGN,</span><br />
+              <span className="whitespace-nowrap">BUILD & SCALE</span><br />
+              <span className="text-[#ef3b5d] whitespace-nowrap">YOUR VISION.</span>
+            </CinematicText>
+            <p className="text-lg md:text-xl font-display font-black tracking-[-0.02em] leading-relaxed opacity-40 uppercase">
               At Buzzworthy, we craft immersive digital ecosystems that merge design, storytelling, motion, and engineering into memorable brand experiences.
             </p>
           </div>
@@ -280,7 +286,7 @@ function WhatWeDo() {
                 }
               }
             }}
-            className="md:col-span-8 flex flex-col pt-12"
+            className="md:col-span-7 flex flex-col pt-12"
           >
             {SERVICES.map((service) => (
               <motion.div
@@ -300,7 +306,10 @@ function WhatWeDo() {
               >
                 <div className="w-full h-px bg-white/10 group-hover:bg-[#ef3b5d] transition-colors duration-500 scale-x-0 group-hover:scale-x-100 origin-left" />
                 <div className="w-full h-px bg-white/5" />
-                <div className="py-6 md:py-8 flex items-center justify-between cursor-pointer group">
+                <div className="py-6 md:py-8 flex items-center justify-between cursor-pointer group" onClick={() => {
+                  const slug = service.toLowerCase().replace(/ /g, "-");
+                  triggerPageTransition(`/${slug}`);
+                }}>
                   <h3 className="text-2xl md:text-5xl font-display font-black tracking-[-0.04em] uppercase transition-all duration-300 group-hover:translate-x-4 group-hover:text-white">
                     {service}
                   </h3>
@@ -326,9 +335,12 @@ function WorkflowSection() {
       <Layout>
         <div className="mb-20">
           <CinematicText className="text-[10px] font-black tracking-[0.3em] uppercase opacity-40 mb-6">THE BUZZ PROCESS</CinematicText>
-          <CinematicText as="h2" className="text-5xl md:text-8xl font-display font-black tracking-[-0.04em] uppercase leading-none text-white flex items-baseline gap-4">
-            HOW WE <span className="text-[#ef3b5d]">WORK</span><HexIcon className="w-[3vw] h-[3vw]" fill="#ef3b5d" />
-          </CinematicText>
+          <div className="flex items-baseline gap-4">
+            <CinematicText as="h2" className="text-5xl md:text-8xl font-display font-black tracking-[-0.04em] uppercase leading-none text-white">
+              HOW WE <span className="text-[#ef3b5d]">WORK</span>
+            </CinematicText>
+            <HexIcon className="w-[3vw] h-[3vw]" fill="#ef3b5d" />
+          </div>
         </div>
 
         <div className="flex h-[500px] md:h-[650px] w-full overflow-x-auto md:overflow-visible pb-8 scrollbar-hide rounded-[20px] md:rounded-[32px] overflow-hidden border border-white/5">

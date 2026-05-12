@@ -80,13 +80,14 @@ export const CinematicText: React.FC<{
   split?: "char" | "word";
   intensity?: number;
   progress?: MotionValue<number>;
-}> = ({
+} & React.HTMLAttributes<HTMLElement>> = ({
   as: Tag = "div",
   className = "",
   children,
   split = "char",
   intensity = 1.0,
   progress,
+  ...props
 }) => {
   const textRef = useRef<HTMLDivElement>(null);
   const scrollCtx = useContext(SmoothScrollContext);
@@ -105,7 +106,7 @@ export const CinematicText: React.FC<{
     mass: 1.0
   });
 
-  if (intensity === 0) return <Tag className={className}>{children}</Tag>;
+  if (intensity === 0) return <Tag className={className} {...props}>{children}</Tag>;
 
   const renderChildren = (node: React.ReactNode, startIndex: { value: number }, totalCount: number): React.ReactNode => {
     if (typeof node === "string") {
@@ -161,8 +162,9 @@ export const CinematicText: React.FC<{
     <Tag
       // @ts-ignore
       ref={textRef}
-      className={`font-display font-black tracking-[-0.04em] uppercase ${className} overflow-visible`}
+      className={`font-display font-black uppercase ${className} overflow-visible`}
       aria-label={typeof children === "string" ? children : ""}
+      {...props}
     >
       {renderChildren(children, startIndex, totalTokens)}
     </Tag>

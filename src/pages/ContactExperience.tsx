@@ -58,15 +58,15 @@ export const ContactExperience: React.FC<{ isOpen: boolean; onClose: () => void 
           <div className="flex gap-2">
             <AnimatePresence>
               {[selections.projectType, selections.budget, selections.hearAbout].map((tag, i) => tag && (
-                  <motion.div
-                    key={`${tag}-${i}`}
-                    initial={{ opacity: 0, y: -20, scale: 0.8 }}
-                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                    className="px-5 py-2 md:py-3 rounded-full bg-white/5 border border-white/10 text-[9px] md:text-[10px] font-display font-black tracking-[0.2em] uppercase text-white/40 whitespace-nowrap flex items-center gap-3"
-                  >
-                    <HexIcon className="w-2.5 h-2.5" fill="#ef3b5d" />
-                    {tag}
-                  </motion.div>
+                <motion.div
+                  key={`${tag}-${i}`}
+                  initial={{ opacity: 0, y: -20, scale: 0.8 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  className="px-5 py-2 md:py-3 rounded-full bg-white/5 border border-white/10 text-[9px] md:text-[10px] font-display font-black tracking-[0.2em] uppercase text-white/40 whitespace-nowrap flex items-center gap-3"
+                >
+                  <HexIcon className="w-2.5 h-2.5" fill="#ef3b5d" />
+                  {tag}
+                </motion.div>
               ))}
             </AnimatePresence>
           </div>
@@ -103,6 +103,7 @@ export const ContactExperience: React.FC<{ isOpen: boolean; onClose: () => void 
                 title={<>WHAT TYPE OF <span className="text-[#ef3b5d]">PROJECT?</span></>}
                 options={["FULL WEBSITE", "UX/UI DESIGN", "WEB DEVELOPMENT", "BRANDING", "MARKETING"]}
                 onSelect={(val) => { setSelections(s => ({ ...s, projectType: val })); nextStep("budget"); }}
+                showDots={true}
               />
             )}
             {step === "budget" && (
@@ -111,6 +112,7 @@ export const ContactExperience: React.FC<{ isOpen: boolean; onClose: () => void 
                 title={<>BUDGET <span className="text-[#ef3b5d]">RANGE</span></>}
                 options={["15K–30K", "30K–50K", "50K–75K", "75K–100K", "100K+"]}
                 onSelect={(val) => { setSelections(s => ({ ...s, budget: val })); nextStep("hearAbout"); }}
+                showDots={true}
               />
             )}
             {step === "hearAbout" && (
@@ -119,6 +121,7 @@ export const ContactExperience: React.FC<{ isOpen: boolean; onClose: () => void 
                 title={<>HOW DID YOU <span className="text-[#ef3b5d]">HEAR ABOUT US?</span></>}
                 options={["AWWWARDS", "FRIEND REFERRAL", "WE DID A PROJECT", "GOOGLE", "ARTICLE"]}
                 onSelect={(val) => { setSelections(s => ({ ...s, hearAbout: val })); nextStep("form"); }}
+                showDots={true}
               />
             )}
             {step === "form" && (
@@ -183,8 +186,7 @@ export const ContactExperience: React.FC<{ isOpen: boolean; onClose: () => void 
 };
 
 /* --- SHARED STEP COMPONENT (CAPSULE STYLE) --- */
-
-const StepContent: React.FC<{ title: React.ReactNode; options: string[]; onSelect: (val: string) => void }> = ({ title, options, onSelect }) => (
+const StepContent: React.FC<{ title: React.ReactNode; options: string[]; onSelect: (val: string) => void; showDots?: boolean }> = ({ title, options, onSelect, showDots }) => (
   <motion.div
     initial={{ opacity: 0, scale: 0.98 }}
     animate={{ opacity: 1, scale: 1 }}
@@ -203,12 +205,14 @@ const StepContent: React.FC<{ title: React.ReactNode; options: string[]; onSelec
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: i * 0.05 }}
-          whileHover={{ scale: 1.05, backgroundColor: "rgba(255,255,255,0.05)" }}
+          whileHover={{ scale: 1.05, backgroundColor: "rgba(255,255,255,0.08)" }}
           whileTap={{ scale: 0.98 }}
           onClick={() => onSelect(opt)}
-          className="px-8 md:px-12 py-5 md:py-7 rounded-[4rem] bg-white/5 border border-white/10 flex items-center gap-4 group transition-colors duration-300"
+          className="px-10 md:px-14 py-6 md:py-8 hexa-box bg-white/5 border border-white/10 flex items-center gap-4 group transition-colors duration-300"
         >
-          <HexIcon className="w-3 h-3" fill={i === 0 ? "rgba(255,255,255,0.2)" : "currentColor"} />
+          {(showDots || opt === "START A PROJECT") && (
+            <HexIcon className="w-3 h-3" fill="#ef3b5d" />
+          )}
           <span className="text-[10px] md:text-xs font-display font-black tracking-[0.2em] uppercase whitespace-nowrap">{opt}</span>
         </motion.button>
       ))}
@@ -283,16 +287,16 @@ const StepSuccess: React.FC<{ onClose: () => void }> = ({ onClose }) => (
 
 const FloatingInput: React.FC<{ label: string; placeholder: string; textarea?: boolean }> = ({ label, placeholder, textarea }) => (
   <div className="relative group w-full">
-    <span className="block text-[8px] font-display font-black tracking-[0.3em] text-[#ef3b5d] mb-1 opacity-60">{label}</span>
+    <span className="block text-[10px] font-display font-black tracking-[0.3em] text-[#ef3b5d] mb-1 uppercase">{label}</span>
     {textarea ? (
       <textarea
-        className="w-full bg-transparent border-b border-white/10 py-3 text-sm font-display font-black tracking-tight uppercase focus:border-[#ef3b5d] focus:outline-none placeholder:text-white/5 min-h-[80px] md:min-h-[100px]"
+        className="w-full bg-transparent border-b border-white/20 py-3 text-base md:text-lg font-display font-black tracking-tight uppercase focus:border-[#ef3b5d] focus:outline-none placeholder:text-white/20 text-white min-h-[80px] md:min-h-[100px]"
         placeholder={placeholder}
       />
     ) : (
       <input
         type="text"
-        className="w-full bg-transparent border-b border-white/10 py-3 text-sm font-display font-black tracking-tight uppercase focus:border-[#ef3b5d] focus:outline-none placeholder:text-white/5"
+        className="w-full bg-transparent border-b border-white/20 py-3 text-base md:text-lg font-display font-black tracking-tight uppercase focus:border-[#ef3b5d] focus:outline-none placeholder:text-white/20 text-white"
         placeholder={placeholder}
       />
     )}

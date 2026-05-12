@@ -301,43 +301,43 @@ export default function WorkPage() {
                         initial="initial"
                         className="w-16 h-16 md:w-24 md:h-24 rounded-full bg-[#2a3154] flex items-center justify-center cursor-pointer group border border-white/5 shadow-2xl relative shrink-0 overflow-hidden"
                       >
-                        <motion.svg 
-                          viewBox="0 0 24 24" 
-                          className="w-8 h-8 md:w-12 md:h-12 text-white" 
-                          fill="none" 
-                          stroke="currentColor" 
+                        <motion.svg
+                          viewBox="0 0 24 24"
+                          className="w-8 h-8 md:w-12 md:h-12 text-white"
+                          fill="none"
+                          stroke="currentColor"
                           strokeWidth="1.2"
                         >
                           {/* The diagonal line that becomes straight */}
-                          <motion.line 
+                          <motion.line
                             variants={{
                               initial: { x1: 7, y1: 17, x2: 16, y2: 8 },
                               hovered: { x1: 5, y1: 12, x2: 19, y2: 12 }
                             }}
                             transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-                            strokeLinecap="round" 
+                            strokeLinecap="round"
                           />
                           {/* The arrow head that changes shape */}
-                          <motion.path 
+                          <motion.path
                             d="M12 8H16V12"
                             variants={{
                               initial: { d: "M12 8H16V12" },
                               hovered: { d: "M14 7l5 5-5 5" }
                             }}
                             transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-                            strokeLinecap="round" 
-                            strokeLinejoin="round" 
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
                           />
                           {/* The custom hexagon that fades out */}
-                          <motion.path 
-                            d="M7 17l1.5.8v1.5L7 20l-1.5-.7v-1.5L7 17z" 
+                          <motion.path
+                            d="M7 17l1.5.8v1.5L7 20l-1.5-.7v-1.5L7 17z"
                             variants={{
                               initial: { opacity: 1, scale: 1 },
                               hovered: { opacity: 0, scale: 0 }
                             }}
                             transition={{ duration: 0.3 }}
-                            fill="none" 
-                            stroke="currentColor" 
+                            fill="none"
+                            stroke="currentColor"
                             strokeWidth="1"
                             className="translate-y-[-0.5px] translate-x-[-0.5px]"
                           />
@@ -435,7 +435,7 @@ export default function WorkPage() {
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
                         <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                           <span className="px-6 py-2 bg-white/10 backdrop-blur-md rounded-full text-white text-[10px] font-black tracking-widest uppercase border border-white/20">VIEW PROJECT</span>
+                          <span className="px-6 py-2 bg-white/10 backdrop-blur-md rounded-full text-white text-[10px] font-black tracking-widest uppercase border border-white/20">VIEW PROJECT</span>
                         </div>
                       </motion.div>
                     </AnimatePresence>
@@ -485,10 +485,10 @@ export default function WorkPage() {
                               <svg viewBox="0 0 24 24" className="w-4 h-4 text-white" fill="none" stroke="currentColor" strokeWidth="1.5">
                                 <line x1="7" y1="17" x2="16" y2="8" strokeLinecap="round" />
                                 <path d="M12 8H16V12" strokeLinecap="round" strokeLinejoin="round" />
-                                <motion.path 
-                                  d="M7 17l1.5.8v1.5L7 20l-1.5-.7v-1.5L7 17z" 
-                                  fill="none" 
-                                  stroke="currentColor" 
+                                <motion.path
+                                  d="M7 17l1.5.8v1.5L7 20l-1.5-.7v-1.5L7 17z"
+                                  fill="none"
+                                  stroke="currentColor"
                                   strokeWidth="1"
                                 />
                               </svg>
