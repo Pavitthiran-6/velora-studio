@@ -21,10 +21,10 @@ const CinematicChar = React.memo(({ char, index, total, smoothProgress, intensit
 }) => {
   const pct = index / Math.max(total - 1, 1);
   
-  const y = useTransform(smoothProgress, [0, 0.45], [20 * I, 0]);
-  const x = useTransform(smoothProgress, [0, 0.45], [(pct - 0.5) * 30 * I, 0]);
-  const opacity = useTransform(smoothProgress, [0.05, 0.35], [0, 1]);
-  const scale = useTransform(smoothProgress, [0, 0.45], [0.98, 1]);
+  const y = useTransform(smoothProgress, [0, 0.2, 0.8, 1], [20 * I, 0, 0, -20 * I]);
+  const x = useTransform(smoothProgress, [0, 0.2, 0.8, 1], [(pct - 0.5) * 30 * I, 0, 0, (pct - 0.5) * -30 * I]);
+  const opacity = useTransform(smoothProgress, [0, 0.15, 0.85, 1], [0, 1, 1, 0]);
+  const scale = useTransform(smoothProgress, [0, 0.2, 0.8, 1], [0.98, 1, 1, 0.98]);
 
   if (char === "\n") return <br />;
 
@@ -53,8 +53,8 @@ const CinematicWord = React.memo(({ word, smoothProgress, intensity }: {
   smoothProgress: MotionValue<number>;
   intensity: number;
 }) => {
-  const opacity = useTransform(smoothProgress, [0.1, 0.4], [0, 1]);
-  const y = useTransform(smoothProgress, [0, 0.4], [15 * intensity, 0]);
+  const opacity = useTransform(smoothProgress, [0, 0.15, 0.85, 1], [0, 1, 1, 0]);
+  const y = useTransform(smoothProgress, [0, 0.2, 0.8, 1], [15 * intensity, 0, 0, -15 * intensity]);
 
   return (
     <motion.span
@@ -95,7 +95,7 @@ export const CinematicText: React.FC<{
   const { scrollYProgress: internalProgress } = useScroll({
     target: textRef,
     container: scrollCtx?.containerRef ?? undefined,
-    offset: ["start 92%", "center 50%"],
+    offset: ["start end", "end start"],
   });
 
   const scrollProgress = (progress ?? internalProgress) as unknown as MotionValue<number>;

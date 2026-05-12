@@ -53,10 +53,14 @@ export default function WorkPage() {
                     </div>
                   </button>
 
-                  <div className="hidden md:flex items-center gap-2">
-                    <CinematicText className="text-[10px] font-black tracking-[0.3em] uppercase opacity-40">BUZZWORTHY</CinematicText>
-                    <HexIcon className="w-2.5 h-2.5" fill="#ef3b5d" />
-                    <CinematicText className="text-[10px] font-black tracking-[0.3em] uppercase text-[#ef3b5d]">WORK</CinematicText>
+                  <div className="hidden md:flex items-center gap-4 pointer-events-auto">
+                    <span className="text-[10px] font-black tracking-[0.4em] uppercase text-white/40 leading-none">
+                      BUZZWORTHY
+                    </span>
+                    <HexIcon className="w-2.5 h-2.5 translate-y-[0.5px]" fill="#ef4444" />
+                    <span className="text-[10px] font-black tracking-[0.4em] uppercase text-[#ef4444] leading-none">
+                      WORK
+                    </span>
                   </div>
                 </div>
 

@@ -44,14 +44,14 @@ function createDetailsTexture(gl: any, text: string, category: string, font = '9
   context.fillText(category.toUpperCase(), 400, 300);
 
   // Title DNA: Creative Strand (Matches Work Page Headline)
-  context.font = '900 84px "Big Shoulders Display", sans-serif';
+  context.font = '900 80px "Big Shoulders Display", sans-serif';
   if ('letterSpacing' in context) (context as any).letterSpacing = "-5.5px";
   context.textBaseline = 'middle';
-  
+
   const words = text.split(' ');
   let part1 = '';
   let part2 = '';
-  
+
   if (words.length >= 2) {
     part1 = words[0];
     part2 = ' ' + words.slice(1).join(' ');
@@ -68,15 +68,15 @@ function createDetailsTexture(gl: any, text: string, category: string, font = '9
 
   // Draw DNA Split (Exact Headline Match)
   context.textAlign = 'left';
-  context.fillStyle = '#ef3b5d'; // Matching Work Page Red
+  context.fillStyle = '#ef4444'; // Standard Brand Red
   context.fillText(part1, startX, 400);
-  
+
   context.fillStyle = 'white'; // Pure White
-  context.fillText(part2, startX + w1, 400);
+  context.fillText(part2, startX + w1 + 10, 400); // Added slight spacing
 
   const texture = new Texture(gl, { generateMipmaps: false, minFilter: gl.LINEAR, magFilter: gl.LINEAR });
   texture.image = canvas;
-  return { texture, width: 400, height: 400 };
+  return { texture, width: 800, height: 800 };
 }
 
 class Details {
@@ -90,26 +90,40 @@ class Details {
     const { texture } = createDetailsTexture(this.gl, this.text, this.category, this.font);
     const geometry = new Plane(this.gl);
     const program = new Program(this.gl, {
-      vertex: `attribute vec3 position; attribute vec2 uv; uniform mat4 modelViewMatrix; uniform mat4 projectionMatrix; uniform float uHover; varying vec2 vUv; void main() { vUv = uv; vec3 pos = position; pos.y += (1.0 - uHover) * 0.2; pos.z += uHover * 1.5; gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0); }`,
+      vertex: `attribute vec3 position; attribute vec2 uv; uniform mat4 modelViewMatrix; uniform mat4 projectionMatrix; uniform float uHover; varying vec2 vUv; void main() { vUv = uv; vec3 pos = position; pos.y += (1.0 - uHover) * 0.2; pos.z += uHover * 1.2; gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0); }`,
       fragment: `precision highp float; uniform sampler2D tMap; uniform float uHover; varying vec2 vUv; void main() { vec4 color = texture2D(tMap, vUv); gl_FragColor = vec4(color.rgb, color.a * uHover); }`,
       uniforms: { tMap: { value: texture }, uHover: { value: 0 } },
       transparent: true
     });
     this.mesh = new Mesh(this.gl, { geometry, program });
-    this.mesh.scale.set(1.3, 1.3, 1);
-    this.mesh.position.z = 0.1;
     this.mesh.setParent(this.plane);
+    this.onResize();
+  }
+  onResize() {
+    if (!this.plane) return;
+    const parentScaleX = this.plane.scale.x;
+    const parentScaleY = this.plane.scale.y;
+    // Target the text to be a fixed portion of the viewport width relative to the card
+    // This compensates for the parent card being narrow/tall
+    const targetWidth = parentScaleX * 1.5;
+    this.mesh.scale.x = targetWidth / parentScaleX;
+    this.mesh.scale.y = targetWidth / parentScaleY;
+    this.mesh.position.z = 0.2;
   }
 }
 
 // Media class handles the project cards
 class Media {
   extra: number = 0; geometry: any; gl: any; image: string; index: number; length: number; scene: any; screen: any; text: string; viewport: any; bend: number; borderRadius: number; font: string; program: any; plane: any; width: any; widthTotal: any; x: any;
+  details: any;
   isHovered: boolean = false; hoverValue: number = 0;
 
   constructor({ geometry, gl, image, index, length, scene, screen, text, category, viewport, bend, borderRadius, font }: any) {
     Object.assign(this, { geometry, gl, image, index, length, scene, screen, text, category, viewport, bend, borderRadius, font });
-    this.createShader(); this.createMesh(); new Details({ gl, plane: this.plane, text, category, font }); this.onResize();
+    this.createShader();
+    this.createMesh();
+    this.details = new Details({ gl, plane: this.plane, text, category, font });
+    this.onResize();
   }
   createShader() {
     const texture = new Texture(this.gl, { generateMipmaps: true, minFilter: this.gl.LINEAR_MIPMAP_LINEAR, magFilter: this.gl.LINEAR });
@@ -174,6 +188,7 @@ class Media {
     this.width = this.plane.scale.x + 1.5;
     this.widthTotal = this.width * this.length;
     this.x = this.width * this.index;
+    if (this.details) this.details.onResize();
   }
 }
 
@@ -241,8 +256,17 @@ export default function CircularGallery({ items, bend = 0, borderRadius = 0.05, 
   const containerRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
     if (!containerRef.current) return;
-    const app = new App(containerRef.current, { items, bend, borderRadius, font, scrollSpeed, scrollEase });
-    return () => app.destroy();
+
+    let app: any;
+    // Wait for fonts to be ready for accurate canvas measurements
+    document.fonts.ready.then(() => {
+      if (!containerRef.current) return;
+      app = new App(containerRef.current, { items, bend, borderRadius, font, scrollSpeed, scrollEase });
+    });
+
+    return () => {
+      if (app) app.destroy();
+    };
   }, [items, bend, borderRadius, font, scrollSpeed, scrollEase]);
   return <div className="circular-gallery" ref={containerRef} />;
 }
