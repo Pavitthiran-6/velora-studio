@@ -18,7 +18,7 @@ import yogiImg from "../assets/projects/hoboken_yogi_hero_1778243105729.png";
 import mdImg from "../assets/projects/modern_md_hero_1778243119932.png";
 
 const GALLERY_ITEMS = [
-  { image: valaclavaImg, text: "VALACLAVA" },
+  { image: valaclavaImg, text: "SLING SHOT" },
   { image: oceanImg, text: "OCEAN AGENCY" },
   { image: yogiImg, text: "HOBOKEN YOGI" },
   { image: mdImg, text: "MODERN MD" },
@@ -31,10 +31,16 @@ export default function WorkPage() {
 
   return (
     <SmoothScrollProvider containerRef={containerRef} ease={0.09}>
-      <div className="h-screen bg-[#ef4444] p-2 md:p-3 lg:p-4 font-sans select-none overflow-hidden">
+      <div 
+        onScroll={(e) => (e.currentTarget.scrollTop = 0)}
+        className="h-screen bg-[#ef4444] p-2 md:p-3 lg:p-4 font-sans select-none overflow-hidden"
+      >
 
         {/* STUDIO BOX */}
-        <div className="relative w-full h-full rounded-[16px] md:rounded-[28px] lg:rounded-[40px] overflow-hidden bg-[#1f2547] flex flex-col border border-white/5 shadow-[0_20px_50px_rgba(0,0,0,0.4)]">
+        <div 
+          onScroll={(e) => (e.currentTarget.scrollTop = 0)}
+          className="relative w-full h-full rounded-[16px] md:rounded-[28px] lg:rounded-[40px] overflow-hidden bg-[#1f2547] flex flex-col border border-white/5 shadow-[0_20px_50px_rgba(0,0,0,0.4)]"
+        >
 
           <WaveMenu isOpen={isWaveOpen} onClose={() => setIsWaveOpen(false)} />
 
@@ -98,6 +104,7 @@ export default function WorkPage() {
                       font='900 80px "Big Shoulders Display", sans-serif'
                       scrollEase={0.08}
                       scrollSpeed={3}
+                      onClick={(title: string) => triggerPageTransition(`/work/${title.toLowerCase().replace(/\s+/g, '-')}`)}
                     />
                   </div>
                 </div>

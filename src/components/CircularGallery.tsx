@@ -194,10 +194,13 @@ class Media {
 
 class App {
   container: HTMLElement; scrollSpeed: number; scroll: any; renderer: any; gl: any; camera: any; scene: any; screen: any; viewport: any; planeGeometry: any; medias: any; isDown: boolean = false; start: number = 0; raf: any;
-  raycast: any; mouse: Vec2;
+  raycast: any; mouse: Vec2; onClick: (text: string) => void;
+  startTime: number = 0; currentIntersect: any = null;
+  boundHandlers: any = {};
 
-  constructor(container: HTMLElement, { items, bend, borderRadius, font, scrollSpeed, scrollEase }: any) {
+  constructor(container: HTMLElement, { items, bend, borderRadius, font, scrollSpeed, scrollEase, onClick }: any) {
     this.container = container; this.scrollSpeed = scrollSpeed; this.scroll = { ease: scrollEase, current: 0, target: 0, last: 0 };
+    this.onClick = onClick;
     this.renderer = new Renderer({ alpha: true, antialias: true, dpr: window.devicePixelRatio });
     this.gl = this.renderer.gl; this.container.appendChild(this.gl.canvas);
     this.camera = new Camera(this.gl); this.camera.position.z = 20; this.scene = new Transform();
@@ -206,9 +209,43 @@ class App {
     this.onResize();
     const images = (items || []).concat(items || []);
     this.medias = images.map((data: any, index: number) => new Media({ geometry: this.planeGeometry, gl: this.gl, image: data.image, index, length: images.length, scene: this.scene, screen: this.screen, text: data.text, category: data.category || '', viewport: this.viewport, bend, borderRadius, font }));
+    
+    // Pre-bind handlers for reliable cleanup
+    this.boundHandlers.onResize = this.onResize.bind(this);
+    this.boundHandlers.onWheel = this.onWheel.bind(this);
+    this.boundHandlers.onTouchDown = this.onTouchDown.bind(this);
+    this.boundHandlers.onTouchMove = this.onTouchMove.bind(this);
+    this.boundHandlers.onTouchUp = this.onTouchUp.bind(this);
+
     this.update(); this.addEventListeners();
   }
-  onTouchDown(e: any) { this.isDown = true; this.scroll.position = this.scroll.current; this.start = e.touches ? e.touches[0].clientX : e.clientX; }
+  onTouchDown(e: any) { 
+    this.isDown = true; 
+    this.scroll.position = this.scroll.current; 
+    this.start = e.touches ? e.touches[0].clientX : e.clientX; 
+    this.startTime = Date.now();
+
+    // Update mouse coordinates immediately on touch down
+    const x = e.touches ? e.touches[0].clientX : e.clientX;
+    const y = e.touches ? e.touches[0].clientY : e.clientY;
+    this.mouse.set((x / this.screen.width) * 2 - 1, -(y / this.screen.height) * 2 + 1);
+
+    // Initial raycast check
+    this.raycast.castMouse(this.camera, this.mouse);
+    const intersects = this.raycast.intersectBounds(this.medias.map((m: any) => m.plane));
+    this.currentIntersect = intersects.length ? this.medias.find((m: any) => m.plane === intersects[0]) : null;
+  }
+
+  onTouchUp() {
+    this.isDown = false;
+    const duration = Date.now() - (this.startTime || 0);
+    
+    // Only trigger click if it was a short tap/click (less than 250ms)
+    if (duration < 250 && this.currentIntersect) {
+      this.onClick(this.currentIntersect.text);
+    }
+    this.currentIntersect = null;
+  }
   onTouchMove(e: any) {
     const x = e.touches ? e.touches[0].clientX : e.clientX;
     const y = e.touches ? e.touches[0].clientY : e.clientY;
@@ -245,14 +282,30 @@ class App {
     this.scroll.last = this.scroll.current; this.raf = window.requestAnimationFrame(this.update.bind(this));
   }
   addEventListeners() {
-    window.addEventListener('resize', this.onResize.bind(this)); window.addEventListener('wheel', this.onWheel.bind(this));
-    window.addEventListener('mousedown', this.onTouchDown.bind(this)); window.addEventListener('mousemove', this.onTouchMove.bind(this)); window.addEventListener('mouseup', () => this.isDown = false);
-    window.addEventListener('touchstart', this.onTouchDown.bind(this)); window.addEventListener('touchmove', this.onTouchMove.bind(this)); window.addEventListener('touchend', () => this.isDown = false);
+    window.addEventListener('resize', this.boundHandlers.onResize);
+    window.addEventListener('wheel', this.boundHandlers.onWheel);
+    window.addEventListener('mousedown', this.boundHandlers.onTouchDown);
+    window.addEventListener('mousemove', this.boundHandlers.onTouchMove);
+    window.addEventListener('mouseup', this.boundHandlers.onTouchUp);
+    window.addEventListener('touchstart', this.boundHandlers.onTouchDown);
+    window.addEventListener('touchmove', this.boundHandlers.onTouchMove);
+    window.addEventListener('touchend', this.boundHandlers.onTouchUp);
   }
-  destroy() { window.cancelAnimationFrame(this.raf); if (this.renderer?.gl.canvas.parentNode) this.renderer.gl.canvas.parentNode.removeChild(this.renderer.gl.canvas); }
+  destroy() { 
+    window.cancelAnimationFrame(this.raf);
+    window.removeEventListener('resize', this.boundHandlers.onResize);
+    window.removeEventListener('wheel', this.boundHandlers.onWheel);
+    window.removeEventListener('mousedown', this.boundHandlers.onTouchDown);
+    window.removeEventListener('mousemove', this.boundHandlers.onTouchMove);
+    window.removeEventListener('mouseup', this.boundHandlers.onTouchUp);
+    window.removeEventListener('touchstart', this.boundHandlers.onTouchDown);
+    window.removeEventListener('touchmove', this.boundHandlers.onTouchMove);
+    window.removeEventListener('touchend', this.boundHandlers.onTouchUp);
+    if (this.renderer?.gl.canvas.parentNode) this.renderer.gl.canvas.parentNode.removeChild(this.renderer.gl.canvas); 
+  }
 }
 
-export default function CircularGallery({ items, bend = 0, borderRadius = 0.05, font = '900 60px "Big Shoulders Display", sans-serif', scrollSpeed = 2, scrollEase = 0.05 }: any) {
+export default function CircularGallery({ items, bend = 0, borderRadius = 0.05, font = '900 60px "Big Shoulders Display", sans-serif', scrollSpeed = 2, scrollEase = 0.05, onClick }: any) {
   const containerRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
     if (!containerRef.current) return;
@@ -261,12 +314,12 @@ export default function CircularGallery({ items, bend = 0, borderRadius = 0.05, 
     // Wait for fonts to be ready for accurate canvas measurements
     document.fonts.ready.then(() => {
       if (!containerRef.current) return;
-      app = new App(containerRef.current, { items, bend, borderRadius, font, scrollSpeed, scrollEase });
+      app = new App(containerRef.current, { items, bend, borderRadius, font, scrollSpeed, scrollEase, onClick });
     });
 
     return () => {
       if (app) app.destroy();
     };
-  }, [items, bend, borderRadius, font, scrollSpeed, scrollEase]);
+  }, [items, bend, borderRadius, font, scrollSpeed, scrollEase, onClick]);
   return <div className="circular-gallery" ref={containerRef} />;
 }

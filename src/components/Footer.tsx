@@ -26,37 +26,45 @@ const SOCIALS = [
   { label: "Dribbble", href: "https://dribbble.com" },
 ];
 
-const RedHex = ({ size = "md" }: { size?: "sm" | "md" | "lg" }) => {
+const RedHex = ({ size = "md", fill = "#ef4444" }: { size?: "sm" | "md" | "lg", fill?: string }) => {
   const s =
     size === "sm" ? "w-2 h-2" : size === "lg" ? "w-5 h-5" : "w-3 h-3 md:w-4 md:h-4";
   return (
-    <svg viewBox="0 0 24 24" className={`${s} shrink-0`} xmlns="http://www.w3.org/2000/svg">
-      <path d="M12 2l9.5 5.5v11L12 24l-9.5-5.5v-11z" fill="#ef4444" />
+    <svg viewBox="0 0 24 24" className={`${s} shrink-0 transition-colors duration-200`} xmlns="http://www.w3.org/2000/svg">
+      <path d="M12 2l9.5 5.5v11L12 24l-9.5-5.5v-11z" fill={fill} />
     </svg>
   );
 };
 
-const BlueprintLine = () => (
-  <div className="w-full h-px bg-white/10 relative my-5">
-    <div className="absolute left-0 top-1/2 -translate-y-1/2 w-2 h-2 rounded-full border border-white/20 bg-[#1f2547]" />
-    <div className="absolute right-0 top-1/2 -translate-y-1/2 w-2 h-2 rounded-full border border-white/20 bg-[#1f2547]" />
+const BlueprintLine = ({ isLight }: { isLight?: boolean }) => (
+  <div className={`w-full h-px ${isLight ? 'bg-[#050505]/10' : 'bg-white/10'} relative my-5`}>
+    <div className={`absolute left-0 top-1/2 -translate-y-1/2 w-2 h-2 rounded-full border ${isLight ? 'border-[#050505]/20 bg-[#f5f5f3]' : 'border-white/20 bg-[#1f2547]'}`} />
+    <div className={`absolute right-0 top-1/2 -translate-y-1/2 w-2 h-2 rounded-full border ${isLight ? 'border-[#050505]/20 bg-[#f5f5f3]' : 'border-white/20 bg-[#1f2547]'}`} />
   </div>
 );
 
-export const Footer = () => {
+export const Footer = ({ isLight = false }: { isLight?: boolean }) => {
   const { triggerPageTransition } = useTransition();
   const [email, setEmail] = useState("");
 
+  const textColor = isLight ? "text-[#050505]" : "text-white";
+  const subTextColor = isLight ? "text-[#050505]/40" : "text-white/40";
+  const borderColor = isLight ? "border-[#050505]/10" : "border-white/10";
+  const hoverColor = isLight ? "#8b5cf6" : "#ef4444"; // Violet for light mode, Red for dark
+  const bgStyle = isLight 
+    ? { background: "#f5f5f3" } 
+    : { background: "linear-gradient(160deg, #181c3a 0%, #1f2547 50%, #1a1f40 100%)" };
+
   return (
-    <footer className="min-h-screen flex flex-col justify-between relative overflow-hidden text-white font-sans py-8 md:py-10"
-      style={{ background: "linear-gradient(160deg, #181c3a 0%, #1f2547 50%, #1a1f40 100%)" }}
+    <footer className={`min-h-screen flex flex-col justify-between relative overflow-hidden ${textColor} font-sans py-8 md:py-10`}
+      style={bgStyle}
     >
       {/* Subtle grid overlay */}
       <div className="absolute inset-0 opacity-[0.025] pointer-events-none">
         <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
           <defs>
             <pattern id="fGrid" width="60" height="60" patternUnits="userSpaceOnUse">
-              <path d="M 60 0 L 0 0 0 60" fill="none" stroke="white" strokeWidth="0.5" />
+              <path d="M 60 0 L 0 0 0 60" fill="none" stroke={isLight ? "black" : "white"} strokeWidth="0.5" />
             </pattern>
           </defs>
           <rect width="100%" height="100%" fill="url(#fGrid)" />
@@ -72,18 +80,19 @@ export const Footer = () => {
         <div className="flex justify-center items-center">
           <motion.div
             className="flex items-center gap-2 md:gap-4 cursor-pointer group"
-            whileHover={{ scale: 1.01 }}
+            whileHover={{ scale: 1.01, color: hoverColor }}
+            whileTap={{ scale: 0.98 }}
             onClick={() => triggerPageTransition("/contact")}
           >
-            <h2 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-display font-black tracking-[-0.04em] uppercase leading-none group-hover:text-[#ef4444] transition-colors duration-300">
+            <h2 className={`text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-display font-black tracking-[-0.04em] uppercase leading-none transition-colors duration-75`}>
               LET'S TALK
             </h2>
-            <RedHex size="md" />
+            <RedHex size="md" fill={hoverColor} />
           </motion.div>
         </div>
 
         {/* ── DIVIDER ── */}
-        <BlueprintLine />
+        <BlueprintLine isLight={isLight} />
 
         {/* ── ROW 2: STUDIO | Services List | SERVICES ── */}
         <div className="grid grid-cols-12 gap-4 items-start">
@@ -92,14 +101,15 @@ export const Footer = () => {
             <motion.div
               onClick={() => triggerPageTransition("/studio")}
               className="flex items-center gap-2 md:gap-3 mb-3 cursor-pointer group"
-              whileHover={{ x: 4 }}
+              whileHover={{ x: 4, color: hoverColor }}
+              whileTap={{ x: 2 }}
             >
-              <h3 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-display font-black tracking-[-0.04em] uppercase leading-none group-hover:text-[#ef4444] transition-colors duration-300">
+              <h3 className={`text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-display font-black tracking-[-0.04em] uppercase leading-none transition-colors duration-75`}>
                 STUDIO
               </h3>
-              <RedHex size="sm" />
+              <RedHex size="sm" fill={hoverColor} />
             </motion.div>
-            <p className="text-white text-[11px] md:text-[13px] font-display font-black tracking-[-0.02em] uppercase leading-relaxed">
+            <p className={`${textColor} text-[11px] md:text-[13px] font-display font-black tracking-[-0.02em] uppercase leading-relaxed`}>
               81 PROSPECT ST, SUITE 9069,<br />
               BROOKLYN, NY 11201
             </p>
@@ -111,9 +121,9 @@ export const Footer = () => {
               <motion.span
                 key={s.label}
                 onClick={() => triggerPageTransition(s.href)}
-                whileHover={{ x: 4, color: "#ef4444" }}
+                whileHover={{ x: 4, color: hoverColor }}
                 transition={{ duration: 0.1 }}
-                className="text-white text-[11px] md:text-[13px] font-display font-black tracking-[-0.02em] uppercase cursor-pointer leading-snug block transition-all"
+                className={`${textColor} text-[11px] md:text-[13px] font-display font-black tracking-[-0.02em] uppercase cursor-pointer leading-snug block transition-all`}
               >
                 {s.label}
               </motion.span>
@@ -125,49 +135,51 @@ export const Footer = () => {
             <motion.div
               onClick={() => triggerPageTransition("/services")}
               className="flex items-center gap-2 group cursor-pointer"
-              whileHover={{ x: -4 }}
+              whileHover={{ x: -4, color: hoverColor }}
+              whileTap={{ x: -2 }}
             >
-              <h3 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-display font-black tracking-[-0.04em] uppercase leading-none text-right group-hover:text-[#ef4444] transition-colors duration-300">
+              <h3 className={`text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-display font-black tracking-[-0.04em] uppercase leading-none text-right transition-colors duration-75`}>
                 SERVICES
               </h3>
-              <RedHex size="sm" />
+              <RedHex size="sm" fill={hoverColor} />
             </motion.div>
           </div>
         </div>
 
         {/* ── DIVIDER ── */}
-        <BlueprintLine />
+        <BlueprintLine isLight={isLight} />
 
         {/* ── ROW 3: WORK big word ── */}
         <motion.div
           onClick={() => triggerPageTransition("/work")}
           className="flex items-center gap-3 md:gap-5 cursor-pointer group w-fit"
-          whileHover={{ x: 6 }}
+          whileHover={{ x: 6, color: hoverColor }}
+          whileTap={{ x: 3 }}
         >
-          <h2 className="text-5xl sm:text-6xl md:text-8xl lg:text-9xl font-display font-black tracking-[-0.04em] uppercase leading-none group-hover:text-[#ef4444] transition-colors duration-300">
+          <h2 className={`text-5xl sm:text-6xl md:text-8xl lg:text-9xl font-display font-black tracking-[-0.04em] uppercase leading-none transition-colors duration-75`}>
             WORK
           </h2>
-          <RedHex size="lg" />
+          <RedHex size="lg" fill={hoverColor} />
         </motion.div>
 
         {/* ── ROW 4: Newsletter / Copyright / Socials ── */}
         <div className="grid grid-cols-12 items-end gap-6 pt-4 border-t border-white/5">
           {/* Newsletter */}
           <div className="col-span-4">
-            <span className="text-white text-[8px] font-black tracking-[0.25em] uppercase block mb-3">
+            <span className={`text-[8px] font-black tracking-[0.25em] uppercase block mb-3 ${textColor}`}>
               NEWSLETTER
             </span>
-            <div className="relative border-b border-white/20 group focus-within:border-[#ef4444] transition-colors">
+            <div className={`relative border-b ${borderColor} group focus-within:border-[#ef4444] transition-colors`}>
               <input
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="Your Email"
-                className="w-full bg-transparent py-2.5 text-[11px] md:text-[13px] font-display font-black tracking-[-0.02em] uppercase focus:outline-none placeholder:text-white/60 text-white"
+                className="w-full bg-transparent py-2.5 text-[11px] md:text-[13px] font-display font-black tracking-[-0.02em] uppercase focus:outline-none placeholder:text-white/60"
               />
               <motion.button
-                whileHover={{ x: 3, color: "#ef4444" }}
-                className="absolute right-0 top-1/2 -translate-y-1/2 text-white"
+                whileHover={{ x: 3, color: hoverColor }}
+                className={`absolute right-0 top-1/2 -translate-y-1/2 ${textColor}`}
                 onClick={() => { if (email) alert(`Subscribed: ${email}`); }}
               >
                 <ArrowRight className="w-4 h-4" />
@@ -177,7 +189,7 @@ export const Footer = () => {
 
           {/* Copyright */}
           <div className="col-start-5 col-span-4 text-center">
-            <span className="text-white text-[11px] font-black tracking-tight opacity-80">
+            <span className={`${textColor} text-[11px] font-black tracking-tight opacity-80`}>
               ©2026 Buzzworthy Studio
             </span>
           </div>
@@ -190,9 +202,9 @@ export const Footer = () => {
                 href={s.href}
                 target="_blank"
                 rel="noopener noreferrer"
-                whileHover={{ y: -2, color: "#ef4444" }}
+                whileHover={{ y: -2, color: hoverColor }}
                 transition={{ duration: 0.1 }}
-                className="text-white text-[11px] md:text-[12px] font-black tracking-tight uppercase cursor-pointer transition-all"
+                className={`${textColor} text-[11px] md:text-[12px] font-black tracking-tight uppercase cursor-pointer transition-all`}
               >
                 {s.label}
               </motion.a>

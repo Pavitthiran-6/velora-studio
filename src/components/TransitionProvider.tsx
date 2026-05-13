@@ -69,18 +69,24 @@ export const TransitionProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   const triggerPageTransition = (path: string) => {
     if (isTransitioning) return;
     
+    // Don't navigate if we are already there
+    if (location.pathname === path) {
+      setIsTransitioning(false);
+      return;
+    }
+
     setIsTransitioning(true);
     
     setTimeout(() => {
+      // Clear all scroll positions before navigating
+      window.scrollTo(0, 0);
+      const containers = document.querySelectorAll(".overflow-y-auto, .overflow-y-scroll, .scrollbar-hide");
+      containers.forEach(container => {
+        container.scrollTo({ top: 0, behavior: 'instant' });
+      });
+
       navigate(path);
       setHeroKey(prev => prev + 1);
-      
-      // Scroll top
-      window.scrollTo(0, 0);
-      const container = document.querySelector(".overflow-y-auto");
-      if (container) {
-        container.scrollTo({ top: 0, behavior: 'instant' });
-      }
     }, 600);
 
     setTimeout(() => {
@@ -108,7 +114,8 @@ export const TransitionProvider: React.FC<{ children: React.ReactNode }> = ({ ch
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.9 }}
           onClick={() => navigate("/contact")}
-          className="fixed bottom-8 md:bottom-12 right-6 md:right-16 z-[150] w-12 h-12 md:w-16 md:h-16 bg-[#ef4444] rounded-full flex items-center justify-center shadow-[0_10px_30px_rgba(239,68,68,0.3)] pointer-events-auto cursor-pointer"
+          className="fixed bottom-8 md:bottom-12 right-6 md:right-16 z-[150] w-12 h-12 md:w-16 md:h-16 rounded-full flex items-center justify-center shadow-[0_10px_30px_rgba(0,0,0,0.1)] pointer-events-auto cursor-pointer"
+          style={{ backgroundColor: location.pathname.startsWith("/work/") ? "#050505" : "#ef4444" }}
         >
           <Pencil className="text-white w-5 h-5 md:w-7 md:h-7" />
         </motion.button>

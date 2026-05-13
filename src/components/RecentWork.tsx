@@ -66,6 +66,8 @@ const StickyCard_001 = ({
 
   const scale = useTransform(progress, range, [1, targetScale]);
 
+  const { triggerPageTransition } = useTransition();
+
   return (
     <div
       ref={container}
@@ -76,7 +78,8 @@ const StickyCard_001 = ({
           scale,
           top: `calc(-5vh + ${i * 20 + 150}px)`,
         }}
-        className="rounded-4xl relative -top-1/4 flex h-[400px] w-[600px] origin-top flex-col overflow-hidden"
+        onClick={() => triggerPageTransition(`/work/${title.toLowerCase().replace(/\s+/g, '-')}`)}
+        className="rounded-4xl relative -top-1/4 flex h-[400px] w-[600px] origin-top flex-col overflow-hidden cursor-pointer"
       >
         <img src={src} alt={title} className="h-full w-full object-cover" />
         <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent flex flex-col justify-end p-8 md:p-10">

@@ -64,8 +64,14 @@ export default function BackEndDevPage() {
 
   return (
     <SmoothScrollProvider containerRef={containerRef} ease={0.09}>
-      <div className="h-screen bg-[#ef4444] p-2 md:p-3 lg:p-4 font-sans select-none transition-colors duration-700">
-        <div className="relative w-full h-full rounded-[16px] md:rounded-[28px] lg:rounded-[40px] overflow-hidden bg-[#1f2547] flex flex-col border border-white/5 shadow-[0_20px_50px_rgba(0,0,0,0.4)]">
+      <div 
+        onScroll={(e) => (e.currentTarget.scrollTop = 0)}
+        className="h-screen bg-[#ef4444] p-2 md:p-3 lg:p-4 font-sans select-none transition-colors duration-700"
+      >
+        <div 
+          onScroll={(e) => (e.currentTarget.scrollTop = 0)}
+          className="relative w-full h-full rounded-[16px] md:rounded-[28px] lg:rounded-[40px] overflow-hidden bg-[#1f2547] flex flex-col border border-white/5 shadow-[0_20px_50px_rgba(0,0,0,0.4)]"
+        >
           <WaveMenu isOpen={isWaveOpen} onClose={() => setIsWaveOpen(false)} />
           <div ref={containerRef} className="h-full overflow-y-auto overflow-x-hidden scrollbar-hide">
 

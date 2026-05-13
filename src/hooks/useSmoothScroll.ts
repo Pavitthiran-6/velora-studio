@@ -51,8 +51,8 @@ export function useSmoothScroll(
 
       const diff = target - current;
 
-      // Use a slightly larger threshold to prevent tiny sub-pixel updates
-      if (Math.abs(diff) < 0.1) {
+      // Use a slightly larger threshold to prevent tiny sub-pixel updates that cause lag
+      if (Math.abs(diff) < 0.4) {
         current = target;
         el.scrollTop = target;
         isScrolling = false;
@@ -104,10 +104,20 @@ export function useSmoothScroll(
       }
     };
 
+    const onFocusIn = () => {
+      // When tabbing, the browser might natively scroll the container.
+      // We need to immediately sync our target to prevent jumps.
+      setTimeout(() => {
+        target = el.scrollTop;
+        current = el.scrollTop;
+      }, 0);
+    };
+
     el.addEventListener("wheel", onWheel, { passive: false });
     el.addEventListener("touchstart", onTouchStart, { passive: true });
     el.addEventListener("touchmove", onTouchMove, { passive: false });
     el.addEventListener("scroll", onNativeScroll, { passive: true });
+    el.addEventListener("focusin", onFocusIn, { passive: true });
 
     return () => {
       el.style.willChange = "auto";
@@ -116,7 +126,8 @@ export function useSmoothScroll(
       el.removeEventListener("touchstart", onTouchStart);
       el.removeEventListener("touchmove", onTouchMove);
       el.removeEventListener("scroll", onNativeScroll);
+      el.removeEventListener("focusin", onFocusIn);
       cancelAnimationFrame(raf);
     };
-  }, [containerRef, ease]);
+  }, [containerRef?.current, ease]);
 }

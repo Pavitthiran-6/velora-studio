@@ -22,6 +22,10 @@ const IMAGES = {
   studio: "/studio_creative_space_1778599072690.png",
   team1: "/team_member_1_1778599096940.png",
   team2: "/team_member_2_1778599116765.png",
+  abbas: "/muhamed_abbas.jpg",
+  azeez: "/abdul_azeez.png",
+  pavit: "/pavitthiran.jpg",
+  palani: "/palaniappan.jpg",
 };
 
 // --- Components ---
@@ -252,46 +256,58 @@ const TeamGridSection = () => {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 md:gap-10">
-          <ProfileCard
-            name="Muhamed Abbas"
-            title="Graphical Designer"
-            handle="m_abbas"
-            status="Creative Lead"
-            contactText="Project Scope"
-            avatarUrl={IMAGES.team1}
-            behindGlowEnabled
-            innerGradient="linear-gradient(145deg, rgba(239, 68, 68, 0.1) 0%, rgba(31, 37, 71, 0.4) 100%)"
-          />
-          <ProfileCard
-            name="Palaniappan"
-            title="UI Developer"
-            handle="palani_design"
-            status="Technical Associate"
-            contactText="Design Audit"
-            avatarUrl={IMAGES.team2}
-            behindGlowEnabled
-            innerGradient="linear-gradient(145deg, rgba(239, 68, 68, 0.1) 0%, rgba(31, 37, 71, 0.4) 100%)"
-          />
-          <ProfileCard
-            name="Pavitthiran"
-            title="Developer"
-            handle="pavitthiran_tech"
-            status="Full-Stack Developer"
-            contactText="Tech Stack"
-            avatarUrl={IMAGES.team1}
-            behindGlowEnabled
-            innerGradient="linear-gradient(145deg, rgba(239, 68, 68, 0.1) 0%, rgba(31, 37, 71, 0.4) 100%)"
-          />
-          <ProfileCard
-            name="Elena Vance"
-            title="Frontend Developer"
-            handle="evance_frontend"
-            status="Lead Frontend"
-            contactText="Consult"
-            avatarUrl={IMAGES.team2}
-            behindGlowEnabled
-            innerGradient="linear-gradient(145deg, rgba(239, 68, 68, 0.1) 0%, rgba(31, 37, 71, 0.4) 100%)"
-          />
+          {[
+            {
+              name: "Muhamed Abbas",
+              title: "Creative Operations Lead",
+              handle: "m_abbas",
+              status: "Management • Video • Design",
+              contactText: "Production Scope",
+              avatarUrl: IMAGES.abbas,
+            },
+            {
+              name: "Palaniappan",
+              title: "UI Developer",
+              handle: "palani_design",
+              status: "Technical Associate",
+              contactText: "Design Audit",
+              avatarUrl: IMAGES.palani,
+            },
+            {
+              name: "Pavitthiran",
+              title: "Developer",
+              handle: "pavitthiran_tech",
+              status: "Full-Stack Developer",
+              contactText: "Tech Stack",
+              avatarUrl: IMAGES.pavit,
+            },
+            {
+              name: "Abdul Azeez",
+              title: "Product Engineering Lead",
+              handle: "azeez_management",
+              status: "Management & Frontend",
+              contactText: "Project Strategy",
+              avatarUrl: IMAGES.azeez,
+            },
+          ].map((profile, i) => (
+            <motion.div
+              key={profile.name}
+              initial={{ opacity: 0, y: 100 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: false, margin: "-50px" }}
+              transition={{
+                duration: 0.8,
+                delay: i * 0.1,
+                ease: [0.16, 1, 0.3, 1]
+              }}
+            >
+              <ProfileCard
+                {...profile}
+                behindGlowEnabled
+                innerGradient="linear-gradient(145deg, rgba(239, 68, 68, 0.1) 0%, rgba(31, 37, 71, 0.4) 100%)"
+              />
+            </motion.div>
+          ))}
         </div>
       </Layout>
     </section>
@@ -525,8 +541,14 @@ export default function StudioPage() {
 
   return (
     <SmoothScrollProvider containerRef={containerRef} ease={0.09}>
-      <div className="h-screen bg-[#ef4444] p-2 md:p-3 lg:p-4 font-display tracking-tight select-none overflow-hidden">
-        <div className="relative w-full h-full rounded-[16px] md:rounded-[28px] lg:rounded-[40px] overflow-hidden bg-[#1f2547] flex flex-col border border-white/5 shadow-[0_20px_50px_rgba(0,0,0,0.4)]">
+      <div 
+        onScroll={(e) => (e.currentTarget.scrollTop = 0)}
+        className="h-screen bg-[#ef4444] p-2 md:p-3 lg:p-4 font-display tracking-tight select-none overflow-hidden"
+      >
+        <div 
+          onScroll={(e) => (e.currentTarget.scrollTop = 0)}
+          className="relative w-full h-full rounded-[16px] md:rounded-[28px] lg:rounded-[40px] overflow-hidden bg-[#1f2547] flex flex-col border border-white/5 shadow-[0_20px_50px_rgba(0,0,0,0.4)]"
+        >
           <WaveMenu isOpen={isWaveOpen} onClose={() => setIsWaveOpen(false)} />
 
           {/* Sticky Header Overlay */}

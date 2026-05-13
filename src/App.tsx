@@ -75,7 +75,7 @@ const LoadingScreen = () => {
 // Global Transition logic moved to TransitionProvider.tsx
 
 export default function App() {
-  const { isTransitioning, isLoading, triggerLogoTransition, heroKey } = useTransition();
+  const { isTransitioning, isLoading, triggerLogoTransition, triggerPageTransition, heroKey } = useTransition();
   const [msgIndex, setMsgIndex] = useState(0);
   const [isWaveOpen, setIsWaveOpen] = useState(false);
   const navigate = useNavigate();
@@ -107,9 +107,15 @@ export default function App() {
     <SmoothScrollProvider containerRef={containerRef} ease={0.09}>
       {/* LOADING SCREEN & OVERLAYS */}
       <>
-        <div className={`h-screen bg-[#ef4444] p-2 md:p-3 lg:p-4 font-sans select-none transition-colors duration-700 ${isWaveOpen ? "wave-open" : ""}`}>
+        <div 
+          onScroll={(e) => (e.currentTarget.scrollTop = 0)}
+          className={`h-screen bg-[#ef4444] p-2 md:p-3 lg:p-4 font-sans select-none transition-colors duration-700 ${isWaveOpen ? "wave-open" : ""}`}
+        >
           {/* Main Container Wrapper - FIXED HEIGHT */}
-          <div className="relative w-full h-full rounded-[16px] md:rounded-[28px] lg:rounded-[40px] overflow-hidden bg-[#1f2547] flex flex-col border border-white/5 shadow-[0_20px_50px_rgba(0,0,0,0.4)]">
+          <div 
+            onScroll={(e) => (e.currentTarget.scrollTop = 0)}
+            className="relative w-full h-full rounded-[16px] md:rounded-[28px] lg:rounded-[40px] overflow-hidden bg-[#1f2547] flex flex-col border border-white/5 shadow-[0_20px_50px_rgba(0,0,0,0.4)]"
+          >
             <WaveMenu isOpen={isWaveOpen} onClose={() => setIsWaveOpen(false)} />
 
             {/* INTERNAL SCROLLABLE AREA */}
@@ -266,6 +272,7 @@ export default function App() {
                       <motion.div
                         whileHover={{ scale: 1.01 }}
                         whileTap={{ scale: 0.98 }}
+                        onClick={() => triggerPageTransition("/work/sling-shot")}
                         className="group cursor-pointer flex items-center gap-3 md:gap-8 border border-white/20 rounded-xl w-full px-4 md:px-8 py-5 bg-white/[0.02] backdrop-blur-xl hover:bg-white/5 transition-all duration-300 pointer-events-auto overflow-hidden min-h-[64px]"
                       >
                         <span className="text-[8px] sm:text-[9px] md:text-xs font-black tracking-[0.2em] md:tracking-[0.25em] uppercase text-white/90 whitespace-nowrap shrink-0">LATEST PROJECT</span>

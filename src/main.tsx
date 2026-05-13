@@ -16,6 +16,7 @@ import PaidSearchAdvertisingPage from './pages/PaidSearchAdvertisingPage.tsx';
 import SocialMediaAdvertisingPage from './pages/SocialMediaAdvertisingPage.tsx';
 import EmailMarketingPage from './pages/EmailMarketingPage.tsx';
 import { ContactExperience } from './pages/ContactExperience.tsx';
+import WorkDetailsPage from './pages/WorkDetailsPage.tsx';
 import { TransitionProvider } from './components/TransitionProvider.tsx';
 import { Preloader } from './components/Preloader.tsx';
 import './index.css';
@@ -28,6 +29,7 @@ createRoot(document.getElementById('root')!).render(
         <Routes>
           <Route path="/" element={<App />} />
           <Route path="/work" element={<WorkPage />} />
+          <Route path="/work/:id" element={<WorkDetailsPage />} />
           <Route path="/services" element={<ServicesPage />} />
           <Route path="/website-design" element={<WebsiteDesignPage />} />
           <Route path="/motion-design" element={<MotionDesignPage />} />

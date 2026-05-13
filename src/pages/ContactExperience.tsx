@@ -37,9 +37,13 @@ export const ContactExperience: React.FC<{ isOpen: boolean; onClose: () => void 
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
+      onScroll={(e) => (e.currentTarget.scrollTop = 0)}
       className="fixed inset-0 z-[5000] bg-[#ef4444] p-2 md:p-3 lg:p-4 font-sans select-none overflow-hidden"
     >
-      <div className="relative w-full h-full rounded-[16px] md:rounded-[28px] lg:rounded-[40px] overflow-hidden bg-[#1f2547] flex flex-col border border-white/5 shadow-[0_20px_50px_rgba(0,0,0,0.4)] p-8 md:p-12 lg:p-16 text-[#f4f4f4] selection:bg-[#ef3b5d] selection:text-white">
+      <div 
+        onScroll={(e) => (e.currentTarget.scrollTop = 0)}
+        className="relative w-full h-full rounded-[16px] md:rounded-[28px] lg:rounded-[40px] overflow-hidden bg-[#1f2547] flex flex-col border border-white/5 shadow-[0_20px_50px_rgba(0,0,0,0.4)] p-8 md:p-12 lg:p-16 text-[#f4f4f4] selection:bg-[#ef3b5d] selection:text-white"
+      >
         {/* TOP LAYER: LOGO + TAGS + DECO */}
         <div className="flex justify-between items-start z-10">
           {/* Logo with Red Circle - Clickable (Global Transition) */}

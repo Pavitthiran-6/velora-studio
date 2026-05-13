@@ -48,15 +48,11 @@ export function SmoothScrollProvider({
   containerRef: externalRef,
   ease = 0.09,
 }: SmoothScrollProviderProps) {
-  // Internal fallback ref (used when no external ref provided)
-  const internalRef = useRef<HTMLDivElement | null>(null);
-  const resolvedRef = externalRef ?? internalRef;
-
-  // Apply smooth scroll to whatever container is resolved
-  useSmoothScroll(resolvedRef, ease);
+  // Use the provided ref if available, otherwise it defaults to window scroll
+  useSmoothScroll(externalRef, ease);
 
   return (
-    <SmoothScrollContext.Provider value={{ containerRef: resolvedRef }}>
+    <SmoothScrollContext.Provider value={{ containerRef: externalRef || { current: null } }}>
       {children}
     </SmoothScrollContext.Provider>
   );
