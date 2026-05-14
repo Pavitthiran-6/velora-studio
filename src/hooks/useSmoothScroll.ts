@@ -25,8 +25,9 @@ export function useSmoothScroll(
   ease = 0.08
 ) {
   useEffect(() => {
-    const el: HTMLElement | null =
-      containerRef?.current ?? document.documentElement;
+    const el: HTMLElement | null = containerRef 
+      ? containerRef.current 
+      : document.documentElement;
 
     if (!el) return;
 

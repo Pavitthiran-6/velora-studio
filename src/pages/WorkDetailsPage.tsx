@@ -93,8 +93,8 @@ const HeroSection = ({ title }: { title: string }) => {
           style={{ scale: titleScale }}
           className="relative z-10 text-center px-4"
         >
-          <CinematicText 
-            as="h1" 
+          <CinematicText
+            as="h1"
             className="text-[12vw] md:text-[15vw] font-display font-black tracking-[-0.04em] uppercase leading-[0.8] text-[#050505] mix-blend-multiply"
             intensity={1.2}
           >
@@ -118,7 +118,7 @@ const ProjectIntroSection = ({ data }: { data: any }) => {
             </div>
             <div className="space-y-6">
               {["Digital Strategy", "Brand Design", "Frontend Dev", "SEO Optimization", "Strapi CMS"].map((service, i) => (
-                <motion.div 
+                <motion.div
                   key={service}
                   initial={{ opacity: 0, x: -20 }}
                   whileInView={{ opacity: 1, x: 0 }}
@@ -126,10 +126,10 @@ const ProjectIntroSection = ({ data }: { data: any }) => {
                   className="group flex items-center justify-between border-b border-[#050505]/10 pb-4 cursor-default"
                 >
                   <span className="text-xl md:text-2xl font-display font-black text-[#050505] uppercase tracking-tighter group-hover:text-[#ef4444] transition-colors">
-                   {service}
-                 </span>
-                 <div className="w-2 h-2 rounded-full bg-[#050505]/20 group-hover:bg-[#ef4444] transition-colors" />
-               </motion.div>
+                    {service}
+                  </span>
+                  <div className="w-2 h-2 rounded-full bg-[#050505]/20 group-hover:bg-[#ef4444] transition-colors" />
+                </motion.div>
               ))}
             </div>
           </div>
@@ -139,8 +139,8 @@ const ProjectIntroSection = ({ data }: { data: any }) => {
               <HexIcon className="w-2.5 h-2.5" fill="rgba(5, 5, 5, 0.2)" />
               <span className="text-[10px] font-display font-black tracking-[0.4em] text-[#050505]/40 uppercase">THE PROJECT</span>
             </div>
-            <CinematicText 
-              as="p" 
+            <CinematicText
+              as="p"
               className="text-4xl md:text-6xl lg:text-[5.5vw] font-display font-black text-[#050505] leading-[0.9] tracking-tighter uppercase"
               intensity={0.8}
             >
@@ -205,7 +205,7 @@ const ImageCompositionSection = ({ editorialImages }: { editorialImages: any }) 
               <img src={imagePairs[imageSet].left} alt="Editorial Left" className="w-full h-full object-cover scale-110" />
             </motion.div>
             <div className="absolute top-20 -right-16 md:-right-24 z-20">
-              <button 
+              <button
                 onClick={handleNext}
                 className="w-32 h-32 md:w-48 md:h-48 bg-[#4b2e83] rounded-full flex items-center justify-center group hover:scale-110 transition-transform cursor-pointer active:scale-95 shadow-2xl"
               >
@@ -267,40 +267,40 @@ const DeviceShowcaseSection = ({ title }: { title: string }) => {
           </div>
 
           <div className="h-screen flex items-center justify-center">
-             <motion.div initial={{ opacity: 0, scale: 0.8 }} whileInView={{ opacity: 1, scale: 1 }} transition={{ duration: 1 }} className="w-full max-w-4xl aspect-video rounded-3xl overflow-hidden bg-white/5 backdrop-blur-3xl border border-white/10 shadow-2xl relative group transform-gpu">
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent z-10" />
-                <img src="https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&q=80&w=1200" alt="Video Preview" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000" />
-                <div className="absolute inset-0 flex items-center justify-center z-20">
-                  <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center shadow-2xl scale-100 group-hover:scale-110 transition-transform">
-                    <div className="w-0 h-0 border-t-[10px] border-t-transparent border-l-[15px] border-l-black border-b-[10px] border-b-transparent ml-1" />
-                  </div>
+            <motion.div initial={{ opacity: 0, scale: 0.8 }} whileInView={{ opacity: 1, scale: 1 }} transition={{ duration: 1 }} className="w-full max-w-4xl aspect-video rounded-3xl overflow-hidden bg-white/5 backdrop-blur-3xl border border-white/10 shadow-2xl relative group transform-gpu">
+              <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent z-10" />
+              <img src="https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&q=80&w=1200" alt="Video Preview" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000" />
+              <div className="absolute inset-0 flex items-center justify-center z-20">
+                <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center shadow-2xl scale-100 group-hover:scale-110 transition-transform">
+                  <div className="w-0 h-0 border-t-[10px] border-t-transparent border-l-[15px] border-l-black border-b-[10px] border-b-transparent ml-1" />
                 </div>
-             </motion.div>
+              </div>
+            </motion.div>
           </div>
 
           <div className="h-[40vh]" />
 
           <div className="h-screen flex items-center justify-start px-10 md:px-40">
-             <motion.div initial={{ opacity: 0, x: -200, y: 100, rotate: -5, scale: 0.9 }} whileInView={{ opacity: 1, x: 0, y: 0, rotate: 0, scale: 1 }} transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }} className="w-[320px] md:w-[380px] aspect-[9/18] rounded-[48px] bg-[#050505] border-[8px] border-[#1a1a1a] shadow-2xl overflow-hidden flex flex-col p-8 space-y-8 transform-gpu">
-                <div className="flex justify-between items-center"><span className="text-white font-display font-black text-xs tracking-widest">{title}</span><div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center"><div className="w-5 h-[1px] bg-white" /></div></div>
-                <div className="flex-1 flex flex-col justify-center space-y-6"><h3 className="text-white text-6xl font-display font-black leading-none uppercase">OUR<br/>COMPANY</h3></div>
-                <div className="h-52 rounded-2xl overflow-hidden bg-blue-100"><img src="https://images.unsplash.com/photo-1534088568595-a066f410bcda?auto=format&fit=crop&q=80&w=600" alt="Clouds" className="w-full h-full object-cover" /></div>
-             </motion.div>
+            <motion.div initial={{ opacity: 0, x: -200, y: 100, rotate: -5, scale: 0.9 }} whileInView={{ opacity: 1, x: 0, y: 0, rotate: 0, scale: 1 }} transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }} className="w-[320px] md:w-[380px] aspect-[9/18] rounded-[48px] bg-[#050505] border-[8px] border-[#1a1a1a] shadow-2xl overflow-hidden flex flex-col p-8 space-y-8 transform-gpu">
+              <div className="flex justify-between items-center"><span className="text-white font-display font-black text-xs tracking-widest">{title}</span><div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center"><div className="w-5 h-[1px] bg-white" /></div></div>
+              <div className="flex-1 flex flex-col justify-center space-y-6"><h3 className="text-white text-6xl font-display font-black leading-none uppercase">OUR<br />COMPANY</h3></div>
+              <div className="h-52 rounded-2xl overflow-hidden bg-blue-100"><img src="https://images.unsplash.com/photo-1534088568595-a066f410bcda?auto=format&fit=crop&q=80&w=600" alt="Clouds" className="w-full h-full object-cover" /></div>
+            </motion.div>
           </div>
 
           <div className="h-screen flex items-center justify-end px-10 md:px-40">
-             <motion.div initial={{ opacity: 0, x: 200, y: 100, rotate: 5, scale: 0.9 }} whileInView={{ opacity: 1, x: 0, y: 0, rotate: 0, scale: 1 }} transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }} className="w-[280px] md:w-[320px] aspect-[9/18] rounded-[48px] bg-[#050505] border-[8px] border-[#1a1a1a] shadow-2xl overflow-hidden flex flex-col p-6 relative transform-gpu mt-40">
-                <div className="absolute inset-0 opacity-40"><img src="https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&q=80&w=600" alt="Abstract Tech" className="w-full h-full object-cover" /></div>
-                <div className="relative z-10 space-y-8 flex-1 flex flex-col"><div className="flex justify-between items-center"><span className="text-white font-display font-black text-xs tracking-widest">{title}</span></div><div className="flex-1" /><p className="text-white/80 text-xs font-sans font-medium leading-relaxed uppercase tracking-wider">WE PROVIDE SECURE SOLUTIONS GLOBALLY.</p></div>
-             </motion.div>
+            <motion.div initial={{ opacity: 0, x: 200, y: 100, rotate: 5, scale: 0.9 }} whileInView={{ opacity: 1, x: 0, y: 0, rotate: 0, scale: 1 }} transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }} className="w-[280px] md:w-[320px] aspect-[9/18] rounded-[48px] bg-[#050505] border-[8px] border-[#1a1a1a] shadow-2xl overflow-hidden flex flex-col p-6 relative transform-gpu mt-40">
+              <div className="absolute inset-0 opacity-40"><img src="https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&q=80&w=600" alt="Abstract Tech" className="w-full h-full object-cover" /></div>
+              <div className="relative z-10 space-y-8 flex-1 flex flex-col"><div className="flex justify-between items-center"><span className="text-white font-display font-black text-xs tracking-widest">{title}</span></div><div className="flex-1" /><p className="text-white/80 text-xs font-sans font-medium leading-relaxed uppercase tracking-wider">WE PROVIDE SECURE SOLUTIONS GLOBALLY.</p></div>
+            </motion.div>
           </div>
 
           <div className="h-screen flex items-center justify-start px-10 md:px-40">
-             <motion.div initial={{ opacity: 0, x: -200, y: 100, rotate: -5, scale: 0.9 }} whileInView={{ opacity: 1, x: 0, y: 0, rotate: 0, scale: 1 }} transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }} className="w-[320px] md:w-[380px] aspect-[9/18] rounded-[48px] bg-[#050505] border-[8px] border-[#1a1a1a] shadow-2xl overflow-hidden flex flex-col p-8 space-y-8 transform-gpu">
+            <motion.div initial={{ opacity: 0, x: -200, y: 100, rotate: -5, scale: 0.9 }} whileInView={{ opacity: 1, x: 0, y: 0, rotate: 0, scale: 1 }} transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }} className="w-[320px] md:w-[380px] aspect-[9/18] rounded-[48px] bg-[#050505] border-[8px] border-[#1a1a1a] shadow-2xl overflow-hidden flex flex-col p-8 space-y-8 transform-gpu">
               <div className="flex justify-between items-center"><span className="text-white font-display font-black text-xs tracking-widest">{title}</span></div>
-              <div className="flex-1 flex flex-col justify-center space-y-4"><h3 className="text-white text-4xl font-display font-black leading-none uppercase">DYNAMIC<br/>SYNC</h3><p className="text-white/60 text-[8px] font-sans font-bold tracking-widest uppercase">REAL-TIME GLOBAL CONNECTIVITY</p></div>
+              <div className="flex-1 flex flex-col justify-center space-y-4"><h3 className="text-white text-4xl font-display font-black leading-none uppercase">DYNAMIC<br />SYNC</h3><p className="text-white/60 text-[8px] font-sans font-bold tracking-widest uppercase">REAL-TIME GLOBAL CONNECTIVITY</p></div>
               <div className="h-40 rounded-2xl overflow-hidden bg-purple-900/20 border border-white/5"><img src="https://images.unsplash.com/photo-1614850523296-e8c041de4398?auto=format&fit=crop&q=80&w=600" alt="Tech Gradient" className="w-full h-full object-cover" /></div>
-             </motion.div>
+            </motion.div>
           </div>
         </Layout>
       </div>
@@ -400,11 +400,11 @@ export default function WorkDetailsPage() {
 
   return (
     <SmoothScrollProvider containerRef={containerRef} ease={0.09}>
-      <div 
+      <div
         onScroll={(e) => (e.currentTarget.scrollTop = 0)}
         className="h-screen bg-black p-2 md:p-3 lg:p-4 font-sans select-none overflow-hidden"
       >
-        <div 
+        <div
           onScroll={(e) => (e.currentTarget.scrollTop = 0)}
           className="relative w-full h-full rounded-[16px] md:rounded-[28px] lg:rounded-[40px] overflow-hidden bg-[#f5f5f3] flex flex-col border border-white/5 shadow-[0_20px_50px_rgba(0,0,0,0.4)]"
         >

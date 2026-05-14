@@ -17,6 +17,15 @@ import SocialMediaAdvertisingPage from './pages/SocialMediaAdvertisingPage.tsx';
 import EmailMarketingPage from './pages/EmailMarketingPage.tsx';
 import { ContactExperience } from './pages/ContactExperience.tsx';
 import WorkDetailsPage from './pages/WorkDetailsPage.tsx';
+import AdminLogin from './pages/admin/AdminLogin.tsx';
+import AdminDashboard from './pages/admin/AdminDashboard.tsx';
+import AdminProjects from './pages/admin/AdminProjects.tsx';
+import AdminCategories from './pages/admin/AdminCategories.tsx';
+import AdminNotifications from './pages/admin/AdminNotifications.tsx';
+import AdminHomeCards from './pages/admin/AdminHomeCards.tsx';
+import AdminAnalytics from './pages/admin/AdminAnalytics.tsx';
+import AdminReviews from './pages/admin/AdminReviews.tsx';
+import AdminSettings from './pages/admin/AdminSettings.tsx';
 import { TransitionProvider } from './components/TransitionProvider.tsx';
 import { Preloader } from './components/Preloader.tsx';
 import './index.css';
@@ -43,6 +52,17 @@ createRoot(document.getElementById('root')!).render(
           <Route path="/email-marketing" element={<EmailMarketingPage />} />
           <Route path="/studio" element={<StudioPage />} />
           <Route path="/contact" element={<ContactExperience isOpen={true} onClose={() => window.history.back()} />} />
+          
+          {/* Admin Routes */}
+          <Route path="/admin" element={<AdminLogin />} />
+          <Route path="/admin/dashboard" element={<AdminDashboard />} />
+          <Route path="/admin/projects" element={<AdminProjects />} />
+          <Route path="/admin/categories" element={<AdminCategories />} />
+          <Route path="/admin/home-cards" element={<AdminHomeCards />} />
+          <Route path="/admin/notifications" element={<AdminNotifications />} />
+          <Route path="/admin/analytics" element={<AdminAnalytics />} />
+          <Route path="/admin/reviews" element={<AdminReviews />} />
+          <Route path="/admin/settings" element={<AdminSettings />} />
         </Routes>
       </TransitionProvider>
     </BrowserRouter>

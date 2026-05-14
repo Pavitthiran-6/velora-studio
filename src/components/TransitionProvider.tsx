@@ -77,6 +77,8 @@ export const TransitionProvider: React.FC<{ children: React.ReactNode }> = ({ ch
 
     setIsTransitioning(true);
     
+    const isAdminPath = location.pathname.startsWith("/admin");
+
     setTimeout(() => {
       // Clear all scroll positions before navigating
       window.scrollTo(0, 0);
@@ -94,6 +96,8 @@ export const TransitionProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     }, 1400);
   };
 
+  const isAdminPath = location.pathname.startsWith("/admin");
+
   return (
     <TransitionContext.Provider value={{ isTransitioning, isLoading, triggerLogoTransition, triggerPageTransition, heroKey }}>
       <div className="relative w-full h-full">
@@ -108,8 +112,8 @@ export const TransitionProvider: React.FC<{ children: React.ReactNode }> = ({ ch
         <motion.button
           initial={{ opacity: 0, x: 20 }}
           animate={{ 
-            opacity: (isTransitioning || location.pathname === "/contact") ? 0 : 1, 
-            x: (isTransitioning || location.pathname === "/contact") ? 20 : 0 
+            opacity: (isTransitioning || location.pathname === "/contact" || isAdminPath) ? 0 : 1, 
+            x: (isTransitioning || location.pathname === "/contact" || isAdminPath) ? 20 : 0 
           }}
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.9 }}

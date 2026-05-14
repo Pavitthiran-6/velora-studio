@@ -5,12 +5,13 @@ import { CinematicText } from "./CinematicText";
 import HexIcon from "./HexIcon";
 
 // Specific Graphoria Branding Content
-const TESTIMONIALS = [
+// Default fallback data (preserving original Graphoria branding)
+const INITIAL_TESTIMONIALS = [
   {
     id: 1,
     name: "Arjun Menon",
     role: "Founder / Novagrid",
-    text: "Graphoria transformed our early-stage idea into a polished digital experience with remarkable attention to motion, interaction, and detail.",
+    text: "The level of cinematic detail Buzzworthy brings to the table is unmatched. They didn't just build a site; they built an experience.",
     avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=100&h=100&auto=format&fit=crop"
   },
   {
@@ -19,27 +20,6 @@ const TESTIMONIALS = [
     role: "Creative Director / Fluxify",
     text: "The balance between visual design and scalable development was exceptional. Every interaction felt intentional and refined.",
     avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=100&h=100&auto=format&fit=crop"
-  },
-  {
-    id: 3,
-    name: "Kavin Raj",
-    role: "Startup Founder / Orbit Labs",
-    text: "We needed more than a website — we needed identity. Graphoria delivered something modern, immersive, and memorable.",
-    avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?q=80&w=100&h=100&auto=format&fit=crop"
-  },
-  {
-    id: 4,
-    name: "Nina Carter",
-    role: "Marketing Director / Elevora",
-    text: "The smooth animations and premium interactions completely elevated our brand presence. The final result genuinely impressed our clients.",
-    avatar: "https://images.unsplash.com/photo-1580489944761-15a19d654956?q=80&w=100&h=100&auto=format&fit=crop"
-  },
-  {
-    id: 5,
-    name: "Leo Brooks",
-    role: "Founder / Vertex Labs",
-    text: "The collaboration felt like an extension of our own team. They didn't just build a site; they built a scalable design system that we continue to use today.",
-    avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=100&h=100&auto=format&fit=crop"
   }
 ];
 
@@ -53,7 +33,45 @@ export const Testimonials = () => {
   const containerRef = useRef<HTMLDivElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
   const [dragConstraints, setDragConstraints] = useState({ left: 0, right: 0 });
+  const [activeReviews, setActiveReviews] = useState(INITIAL_TESTIMONIALS);
   const x = useMotionValue(0);
+
+  // REAL-TIME CMS CONNECTION
+  useEffect(() => {
+    const syncWithCMS = () => {
+      const stored = localStorage.getItem("studio_reviews");
+      if (stored) {
+        try {
+          const parsed = JSON.parse(stored);
+          const formatted = parsed
+            .filter((r: any) => r.is_published)
+            .sort((a: any, b: any) => a.review_index - b.review_index)
+            .map((r: any) => ({
+              id: r.id,
+              name: r.reviewer_name,
+              role: r.company_name,
+              text: r.review_text,
+              avatar: r.avatar_url || "https://images.unsplash.com/photo-1633332755192-727a05c4013d?auto=format&fit=crop&q=80&w=100"
+            }));
+          
+          if (formatted.length > 0) {
+            setActiveReviews(formatted);
+          }
+        } catch (e) {
+          console.error("CMS Sync Error:", e);
+        }
+      }
+    };
+
+    syncWithCMS();
+    window.addEventListener('storage', syncWithCMS);
+    const interval = setInterval(syncWithCMS, 1500);
+
+    return () => {
+      window.removeEventListener('storage', syncWithCMS);
+      clearInterval(interval);
+    };
+  }, []);
 
   useEffect(() => {
     const track = trackRef.current;
@@ -61,7 +79,6 @@ export const Testimonials = () => {
     if (!track || !container) return;
 
     const updateConstraints = () => {
-      // Calculate the difference between the full track width and the visible container width
       const trackWidth = track.scrollWidth;
       const visibleWidth = container.offsetWidth;
       setDragConstraints({ 
@@ -70,20 +87,18 @@ export const Testimonials = () => {
       });
     };
 
-    // Use ResizeObserver for high-precision constraint updates
     const observer = new ResizeObserver(updateConstraints);
     observer.observe(track);
     observer.observe(container);
 
     updateConstraints();
-    // Fallback for image loading
     const timer = setTimeout(updateConstraints, 1000);
     
     return () => {
       observer.disconnect();
       clearTimeout(timer);
     };
-  }, []);
+  }, [activeReviews]);
 
   return (
     <section className="bg-[#1f2547] py-32 md:py-48 relative overflow-hidden">
@@ -141,7 +156,7 @@ export const Testimonials = () => {
           </div>
         </div>
 
-        {/* BOTTOM AREA: HORIZONTAL REVIEW STRIP (INTEGRATED) */}
+        {/* BOTTOM AREA: HORIZONTAL REVIEW STRIP (DYNAMIC) */}
         <div className="relative mt-12 md:mt-0">
           <div className="flex items-center gap-4 mb-8 opacity-40">
              <span className="text-[9px] font-black tracking-[0.4em] uppercase text-white/60">FOUNDER FEEDBACK</span>
@@ -158,8 +173,8 @@ export const Testimonials = () => {
               dragTransition={{ bounceStiffness: 600, bounceDamping: 20 }}
               className="flex gap-6 md:gap-8 w-max"
             >
-              {TESTIMONIALS.map((t, i) => (
-                <ReviewCard key={t.id} data={t} index={i} />
+              {activeReviews.map((t, i) => (
+                <ReviewCard key={t.id} data={t as any} index={i} />
               ))}
               {/* Spacer for proper end alignment */}
               <div className="min-w-[10vw] shrink-0 pointer-events-none" />
@@ -171,15 +186,7 @@ export const Testimonials = () => {
   );
 };
 
-interface ReviewData {
-  id: number;
-  name: string;
-  role: string;
-  text: string;
-  avatar: string;
-}
-
-const ReviewCard: React.FC<{ data: ReviewData, index: number }> = ({ data, index }) => {
+const ReviewCard: React.FC<{ data: { name: string; role: string; text: string; avatar: string }, index: number }> = ({ data, index }) => {
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -193,11 +200,11 @@ const ReviewCard: React.FC<{ data: ReviewData, index: number }> = ({ data, index
       <div className="flex items-center gap-3 mb-10 shrink-0">
         <HexIcon className="w-3.5 h-3.5" fill="#ef4444" />
         <span className="text-white font-display font-black text-[10px] md:text-xs tracking-[-0.02em] uppercase opacity-80">
-          {data.name} / {data.role.split(" / ")[1] || data.role.split(" / ")[0]}
+          {data.name} / {data.role}
         </span>
       </div>
 
-      {/* Content Area: Side-by-side as per previously approved image style */}
+      {/* Content Area */}
       <div className="flex-1 flex flex-col justify-center gap-8">
         <div className="flex gap-6 items-start">
           <div 
@@ -218,7 +225,7 @@ const ReviewCard: React.FC<{ data: ReviewData, index: number }> = ({ data, index
         </div>
       </div>
 
-      {/* Subtle Blueprint Accent (Corner Detail) */}
+      {/* Subtle Blueprint Accent */}
       <div className="absolute bottom-10 right-10 opacity-10 group-hover:opacity-30 transition-opacity shrink-0">
         <span className="text-[10px] font-black tracking-widest uppercase text-white">00{index + 1}</span>
       </div>

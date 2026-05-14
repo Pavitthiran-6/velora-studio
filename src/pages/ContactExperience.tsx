@@ -130,7 +130,25 @@ export const ContactExperience: React.FC<{ isOpen: boolean; onClose: () => void 
             )}
             {step === "form" && (
               <StepFinalForm
-                onSelect={() => nextStep("success")}
+                onSelect={(formData) => {
+                  // BROADCAST TO ADMIN
+                  const inquiry = {
+                    id: Math.random().toString(36).substr(2, 9),
+                    type: "message",
+                    title: `New Inquiry: ${formData.firstName} ${formData.lastName}`,
+                    desc: `${formData.message} | Budget: ${selections.budget} | Interest: ${selections.projectType}`,
+                    email: formData.email,
+                    time: "Just Now",
+                    icon: "MessageSquare",
+                    color: "text-green-500",
+                    meta: selections
+                  };
+                  
+                  const existing = JSON.parse(localStorage.getItem("studio_inquiries") || "[]");
+                  localStorage.setItem("studio_inquiries", JSON.stringify([inquiry, ...existing]));
+                  
+                  nextStep("success");
+                }}
                 selections={selections}
               />
             )}
@@ -224,41 +242,71 @@ const StepContent: React.FC<{ title: React.ReactNode; options: string[]; onSelec
   </motion.div>
 );
 
-const StepFinalForm: React.FC<{ selections: SelectionData; onSelect: () => void }> = ({ selections, onSelect }) => (
-  <motion.div
-    initial={{ opacity: 0, y: 40 }}
-    animate={{ opacity: 1, y: 0 }}
-    exit={{ opacity: 0, y: -40 }}
-    className="w-full max-w-6xl grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-24 text-left"
-  >
-    <div className="flex flex-col justify-center">
-      <h1 className="text-4xl md:text-6xl lg:text-[5.5vw] font-display font-black tracking-[-0.04em] uppercase leading-[0.85] mb-8">
-        READY TO <br /> CREATE <br /> <span className="text-[#ef3b5d]">MAGIC?</span>
-      </h1>
-      <p className="text-xs md:text-sm font-display font-black tracking-[0.3em] uppercase opacity-30">BUZZWORTHY STUDIO — PROJECT INTAKE</p>
-    </div>
+const StepFinalForm: React.FC<{ selections: SelectionData; onSelect: (formData: any) => void }> = ({ selections, onSelect }) => {
+  const [formData, setFormData] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    message: ""
+  });
 
-    <div className="space-y-4 md:space-y-6">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <FloatingInput label="FIRST NAME" placeholder="JOHN" />
-        <FloatingInput label="LAST NAME" placeholder="DOE" />
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 40 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -40 }}
+      className="w-full max-w-6xl grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-24 text-left"
+    >
+      <div className="flex flex-col justify-center">
+        <h1 className="text-4xl md:text-6xl lg:text-[5.5vw] font-display font-black tracking-[-0.04em] uppercase leading-[0.85] mb-8">
+          READY TO <br /> CREATE <br /> <span className="text-[#ef3b5d]">MAGIC?</span>
+        </h1>
+        <p className="text-xs md:text-sm font-display font-black tracking-[0.3em] uppercase opacity-30">BUZZWORTHY STUDIO — PROJECT INTAKE</p>
       </div>
-      <FloatingInput label="EMAIL" placeholder="HELLO@EXAMPLE.COM" />
-      <FloatingInput label="TELL US ABOUT THE DREAM" placeholder="MY VISION IS..." textarea />
 
-      <div className="pt-8">
-        <motion.button
-          whileHover={{ scale: 1.02 }}
-          whileTap={{ scale: 0.98 }}
-          onClick={onSelect}
-          className="w-full h-16 md:h-20 bg-[#ef3b5d] rounded-full flex items-center justify-center gap-4 text-[10px] md:text-xs font-display font-black tracking-[0.4em] uppercase hover:bg-[#ff4d6d] transition-all"
-        >
-          SEND MAGIC <ArrowRight className="w-5 h-5" />
-        </motion.button>
+      <div className="space-y-4 md:space-y-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <FloatingInput 
+            label="FIRST NAME" 
+            placeholder="JOHN" 
+            value={formData.firstName}
+            onChange={(val) => setFormData(f => ({ ...f, firstName: val }))}
+          />
+          <FloatingInput 
+            label="LAST NAME" 
+            placeholder="DOE" 
+            value={formData.lastName}
+            onChange={(val) => setFormData(f => ({ ...f, lastName: val }))}
+          />
+        </div>
+        <FloatingInput 
+          label="EMAIL" 
+          placeholder="HELLO@EXAMPLE.COM" 
+          value={formData.email}
+          onChange={(val) => setFormData(f => ({ ...f, email: val }))}
+        />
+        <FloatingInput 
+          label="TELL US ABOUT THE DREAM" 
+          placeholder="MY VISION IS..." 
+          textarea 
+          value={formData.message}
+          onChange={(val) => setFormData(f => ({ ...f, message: val }))}
+        />
+
+        <div className="pt-8">
+          <motion.button
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            onClick={() => onSelect(formData)}
+            className="w-full h-16 md:h-20 bg-[#ef3b5d] rounded-full flex items-center justify-center gap-4 text-[10px] md:text-xs font-display font-black tracking-[0.4em] uppercase hover:bg-[#ff4d6d] transition-all"
+          >
+            SEND MAGIC <ArrowRight className="w-5 h-5" />
+          </motion.button>
+        </div>
       </div>
-    </div>
-  </motion.div>
-);
+    </motion.div>
+  );
+};
 
 const StepSuccess: React.FC<{ onClose: () => void }> = ({ onClose }) => (
   <motion.div
@@ -289,17 +337,21 @@ const StepSuccess: React.FC<{ onClose: () => void }> = ({ onClose }) => (
   </motion.div>
 );
 
-const FloatingInput: React.FC<{ label: string; placeholder: string; textarea?: boolean }> = ({ label, placeholder, textarea }) => (
+const FloatingInput: React.FC<{ label: string; placeholder: string; textarea?: boolean; value: string; onChange: (val: string) => void }> = ({ label, placeholder, textarea, value, onChange }) => (
   <div className="relative group w-full">
     <span className="block text-[10px] font-display font-black tracking-[0.3em] text-[#ef3b5d] mb-1 uppercase">{label}</span>
     {textarea ? (
       <textarea
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
         className="w-full bg-transparent border-b border-white/20 py-3 text-base md:text-lg font-display font-black tracking-tight uppercase focus:border-[#ef3b5d] focus:outline-none placeholder:text-white/20 text-white min-h-[80px] md:min-h-[100px]"
         placeholder={placeholder}
       />
     ) : (
       <input
         type="text"
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
         className="w-full bg-transparent border-b border-white/20 py-3 text-base md:text-lg font-display font-black tracking-tight uppercase focus:border-[#ef3b5d] focus:outline-none placeholder:text-white/20 text-white"
         placeholder={placeholder}
       />

@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import { motion, useScroll, useTransform } from "motion/react";
 import ReactLenis from "lenis/react";
 import { Layout } from "./layout/Layout";
@@ -19,29 +19,22 @@ const ArrowIcon = ({ className = "" }) => (
   </svg>
 );
 
-// Robust Vite asset resolution
-const getAssetUrl = (path: string) => new URL(path, import.meta.url).href;
-
-const projects = [
+// Default fallback data (preserving original content)
+const INITIAL_PROJECTS = [
   {
     title: "SLING SHOT",
     services: ["UX/UI DESIGN", "DEVELOPMENT", "STRATEGY"],
-    src: "/src/assets/projects/valaclava_project_hero_1778243074252.png",
+    src: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&q=80&w=800",
   },
   {
     title: "OCEAN AGENCY",
     services: ["BRANDING", "3D ANIMATION", "WEBGL"],
-    src: "/src/assets/projects/ocean_agency_hero_1778243090443.png",
+    src: "https://images.unsplash.com/photo-1633356122544-f134324a6cee?auto=format&fit=crop&q=80&w=800",
   },
   {
     title: "HOBOKEN YOGI",
     services: ["MARKETING", "SEO", "E-COMMERCE"],
-    src: "/src/assets/projects/hoboken_yogi_hero_1778243105729.png",
-  },
-  {
-    title: "MODERN MD",
-    services: ["HEALTH-TECH", "UX DESIGN", "AI"],
-    src: "/src/assets/projects/modern_md_hero_1778243119932.png",
+    src: "https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&q=80&w=800",
   },
 ];
 
@@ -103,7 +96,7 @@ const StickyCard_001 = ({
   );
 };
 
-const Skiper16 = ({ scrollYProgress }: { scrollYProgress: any }) => {
+const Skiper16 = ({ projects, scrollYProgress }: { projects: any[], scrollYProgress: any }) => {
   return (
     <div className="relative mx-auto flex flex-col items-center justify-center pt-[10vh]">
       {projects.map((project, i) => {
@@ -131,6 +124,46 @@ const Skiper16 = ({ scrollYProgress }: { scrollYProgress: any }) => {
 export const RecentWork = ({ containerRef }: { containerRef: React.RefObject<HTMLDivElement | null> }) => {
   const sectionRef = useRef<HTMLDivElement>(null);
   const { triggerPageTransition } = useTransition();
+  const [activeProjects, setActiveProjects] = useState(INITIAL_PROJECTS);
+
+  // REAL-TIME CMS CONNECTION
+  useEffect(() => {
+    const syncWithCMS = () => {
+      const storedCards = localStorage.getItem("home_cards");
+      if (storedCards) {
+        try {
+          const parsedCards = JSON.parse(storedCards);
+          const formatted = parsedCards
+            .filter((c: any) => c.active)
+            .sort((a: any, b: any) => a.order - b.order)
+            .map((c: any) => ({
+              title: c.title,
+              services: c.tags.split(",").map((s: string) => s.trim()),
+              src: c.image
+            }));
+          
+          if (formatted.length > 0) {
+            setActiveProjects(formatted);
+          }
+        } catch (e) {
+          console.error("CMS Sync Error:", e);
+        }
+      }
+    };
+
+    // Initial sync
+    syncWithCMS();
+
+    // Listen for storage changes (for live preview across tabs)
+    window.addEventListener('storage', syncWithCMS);
+    // Poll for changes within the same tab (since admin and home are in the same app)
+    const pollInterval = setInterval(syncWithCMS, 1000);
+
+    return () => {
+      window.removeEventListener('storage', syncWithCMS);
+      clearInterval(pollInterval);
+    };
+  }, []);
 
   const { scrollYProgress } = useScroll({
     target: sectionRef,
@@ -183,7 +216,7 @@ export const RecentWork = ({ containerRef }: { containerRef: React.RefObject<HTM
               </h2>
             </div>
 
-            <Skiper16 scrollYProgress={scrollYProgress} />
+            <Skiper16 projects={activeProjects} scrollYProgress={scrollYProgress} />
           </div>
         </div>
       </Layout>
