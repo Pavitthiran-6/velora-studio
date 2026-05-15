@@ -67,7 +67,7 @@ const StickyCard_001 = ({
               </span>
             )}
           </div>
-          <h3 className="text-white text-4xl md:text-5xl font-black uppercase leading-tight tracking-tighter">
+          <h3 className="text-white text-4xl md:text-5xl font-display font-black uppercase leading-tight tracking-tighter">
             <span className="text-[#ef4444]">{project.title.split(' ')[0]}</span>
             {project.title.split(' ').length > 1 ? ` ${project.title.split(' ').slice(1).join(' ')}` : ''}
           </h3>
@@ -158,7 +158,7 @@ export const RecentWork = ({ containerRef }: { containerRef: React.RefObject<HTM
                 <HexIcon className="w-3.5 h-3.5" fill="#ef4444" />
                 <span className="text-white text-[10px] md:text-xs font-black tracking-[0.3em] uppercase whitespace-nowrap opacity-60">SELECTED PROJECTS</span>
               </div>
-              <h2 className="text-white text-5xl md:text-7xl lg:text-8xl font-black leading-[0.85] tracking-tighter uppercase cursor-default">
+              <h2 className="text-white text-5xl md:text-7xl lg:text-8xl font-display font-black leading-[0.85] tracking-tighter uppercase cursor-default">
                 <CinematicText as="span" className="text-[#ef4444] hover:text-white transition-colors duration-500" intensity={1.0}>RECENT</CinematicText>
                 <br />
                 <CinematicText as="span" className="hover:text-[#ef4444] transition-colors duration-500" intensity={1.0}>WORK.</CinematicText>
@@ -183,7 +183,7 @@ export const RecentWork = ({ containerRef }: { containerRef: React.RefObject<HTM
           {/* Right Column: Stacking Cards */}
           <div className="col-span-1 lg:col-span-7 relative h-full flex flex-col items-center justify-start">
             <div className="lg:hidden pt-20 mb-12">
-              <h2 className="text-white text-6xl font-black uppercase leading-tight tracking-tighter">
+              <h2 className="text-white text-6xl font-display font-black uppercase leading-tight tracking-tighter">
                 RECENT<br/><span className="text-[#ef4444]">WORK.</span>
               </h2>
             </div>
