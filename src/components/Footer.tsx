@@ -188,9 +188,15 @@ export const Footer = ({ isLight = false }: { isLight?: boolean }) => {
           </div>
 
           {/* Copyright */}
-          <div className="col-start-5 col-span-4 text-center">
+          <div className="col-start-5 col-span-4 flex flex-col items-center gap-4">
+            <img 
+              src="/W2C Studios.png" 
+              alt="W2C Studios" 
+              className="h-8 md:h-10 opacity-100 transition-opacity cursor-pointer" 
+              onClick={() => triggerLogoTransition()}
+            />
             <span className={`${textColor} text-[11px] font-black tracking-tight opacity-80`}>
-              ©2026 Buzzworthy Studio
+              ©2026 W2C Studios
             </span>
           </div>
 

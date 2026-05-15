@@ -170,19 +170,36 @@ const GeometricShutterTransition = ({ isActive }: { isActive: boolean }) => {
 
           {/* Central Logo Flash */}
           <motion.div
-            initial={{ opacity: 0, scale: 0.5, rotate: -20 }}
+            initial={{ opacity: 0, scale: 0.5 }}
             animate={{ 
               opacity: [0, 1, 1, 0],
-              scale: [0.5, 1.2, 1, 1.5],
-              rotate: [20, 0, 0, -20]
+              scale: [0.5, 1.1, 1, 1.5],
             }}
-            transition={{ duration: 1.0, times: [0, 0.3, 0.7, 1], ease: "easeInOut" }}
+            transition={{ duration: 1.2, times: [0, 0.2, 0.8, 1], ease: "easeInOut" }}
             className="absolute inset-0 flex items-center justify-center z-30"
           >
-            <div className="w-48 h-48 bg-white rounded-full flex items-center justify-center shadow-[0_0_100px_rgba(255,255,255,0.4)]">
-              <svg viewBox="0 0 24 24" className="w-24 h-24 fill-[#ef4444]" xmlns="http://www.w3.org/2000/svg">
-                <path d="M12 21c-4.97 0-9-4.03-9-9s4.03-9 9-9 9 4.03 9 9-4.03 9-9 9zm0-16.5c-4.14 0-7.5 3.36-7.5 7.5s3.36 7.5 7.5 7.5 7.5-3.36 7.5-7.5-3.36-7.5-7.5-7.5zm.75 12c-1.24 0-2.25-1.01-2.25-2.25v-4.5c0-.41.34-.75.75-.75s.75.34.75.75v4.5c0 .41.34.75.75.75h.75c.41 0 .75.34.75.75s-.34.75-.75.75h-1.5z" />
-              </svg>
+            <div className="relative w-48 h-48 rounded-full flex items-center justify-center overflow-hidden">
+              {/* Old Logo (SVG) - Fades out and shrinks */}
+              <motion.div
+                initial={{ opacity: 1, scale: 1 }}
+                animate={{ opacity: 0, scale: 0.8, rotateY: 90 }}
+                transition={{ duration: 0.4, delay: 0.3 }}
+                className="absolute inset-0 flex items-center justify-center"
+              >
+                <svg viewBox="0 0 24 24" className="w-24 h-24 fill-[#ef4444]" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M12 21c-4.97 0-9-4.03-9-9s4.03-9 9-9 9 4.03 9 9-4.03 9-9 9zm0-16.5c-4.14 0-7.5 3.36-7.5 7.5s3.36 7.5 7.5 7.5 7.5-3.36 7.5-7.5-3.36-7.5-7.5-7.5zm.75 12c-1.24 0-2.25-1.01-2.25-2.25v-4.5c0-.41.34-.75.75-.75s.75.34.75.75v4.5c0 .41.34.75.75.75h.75c.41 0 .75.34.75.75s-.34.75-.75.75h-1.5z" />
+                </svg>
+              </motion.div>
+
+              {/* New Logo (Image) - Fades in and grows with a flip */}
+              <motion.div
+                initial={{ opacity: 0, scale: 1.2, rotateY: -90 }}
+                animate={{ opacity: 1, scale: 1, rotateY: 0 }}
+                transition={{ duration: 0.5, delay: 0.45, ease: "easeOut" }}
+                className="absolute inset-0 flex items-center justify-center"
+              >
+                <img src="/W2C Studios.png" alt="W2C Studios" className="w-full h-full object-contain p-4" />
+              </motion.div>
             </div>
           </motion.div>
 

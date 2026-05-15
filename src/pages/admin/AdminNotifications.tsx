@@ -62,6 +62,17 @@ export default function AdminNotifications() {
     }
   };
 
+  const handleClearAll = async () => {
+    if (!confirm("🚨 BULK WIPE: Are you sure you want to delete ALL messages in your inbox?")) return;
+    try {
+      await cmsService.clearAllMessages();
+      await fetchMessages();
+      setSelectedMessage(null);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   const filteredMessages = messages.filter((m: any) => {
     if (filter === "UNREAD") return m.status === 'unread';
     if (filter === "ARCHIVED") return m.status === 'archived';
@@ -84,6 +95,13 @@ export default function AdminNotifications() {
           </motion.div>
           
           <div className="flex items-center gap-12 border-b border-black/5 pb-4">
+            <button 
+              onClick={handleClearAll}
+              className="text-[10px] font-black tracking-widest uppercase text-red-500/40 hover:text-red-500 transition-all mr-8"
+            >
+              Clear All Messages
+            </button>
+            <div className="h-4 w-px bg-black/10 mr-4" />
             {['ALL', 'UNREAD', 'ARCHIVED'].map(f => (
               <button 
                 key={f} 

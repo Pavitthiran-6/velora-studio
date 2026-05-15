@@ -1,6 +1,6 @@
 import { Project } from '../types/project';
 
-const STORAGE_KEY = 'buzzworthy_cms_projects';
+const STORAGE_KEY = 'W2C Studios_cms_projects';
 
 // Initial Mock Data
 const INITIAL_PROJECTS: Project[] = [

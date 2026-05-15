@@ -14,21 +14,23 @@ import {
   Power,
   Monitor,
   Layers,
-  Star
+  Star,
+  Terminal
 } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useRef, useState, useEffect } from "react";
+import { useTransition } from "../TransitionProvider";
 import { cn } from "@/lib/utils";
 import { SmoothScrollProvider } from "../SmoothScrollProvider";
 import { cmsService } from "../../lib/cms-service";
 
 const NAV_ITEMS = [
   { icon: LayoutDashboard, label: "Dashboard", path: "/admin/dashboard" },
+  { icon: BarChart3, label: "Analytics", path: "/admin/analytics" },
   { icon: FolderKanban, label: "Projects", path: "/admin/projects" },
-  { icon: Sparkles, label: "Categories", path: "/admin/categories" },
   { icon: Layers, label: "Home Cards", path: "/admin/home-cards" },
   { icon: Bell, label: "Messages", path: "/admin/notifications" },
-  { icon: BarChart3, label: "Analytics", path: "/admin/analytics" },
+  { icon: Terminal, label: "System Logs", path: "/admin/system-logs" },
   { icon: Star, label: "Reviews", path: "/admin/reviews" },
   { icon: Settings, label: "Settings", path: "/admin/settings" },
 ];
@@ -36,25 +38,31 @@ const NAV_ITEMS = [
 export function AdminLayout({ children }: { children: React.ReactNode }) {
   const navigate = useNavigate();
   const location = useLocation();
+  const { triggerLogoTransition } = useTransition();
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [unreadCount, setUnreadCount] = useState(0);
+  const [studioName, setStudioName] = useState("W2C Studios");
 
   useEffect(() => {
-    const fetchUnreadCount = async () => {
+    const fetchData = async () => {
       try {
-        const messages = await cmsService.getMessages();
+        const [messages, settings] = await Promise.all([
+          cmsService.getMessages(),
+          cmsService.getSettings()
+        ]);
         const unread = messages.filter((m: any) => m.status === 'unread').length;
         setUnreadCount(unread);
+        if (settings.studio_name) setStudioName(settings.studio_name.toUpperCase());
       } catch (err) {
         console.error(err);
       }
     };
 
-    fetchUnreadCount();
+    fetchData();
     // Refresh every 30 seconds for live-ish updates
-    const interval = setInterval(fetchUnreadCount, 30000);
+    const interval = setInterval(fetchData, 30000);
     return () => clearInterval(interval);
-  }, [location.pathname]); // Refresh when navigating
+  }, [location.pathname]);
 
   return (
     <div 
@@ -74,11 +82,11 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
         {/* Admin Branding & View Site */}
         <div className="px-8 mb-10">
           <div className="flex items-center gap-4 mb-8">
-            <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center cursor-pointer group" onClick={() => navigate("/admin/dashboard")}>
-              <div className="w-5 h-px bg-black group-hover:scale-x-125 transition-transform" />
+            <div className="w-12 h-12 flex items-center justify-center cursor-pointer group overflow-hidden transition-all" onClick={() => triggerLogoTransition()}>
+              <img src="/W2C Studios.png" alt="W2C Studios" className="w-full h-full object-contain p-1" />
             </div>
             <div>
-              <p className="text-[10px] font-black tracking-[0.2em] uppercase leading-tight">STUDIO</p>
+              <p className="text-[10px] font-black tracking-[0.2em] uppercase leading-tight">{studioName}</p>
               <p className="text-[8px] font-medium opacity-40 uppercase tracking-widest">CONTROL CENTER</p>
             </div>
           </div>
@@ -174,11 +182,11 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
                 </button>
                 <div className="flex items-center gap-4 border-l border-black/10 pl-6">
                   <div className="text-right">
-                    <p className="text-[10px] font-black tracking-[0.1em] uppercase leading-tight">Alex Rivera</p>
-                    <p className="text-[9px] font-medium opacity-40 uppercase">Creative Director</p>
+                    <p className="text-[10px] font-black tracking-[0.1em] uppercase leading-tight">Pavitthiran R A</p>
+                    <p className="text-[9px] font-medium opacity-40 uppercase">Studio Admin</p>
                   </div>
                   <div className="w-10 h-10 bg-black/5 border border-black/10 rounded-full flex items-center justify-center overflow-hidden">
-                    <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Alex" alt="User" className="w-full h-full object-cover" />
+                    <img src="https://api.dicebear.com/7.x/pixel-art/svg?seed=Pavitthiran" alt="User" className="w-full h-full object-cover" />
                   </div>
                 </div>
               </div>
@@ -194,7 +202,7 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
           <div className="px-8 md:px-16 lg:px-24 pb-12 opacity-20">
             <div className="h-px bg-black w-full mb-8" />
             <div className="flex justify-between items-center text-[10px] font-black tracking-[0.5em] uppercase">
-              <span>BUZZWORTHY OS v2.0.4</span>
+              <span>W2C Studios OS v2.0.4</span>
               <span>EST. 2016 — 2026</span>
             </div>
           </div>

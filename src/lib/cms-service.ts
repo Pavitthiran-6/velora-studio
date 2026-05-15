@@ -1,5 +1,6 @@
 import { supabase, Project as DBProject, Review, HomeCard } from './supabase';
 import { Project } from '../types/project';
+import { logSystemEvent } from './logger';
 
 const mapProjectFields = (p: any) => ({
   id: p.id,
@@ -37,6 +38,18 @@ const mapProjectFields = (p: any) => ({
   createdAt: p.created_at,
   updatedAt: p.updated_at
 });
+
+const deleteStorageFile = async (url: string, bucket: string) => {
+  if (!url || !url.includes('storage/v1/object/public/')) return;
+  try {
+    const parts = url.split(`${bucket}/`);
+    if (parts.length < 2) return;
+    const filePath = parts[1];
+    await supabase.storage.from(bucket).remove([filePath]);
+  } catch (err) {
+    console.error('Storage cleanup failed:', err);
+  }
+};
 
 export const cmsService = {
   // --- Projects ---
@@ -151,8 +164,23 @@ export const cmsService = {
   },
 
   async deleteProject(id: string) {
+    // 1. Get project data to find file URLs
+    const project = await this.getProjectById(id);
+    
+    // 2. Delete database record
     const { error } = await supabase.from('projects').delete().eq('id', id);
     if (error) throw error;
+
+    // 3. Cleanup files from storage if DB delete successful
+    if (project) {
+      await Promise.all([
+        deleteStorageFile(project.coverImage, 'projects'),
+        deleteStorageFile(project.videoUrl, 'projects'),
+        deleteStorageFile(project.shuffleImage1, 'projects'),
+        deleteStorageFile(project.shuffleImage2, 'projects'),
+        ...(project.mobileViews || []).map(v => deleteStorageFile(v.url, 'projects'))
+      ]);
+    }
   },
 
   async saveHomeCard(card: Partial<any>, id?: string) {
@@ -175,8 +203,17 @@ export const cmsService = {
   },
 
   async deleteHomeCard(id: string) {
+    // 1. Get card data for URL
+    const { data: card } = await supabase.from('home_cards').select('image_url').eq('id', id).single();
+    
+    // 2. Delete DB record
     const { error } = await supabase.from('home_cards').delete().eq('id', id);
     if (error) throw error;
+
+    // 3. Storage cleanup
+    if (card?.image_url) {
+      await deleteStorageFile(card.image_url, 'home-cards');
+    }
   },
 
   // --- Reviews ---
@@ -240,6 +277,20 @@ export const cmsService = {
     if (error) throw error;
   },
 
+  async deleteReview(id: string) {
+    // 1. Get avatar URL
+    const { data: review } = await supabase.from('reviews').select('avatar_url').eq('id', id).single();
+    
+    // 2. Delete DB record
+    const { error } = await supabase.from('reviews').delete().eq('id', id);
+    if (error) throw error;
+
+    // 3. Storage cleanup
+    if (review?.avatar_url) {
+      await deleteStorageFile(review.avatar_url, 'avatars');
+    }
+  },
+
   // --- Messages ---
   async getMessages() {
     const { data, error } = await supabase.from('messages').select('*').order('created_at', { ascending: false });
@@ -259,6 +310,28 @@ export const cmsService = {
 
   async deleteMessage(id: string) {
     const { error } = await supabase.from('messages').delete().eq('id', id);
+    if (error) throw error;
+  },
+
+  async clearAllMessages() {
+    const { error } = await supabase.from('messages').delete().neq('id', '00000000-0000-0000-0000-000000000000');
+    if (error) throw error;
+  },
+
+  // --- System Logs ---
+  async getSystemLogs() {
+    const { data, error } = await supabase.from('system_logs').select('*').order('created_at', { ascending: false });
+    if (error) throw error;
+    return data || [];
+  },
+
+  async deleteSystemLog(id: string) {
+    const { error } = await supabase.from('system_logs').delete().eq('id', id);
+    if (error) throw error;
+  },
+
+  async clearAllSystemLogs() {
+    const { error } = await supabase.from('system_logs').delete().neq('id', '00000000-0000-0000-0000-000000000000');
     if (error) throw error;
   },
 

@@ -130,10 +130,8 @@ export default function App() {
                     className="flex items-center pointer-events-auto cursor-pointer bg-transparent border-none p-0 outline-none"
                     onClick={handleLogoClick}
                   >
-                    <div className="w-10 h-10 md:w-14 md:h-14 bg-[#ef4444] rounded-full flex items-center justify-center p-2 md:p-3">
-                      <svg viewBox="0 0 24 24" className="w-full h-full fill-white" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M12 21c-4.97 0-9-4.03-9-9s4.03-9 9-9 9 4.03 9 9-4.03 9-9 9zm0-16.5c-4.14 0-7.5 3.36-7.5 7.5s3.36 7.5 7.5 7.5 7.5-3.36 7.5-7.5-3.36-7.5-7.5-7.5zm.75 12c-1.24 0-2.25-1.01-2.25-2.25v-4.5c0-.41.34-.75.75-.75s.75.34.75.75v4.5c0 .41.34.75.75.75h.75c.41 0 .75.34.75.75s-.34.75-.75.75h-1.5z" />
-                      </svg>
+                    <div className="w-10 h-10 md:w-14 md:h-14 rounded-full flex items-center justify-center overflow-hidden">
+                      <img src="/W2C Studios.png" alt="W2C Studios" className="w-full h-full object-contain" />
                     </div>
                   </motion.button>
 
@@ -182,11 +180,13 @@ export default function App() {
                   className="flex-1 flex flex-col z-10"
                 >
                   {/* Hero Header (Brand Name only - scrolls with hero) */}
-                  <Layout className="pt-8 md:pt-12 pb-6 flex items-center pointer-events-none">
+                  <Layout className="pt-8 md:pt-12 pb-6 flex items-center pointer-events-auto">
                     <div className="w-10 h-10 md:w-14 md:h-14 opacity-0 shrink-0" />
-                    <span className="ml-3 md:ml-5 text-[9px] md:text-xs font-display font-black tracking-[0.2em] md:tracking-[0.3em] uppercase text-white/90">
-                      BUZZWORTHY STUDIO
-                    </span>
+                    <button onClick={() => triggerLogoTransition()} className="ml-3 md:ml-5 hover:opacity-80 transition-opacity flex items-center gap-2">
+                      <span className="text-[9px] md:text-xs font-display font-black tracking-[0.2em] md:tracking-[0.3em] uppercase text-white/90 leading-none">
+                        W2C Studios
+                      </span>
+                    </button>
                   </Layout>
 
                   {/* Main Hero Content */}
@@ -314,7 +314,7 @@ export default function App() {
                     <p className="text-white text-[13px] md:text-[15px] lg:text-[17px] font-display font-black tracking-[-0.04em] leading-[1.3] uppercase opacity-90">
                       WITH A DECADE OF<br />
                       EXPERIENCE UNDER OUR<br />
-                      BELTS, BUZZWORTHY HAS<br />
+                      BELTS, W2C Studios HAS<br />
                       BECOMED A WORLD -<br />
                       RENOWNED STUDIO
                     </p>

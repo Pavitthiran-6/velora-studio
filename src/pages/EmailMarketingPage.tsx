@@ -37,7 +37,7 @@ const OTHER_SERVICES = [
 
 export default function EmailMarketingPage() {
   const containerRef = useRef<HTMLDivElement>(null);
-  const { triggerPageTransition } = useTransition();
+  const { triggerLogoTransition, triggerPageTransition } = useTransition();
   const [isWaveOpen, setIsWaveOpen] = useState(false);
 
   return (
@@ -55,22 +55,22 @@ export default function EmailMarketingPage() {
             <div className="sticky top-0 left-0 right-0 z-[200] h-0 overflow-visible pointer-events-none">
               <div className="px-6 md:px-12 lg:px-16 py-8 md:py-12 flex justify-between items-start">
                 <div className="flex items-center gap-8 pointer-events-auto">
-                  <button onClick={() => triggerPageTransition("/")} className="group">
-                    <div className="w-10 h-10 md:w-14 md:h-14 bg-[#ef4444] rounded-full flex items-center justify-center p-2 md:p-3 group-hover:scale-110 transition-transform">
-                      <svg viewBox="0 0 24 24" className="w-full h-full fill-white" xmlns="http://www.w3.org/2000/svg"><path d="M12 21c-4.97 0-9-4.03-9-9s4.03-9 9-9 9 4.03 9 9-4.03 9-9 9zm0-16.5c-4.14 0-7.5 3.36-7.5 7.5s3.36 7.5 7.5 7.5 7.5-3.36 7.5-7.5-3.36-7.5-7.5-7.5zm.75 12c-1.24 0-2.25-1.01-2.25-2.25v-4.5c0-.41.34-.75.75-.75s.75.34.75.75v4.5c0 .41.34.75.75.75h.75c.41 0 .75.34.75.75s-.34.75-.75.75h-1.5z" /></svg>
+                  <button onClick={() => triggerLogoTransition()} className="group">
+                    <div className="w-10 h-10 md:w-14 md:h-14 rounded-full flex items-center justify-center overflow-hidden group-hover:scale-110 transition-transform">
+                      <img src="/W2C Studios.png" alt="W2C Studios" className="w-full h-full object-contain" />
                     </div>
                   </button>
                   <div className="hidden md:flex items-center gap-2">
-                    <CinematicText className="text-[10px] font-black tracking-[0.3em] uppercase opacity-40">BUZZWORTHY</CinematicText>
+                    <span className="text-[10px] font-black tracking-[0.3em] uppercase opacity-40 leading-none">W2C Studios</span>
                     <HexIcon className="w-2.5 h-2.5" fill="#ef3b5d" />
-                    <CinematicText 
+                    <span 
                       onClick={() => triggerPageTransition("/services")}
-                      className="text-[10px] font-black tracking-[0.3em] uppercase opacity-40 hover:opacity-100 cursor-pointer transition-opacity"
+                      className="text-[10px] font-black tracking-[0.3em] uppercase opacity-40 hover:opacity-100 cursor-pointer transition-opacity leading-none"
                     >
                       SERVICES
-                    </CinematicText>
+                    </span>
                     <HexIcon className="w-2.5 h-2.5" fill="#ef3b5d" />
-                    <CinematicText className="text-[10px] font-black tracking-[0.3em] uppercase text-[#ef3b5d]">EMAIL MARKETING</CinematicText>
+                    <span className="text-[10px] font-black tracking-[0.3em] uppercase text-[#ef3b5d] leading-none">EMAIL MARKETING</span>
                   </div>
                 </div>
                 <button onClick={() => setIsWaveOpen(!isWaveOpen)} className="relative z-[100] flex gap-3 md:gap-4 h-14 md:h-20 items-center cursor-pointer group pointer-events-auto">
@@ -93,7 +93,7 @@ export default function EmailMarketingPage() {
 }
 
 function HeroSection() {
-  const { triggerPageTransition } = useTransition();
+  const { triggerLogoTransition, triggerPageTransition } = useTransition();
   return (
     <section className="h-full relative flex flex-col pt-16 md:pt-20 pb-8 overflow-hidden justify-center">
       <Layout>
@@ -107,7 +107,7 @@ function HeroSection() {
           <div className="grid grid-cols-1 md:grid-cols-12 gap-6 md:gap-8">
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.4 }} className="md:col-span-2 flex items-center gap-3"><HexIcon className="w-3 h-3" fill="#ef3b5d" /><CinematicText className="text-[10px] font-black tracking-[0.3em] uppercase text-white">THE SERVICE</CinematicText></motion.div>
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.5 }} className="md:col-span-4"><p className="text-xl md:text-2xl font-display font-black tracking-[-0.02em] leading-tight uppercase text-white">WE ARCHITECT HIGH-PERFORMANCE EMAIL ECOSYSTEMS THAT MERGE PERSUASIVE COPYWRITING WITH SURGICAL AUTOMATION.</p></motion.div>
-            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.6 }} className="md:col-span-6"><p className="text-base md:text-lg font-display font-black tracking-[-0.01em] leading-relaxed opacity-40 uppercase">Email marketing at Buzzworthy is not about blasting a list, but about architecting definitive brand conversations. We blend technical excellence in automation with cinematic creative design to ensure your brand remains top-of-mind and commands action. By focusing on surgical list segmentation and high-intent copy, we deliver sustainable growth that compounds over time, making your inbox presence a definitive revenue driver.</p></motion.div>
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.6 }} className="md:col-span-6"><p className="text-base md:text-lg font-display font-black tracking-[-0.01em] leading-relaxed opacity-40 uppercase">Email marketing at W2C Studios is not about blasting a list, but about architecting definitive brand conversations. We blend technical excellence in automation with cinematic creative design to ensure your brand remains top-of-mind and commands action. By focusing on surgical list segmentation and high-intent copy, we deliver sustainable growth that compounds over time, making your inbox presence a definitive revenue driver.</p></motion.div>
           </div>
         </div>
       </Layout>
@@ -223,7 +223,7 @@ function WaveText({ text, className, containerRef }: { text: string; className?:
 }
 
 function OtherServices({ containerRef }: { containerRef: React.RefObject<HTMLDivElement | null> }) {
-  const { triggerPageTransition } = useTransition();
+  const { triggerLogoTransition, triggerPageTransition } = useTransition();
   return (
     <section className="py-32 md:py-48 bg-[#1f2547]">
       <Layout>

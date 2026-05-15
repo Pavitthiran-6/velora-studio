@@ -106,7 +106,6 @@ export const CinematicText: React.FC<{
     mass: 1.0
   });
 
-  if (intensity === 0) return <Tag className={className} {...props}>{children}</Tag>;
 
   const renderChildren = (node: React.ReactNode, startIndex: { value: number }, totalCount: number): React.ReactNode => {
     if (typeof node === "string") {

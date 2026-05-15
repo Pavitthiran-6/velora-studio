@@ -14,6 +14,7 @@ import {
   AlertCircle
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { cmsService } from "../../lib/cms-service";
 
 const SETTING_SECTIONS = [
   { id: "profile", label: "Studio Identity", icon: User, desc: "Manage your studio branding and profile." },
@@ -24,6 +25,39 @@ const SETTING_SECTIONS = [
 ];
 
 export default function AdminSettings() {
+  const [studioName, setStudioName] = React.useState("W2C Studios");
+  const [studioEmail, setStudioEmail] = React.useState("w2cstudios@gmail.com");
+  const [isSaving, setIsSaving] = React.useState(false);
+
+  React.useEffect(() => {
+    const fetchSettings = async () => {
+      try {
+        const settings = await cmsService.getSettings();
+        if (settings.studio_name) setStudioName(settings.studio_name);
+        if (settings.studio_email) setStudioEmail(settings.studio_email);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+    fetchSettings();
+  }, []);
+
+  const handleSave = async () => {
+    setIsSaving(true);
+    try {
+      await Promise.all([
+        cmsService.updateSetting("studio_name", studioName),
+        cmsService.updateSetting("studio_email", studioEmail)
+      ]);
+      alert("Studio protocols updated successfully.");
+    } catch (err) {
+      console.error(err);
+      alert("Failed to save settings.");
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
   return (
     <AdminLayout>
       <div className="space-y-16">
@@ -72,12 +106,21 @@ export default function AdminSettings() {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
                 <div className="space-y-4 md:col-span-2">
-                  <label className="text-[10px] font-black tracking-[0.2em] uppercase opacity-40">STUDIO EMAIL ID [ LOCKED ]</label>
+                  <label className="text-[10px] font-black tracking-[0.2em] uppercase opacity-40">STUDIO NAME</label>
+                  <input 
+                    type="text" 
+                    value={studioName} 
+                    onChange={(e) => setStudioName(e.target.value)}
+                    className="w-full bg-transparent border-b border-black/10 py-4 px-0 text-2xl font-display uppercase outline-none focus:border-black transition-colors" 
+                  />
+                </div>
+                <div className="space-y-4 md:col-span-2">
+                  <label className="text-[10px] font-black tracking-[0.2em] uppercase opacity-40">STUDIO EMAIL ID</label>
                   <input 
                     type="email" 
-                    readOnly 
-                    defaultValue="studio@buzzworthy.com" 
-                    className="w-full bg-black/5 border-b border-black/10 py-4 px-6 text-lg font-display uppercase outline-none cursor-not-allowed opacity-60" 
+                    value={studioEmail} 
+                    onChange={(e) => setStudioEmail(e.target.value)}
+                    className="w-full bg-transparent border-b border-black/10 py-4 px-0 text-lg font-display uppercase outline-none focus:border-black transition-colors" 
                   />
                 </div>
                 <div className="space-y-4 md:col-span-2">
@@ -101,10 +144,16 @@ export default function AdminSettings() {
                   <motion.button 
                     whileHover={{ scale: 1.01 }}
                     whileTap={{ scale: 0.99 }}
-                    className="w-full h-16 bg-black text-white text-[10px] font-black tracking-[0.3em] uppercase flex items-center justify-center gap-3 hover:bg-[#ef4444] transition-colors shadow-2xl"
+                    onClick={handleSave}
+                    disabled={isSaving}
+                    className="w-full h-16 bg-black text-white text-[10px] font-black tracking-[0.3em] uppercase flex items-center justify-center gap-3 hover:bg-[#ef4444] transition-colors shadow-2xl disabled:opacity-50"
                   >
-                    <Save className="w-4 h-4" />
-                    SAVE PROTOCOLS
+                    {isSaving ? "INITIALIZING..." : (
+                      <>
+                        <Save className="w-4 h-4" />
+                        SAVE PROTOCOLS
+                      </>
+                    )}
                   </motion.button>
                 </div>
 
