@@ -31,9 +31,10 @@ export function useSmoothScroll(
 
     if (!el) return;
 
-    // Apply hardware acceleration hints to the container
-    el.style.willChange = "transform, scroll-position";
-    el.style.transform = "translateZ(0)";
+    // Apply minimal hints without breaking CSS fixed positioning context
+    // We removed transform: translateZ(0) and will-change: transform 
+    // because they force the container to act as the coordinate system for position: fixed elements,
+    // which breaks modals rendered inside this container.
     el.style.backfaceVisibility = "hidden";
 
     let target = el.scrollTop;
@@ -75,6 +76,7 @@ export function useSmoothScroll(
 
     const onWheel = (e: WheelEvent) => {
       e.preventDefault();
+      e.stopPropagation();
       let delta = e.deltaY;
       
       // Precision handling for different delta modes
@@ -86,12 +88,14 @@ export function useSmoothScroll(
     };
 
     const onTouchStart = (e: TouchEvent) => {
+      e.stopPropagation();
       touchStartY = e.touches[0].clientY;
     };
 
     const onTouchMove = (e: TouchEvent) => {
       // Don't prevent default if we want native behavior, but we want smooth
       e.preventDefault();
+      e.stopPropagation();
       const dy = touchStartY - e.touches[0].clientY;
       touchStartY = e.touches[0].clientY;
       target += dy * 1.8; // Increased sensitivity for mobile fluidity
@@ -121,8 +125,6 @@ export function useSmoothScroll(
     el.addEventListener("focusin", onFocusIn, { passive: true });
 
     return () => {
-      el.style.willChange = "auto";
-      el.style.transform = "none";
       el.removeEventListener("wheel", onWheel);
       el.removeEventListener("touchstart", onTouchStart);
       el.removeEventListener("touchmove", onTouchMove);
@@ -130,5 +132,5 @@ export function useSmoothScroll(
       el.removeEventListener("focusin", onFocusIn);
       cancelAnimationFrame(raf);
     };
-  }, [containerRef?.current, ease]);
+  }, [containerRef?.current, ease]); // Dependent on the actual element
 }

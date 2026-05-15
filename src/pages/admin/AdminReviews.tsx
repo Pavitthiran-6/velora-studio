@@ -21,36 +21,45 @@ import {
 import { cn } from "@/lib/utils";
 import { SmoothScrollProvider } from "../../components/SmoothScrollProvider";
 
-const INITIAL_REVIEWS = [
-  { id: "1", reviewer_name: "James Wilson", company_name: "Nexus Tech", review_text: "The level of cinematic detail Buzzworthy brings to the table is unmatched. They didn't just build a site; they built an experience.", rating: 5, avatar_url: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=200", is_published: true, is_featured: true, date: "Oct 12, 2024", review_index: 1 },
-  { id: "2", reviewer_name: "Elena Rossi", company_name: "Vogue Italia", review_text: "A brutalist masterpiece. Our digital presence has never felt more premium and cohesive.", rating: 5, avatar_url: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=200", is_published: true, is_featured: false, date: "Sep 28, 2024", review_index: 2 },
-];
+
+import { cmsService } from "../../lib/cms-service";
 
 export default function AdminReviews() {
-  const [reviews, setReviews] = useState(() => {
-    const saved = localStorage.getItem("studio_reviews");
-    return saved ? JSON.parse(saved) : INITIAL_REVIEWS;
-  });
+  const [reviews, setReviews] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingReview, setEditingReview] = useState<any>(null);
   const [filter, setFilter] = useState<"ALL" | "PUBLISHED" | "DRAFTS">("ALL");
   const [formData, setFormData] = useState({
-    reviewer_name: "",
-    company_name: "",
-    review_text: "",
+    name: "",
+    company: "",
+    content: "",
     rating: 5,
-    avatar_url: "",
-    is_published: true,
-    is_featured: false,
-    review_index: 1
+    avatarUrl: "",
+    isActive: true,
+    isFeatured: false,
+    reviewIndex: 0
   });
+
+  const fetchReviews = async () => {
+    setIsLoading(true);
+    try {
+      const data = await cmsService.getReviews();
+      setReviews(data);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchReviews();
+  }, []);
+
   const modalRootRef = useRef<HTMLDivElement>(null);
   const modalContainerRef = useRef<HTMLDivElement>(null);
   const formScrollRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    localStorage.setItem("studio_reviews", JSON.stringify(reviews));
-  }, [reviews]);
 
   // Prevent background scrolling when modal is open
   useEffect(() => {
@@ -88,49 +97,58 @@ export default function AdminReviews() {
   const handleOpenModal = (review: any = null) => {
     if (review) {
       setEditingReview(review);
-      setFormData({ ...review });
+      setFormData({ 
+        name: review.name || "",
+        company: review.company || "",
+        content: review.content || "",
+        rating: review.rating || 5,
+        avatarUrl: review.avatarUrl || "",
+        isActive: review.isActive ?? true,
+        isFeatured: review.isFeatured ?? false,
+        reviewIndex: review.reviewIndex || 0,
+      });
     } else {
       setEditingReview(null);
       setFormData({
-        reviewer_name: "",
-        company_name: "",
-        review_text: "",
+        name: "",
+        company: "",
+        content: "",
         rating: 5,
-        avatar_url: "",
-        is_published: true,
-        is_featured: false,
-        review_index: reviews.length + 1
+        avatarUrl: "",
+        isActive: true,
+        isFeatured: false,
+        reviewIndex: reviews.length + 1,
       });
     }
     setIsModalOpen(true);
   };
 
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setFormData({ ...formData, avatar_url: reader.result as string });
-      };
-      reader.readAsDataURL(file);
+      try {
+        const url = await cmsService.uploadMedia(file, 'review-avatars');
+        setFormData({ ...formData, avatarUrl: url });
+      } catch (err) {
+        console.error(err);
+      }
     }
   };
 
-  const handleSave = (e: React.FormEvent) => {
+  const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (editingReview) {
-      setReviews(reviews.map((r: any) => r.id === editingReview.id ? { ...r, ...formData } : r));
-    } else {
-      const newReview = {
-        id: Math.random().toString(36).substr(2, 9),
+    try {
+      const reviewToSave = {
         ...formData,
-        date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+        reviewIndex: formData.reviewIndex || reviews.length + 1
       };
-      setReviews([newReview, ...reviews]);
+      await cmsService.saveReview(reviewToSave, editingReview?.id);
+      await fetchReviews();
+      setIsModalOpen(false);
+    } catch (err) {
+      console.error(err);
     }
-    setIsModalOpen(false);
   };
-
   const filteredReviews = reviews.filter((r: any) => {
     if (filter === "PUBLISHED") return r.is_published;
     if (filter === "DRAFTS") return !r.is_published;
@@ -198,20 +216,20 @@ export default function AdminReviews() {
                       </div>
                       <div className="flex-1 overflow-y-auto custom-scrollbar-light pr-2 min-h-0">
                         <p className="text-2xl font-display font-black uppercase italic leading-[1.05] tracking-tight text-white opacity-95 break-all">
-                          "{formData.review_text || "ENTER REVIEW TEXT TO PREVIEW..."}"
+                          "{formData.content || "ENTER REVIEW TEXT TO PREVIEW..."}"
                         </p>
                       </div>
                     </div>
 
                     <div className="relative z-10 flex items-center gap-4 pt-6 border-t border-white/5">
                       <div className="w-12 h-12 rounded-full bg-white/10 overflow-hidden shrink-0 border border-white/10">
-                        <img src={formData.avatar_url || "https://images.unsplash.com/photo-1633332755192-727a05c4013d?auto=format&fit=crop&q=80&w=100"} className="w-full h-full object-cover grayscale brightness-110 group-hover:grayscale-0 transition-all duration-700" alt="" />
+                        <img src={formData.avatarUrl || "https://images.unsplash.com/photo-1633332755192-727a05c4013d?auto=format&fit=crop&q=80&w=100"} className="w-full h-full object-cover grayscale brightness-110 group-hover:grayscale-0 transition-all duration-700" alt="" />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="text-[10px] font-black tracking-[0.2em] text-white uppercase truncate">{formData.reviewer_name || "REVIEWER"}</p>
-                        <p className="text-[8px] font-black tracking-[0.3em] text-[#ef4444] uppercase mt-1 truncate">{formData.company_name || "COMPANY"}</p>
+                        <p className="text-[10px] font-black tracking-[0.2em] text-white uppercase truncate">{formData.name || "REVIEWER"}</p>
+                        <p className="text-[8px] font-black tracking-[0.3em] text-[#ef4444] uppercase mt-1 truncate">{formData.company || "COMPANY"}</p>
                       </div>
-                      <div className="text-[9px] font-black text-white/20 uppercase tracking-tighter shrink-0">0{formData.review_index}</div>
+                      <div className="text-[9px] font-black text-white/20 uppercase tracking-tighter shrink-0">0{formData.reviewIndex || (editingReview?.reviewIndex ?? reviews.length + 1)}</div>
                     </div>
                   </motion.div>
                 </div>
@@ -249,8 +267,8 @@ export default function AdminReviews() {
                           <input 
                             type="text" 
                             required
-                            value={formData.reviewer_name}
-                            onChange={(e) => setFormData({ ...formData, reviewer_name: e.target.value })}
+                            value={formData.name}
+                            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                             className="w-full bg-transparent border-b border-black/10 py-2.5 text-lg font-display uppercase outline-none focus:border-black transition-all" 
                             placeholder="FULL NAME"
                           />
@@ -260,8 +278,8 @@ export default function AdminReviews() {
                           <input 
                             type="text" 
                             required
-                            value={formData.company_name}
-                            onChange={(e) => setFormData({ ...formData, company_name: e.target.value })}
+                            value={formData.company}
+                            onChange={(e) => setFormData({ ...formData, company: e.target.value })}
                             className="w-full bg-transparent border-b border-black/10 py-2.5 text-lg font-display uppercase outline-none focus:border-black transition-all" 
                             placeholder="ORGANIZATION"
                           />
@@ -274,8 +292,8 @@ export default function AdminReviews() {
                           <label className="text-[8px] font-black tracking-[0.3em] uppercase opacity-30 group-focus-within:opacity-100 transition-opacity">Reviewer Avatar</label>
                           <div className="flex items-center gap-4">
                             <div className="w-12 h-12 rounded-full bg-black/5 border border-black/10 overflow-hidden shrink-0 flex items-center justify-center">
-                              {formData.avatar_url ? (
-                                <img src={formData.avatar_url} className="w-full h-full object-cover" alt="" />
+                              {formData.avatarUrl ? (
+                                <img src={formData.avatarUrl} className="w-full h-full object-cover" alt="" />
                               ) : (
                                 <ImageIcon className="w-4 h-4 opacity-20" />
                               )}
@@ -283,8 +301,8 @@ export default function AdminReviews() {
                             <div className="flex-1 relative">
                               <input 
                                 type="text" 
-                                value={formData.avatar_url}
-                                onChange={(e) => setFormData({ ...formData, avatar_url: e.target.value })}
+                                value={formData.avatarUrl}
+                                onChange={(e) => setFormData({ ...formData, avatarUrl: e.target.value })}
                                 className="w-full bg-transparent border-b border-black/10 py-2.5 text-[10px] font-black tracking-widest uppercase outline-none focus:border-black transition-all pr-10" 
                                 placeholder="PASTE URL OR UPLOAD →"
                               />
@@ -326,8 +344,8 @@ export default function AdminReviews() {
                         <label className="text-[8px] font-black tracking-[0.3em] uppercase opacity-30 group-focus-within:opacity-100 transition-opacity">Review Testimony</label>
                         <textarea 
                           required
-                          value={formData.review_text}
-                          onChange={(e) => setFormData({ ...formData, review_text: e.target.value })}
+                          value={formData.content}
+                          onChange={(e) => setFormData({ ...formData, content: e.target.value })}
                           className="w-full h-[120px] bg-[#fafafa] border border-black/5 p-6 text-sm font-medium uppercase outline-none focus:border-black focus:bg-white transition-all resize-none leading-relaxed" 
                           placeholder="WRITE THE STORY..."
                         />
@@ -336,7 +354,7 @@ export default function AdminReviews() {
                       {/* Toggles */}
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
                         <div 
-                          onClick={() => setFormData({ ...formData, is_published: !formData.is_published })}
+                          onClick={() => setFormData({ ...formData, isActive: !formData.isActive })}
                           className="flex items-center justify-between p-5 bg-[#fafafa] border border-black/5 hover:border-black/20 cursor-pointer transition-all group"
                         >
                           <div>
@@ -345,16 +363,16 @@ export default function AdminReviews() {
                           </div>
                           <div className={cn(
                             "w-10 h-5 border-[1.5px] border-black flex items-center p-0.5 transition-all shrink-0",
-                            formData.is_published ? "bg-black shadow-[0_0_15px_rgba(0,0,0,0.1)]" : "bg-transparent"
+                            formData.isActive ? "bg-black shadow-[0_0_15px_rgba(0,0,0,0.1)]" : "bg-transparent"
                           )}>
                             <motion.div 
-                              animate={{ x: formData.is_published ? 20 : 0 }}
-                              className={cn("w-3 h-3 transition-colors", formData.is_published ? "bg-white" : "bg-black")} 
+                              animate={{ x: formData.isActive ? 20 : 0 }}
+                              className={cn("w-3 h-3 transition-colors", formData.isActive ? "bg-white" : "bg-black")} 
                             />
                           </div>
                         </div>
                         <div 
-                          onClick={() => setFormData({ ...formData, is_featured: !formData.is_featured })}
+                          onClick={() => setFormData({ ...formData, isFeatured: !formData.isFeatured })}
                           className="flex items-center justify-between p-5 bg-[#fafafa] border border-black/5 hover:border-black/20 cursor-pointer transition-all group"
                         >
                           <div>
@@ -363,11 +381,11 @@ export default function AdminReviews() {
                           </div>
                           <div className={cn(
                             "w-10 h-5 border-[1.5px] border-[#ef4444] flex items-center p-0.5 transition-all shrink-0",
-                            formData.is_featured ? "bg-[#ef4444] shadow-[0_0_15px_rgba(239,68,68,0.2)]" : "bg-transparent"
+                            formData.isFeatured ? "bg-[#ef4444] shadow-[0_0_15px_rgba(239,68,68,0.2)]" : "bg-transparent"
                           )}>
                             <motion.div 
-                              animate={{ x: formData.is_featured ? 20 : 0 }}
-                              className={cn("w-3 h-3 transition-colors", formData.is_featured ? "bg-white" : "bg-[#ef4444]")} 
+                              animate={{ x: formData.isFeatured ? 20 : 0 }}
+                              className={cn("w-3 h-3 transition-colors", formData.isFeatured ? "bg-white" : "bg-[#ef4444]")} 
                             />
                           </div>
                         </div>
@@ -451,20 +469,20 @@ export default function AdminReviews() {
                   >
                     <div className={cn(
                       "absolute top-0 left-0 w-[3px] h-full transition-all duration-500 group-hover:w-[6px]",
-                      review.is_published ? "bg-green-500" : "bg-black/10"
+                      review.isActive ? "bg-green-500" : "bg-black/10"
                     )} />
 
                     <div className="w-20 h-20 bg-black/5 rounded-full overflow-hidden shrink-0 border-2 border-black/5 group-hover:scale-110 transition-transform duration-700">
-                      <img src={review.avatar_url || "https://images.unsplash.com/photo-1633332755192-727a05c4013d?auto=format&fit=crop&q=80&w=100"} className="w-full h-full object-cover grayscale brightness-110 group-hover:grayscale-0" alt="" />
+                      <img src={review.avatarUrl || "https://images.unsplash.com/photo-1633332755192-727a05c4013d?auto=format&fit=crop&q=80&w=100"} className="w-full h-full object-cover grayscale brightness-110 group-hover:grayscale-0" alt="" />
                     </div>
 
                     <div className="flex-1 space-y-3">
                       <div className="flex items-center gap-5">
-                        <h3 className="text-2xl font-black uppercase tracking-tight leading-none">{review.reviewer_name}</h3>
-                        <div className="px-3 py-1 bg-black/5 rounded-full text-[8px] font-black uppercase tracking-widest opacity-40">SQ-00{review.review_index}</div>
+                        <h3 className="text-2xl font-black uppercase tracking-tight leading-none">{review.name}</h3>
+                        <div className="px-3 py-1 bg-black/5 rounded-full text-[8px] font-black uppercase tracking-widest opacity-40">SQ-00{review.reviewIndex}</div>
                       </div>
                       <div className="flex items-center gap-4">
-                        <span className="text-[10px] font-black tracking-[0.2em] text-[#ef4444] uppercase">{review.company_name}</span>
+                        <span className="text-[10px] font-black tracking-[0.2em] text-[#ef4444] uppercase">{review.company}</span>
                         <div className="w-1 h-1 bg-black/10 rounded-full" />
                         <div className="flex gap-0.5">
                           {[...Array(5)].map((_, i) => (
@@ -473,7 +491,7 @@ export default function AdminReviews() {
                         </div>
                       </div>
                       <p className="text-xs font-medium opacity-40 uppercase line-clamp-1 italic pr-12 group-hover:opacity-100 transition-opacity">
-                        "{review.review_text}"
+                        "{review.content}"
                       </p>
                     </div>
 
@@ -482,8 +500,8 @@ export default function AdminReviews() {
                         <p className="text-[10px] font-black uppercase tracking-widest opacity-20">{review.date}</p>
                         <p className={cn(
                           "text-[9px] font-black uppercase tracking-[0.2em] mt-1.5",
-                          review.is_published ? "text-green-500" : "text-black/20"
-                        )}>{review.is_published ? "PUBLISHED" : "DRAFT"}</p>
+                          review.isActive ? "text-green-500" : "text-black/20"
+                        )}>{review.isActive ? "PUBLISHED" : "DRAFT"}</p>
                       </div>
                       <div className="flex items-center gap-3">
                         <motion.button 
@@ -517,10 +535,10 @@ export default function AdminReviews() {
           {/* METRICS GRID */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4 px-8 pb-20">
             {[
-              { label: "LIVE STORIES", val: reviews.filter((r: any) => r.is_published).length, icon: Globe },
+              { label: "LIVE STORIES", val: reviews.filter((r: any) => r.isActive).length, icon: Globe },
               { label: "AVG RATING", val: "5.0", icon: Star },
               { label: "TOTAL SIGNALS", val: reviews.length, icon: Zap },
-              { label: "FEATURED", val: reviews.filter((r: any) => r.is_featured).length, icon: Settings }
+              { label: "FEATURED", val: reviews.filter((r: any) => r.isFeatured).length, icon: Settings }
             ].map(m => (
               <div key={m.label} className="p-12 border border-black/5 bg-white flex flex-col group hover:border-black/20 transition-all cursor-default">
                 <div className="flex justify-between items-start mb-6">

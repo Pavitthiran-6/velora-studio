@@ -253,7 +253,7 @@ class App {
     if (!this.isDown) return;
     this.scroll.target = this.scroll.position + (this.start - x) * (this.scrollSpeed * 0.025);
   }
-  onWheel(e: any) { this.scroll.target += (e.deltaY > 0 ? this.scrollSpeed : -this.scrollSpeed) * 0.2; }
+  onWheel(e: any) { this.scroll.target += e.deltaY * (this.scrollSpeed * 0.05); }
   onResize() {
     this.screen = { width: this.container.clientWidth, height: this.container.clientHeight };
     this.renderer.setSize(this.screen.width, this.screen.height);

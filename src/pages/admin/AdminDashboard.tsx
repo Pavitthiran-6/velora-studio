@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { AdminLayout } from "../../components/admin/AdminLayout";
 import { 
@@ -13,27 +13,51 @@ import {
   ArrowRight
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useNavigate } from "react-router-dom";
 
-const STATS = [
-  { label: "Total Projects", value: "124", change: "+12%" },
-  { label: "Active Clients", value: "18", change: "+4" },
-  { label: "Pending Uploads", value: "07", change: "-2" },
-  { label: "Website Views", value: "48.2K", change: "+24%" },
-];
-
-const PROJECTS = [
-  { name: "Sling Shot Branding", status: "Active", category: "Branding", updated: "2h ago", image: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&q=80&w=400" },
-  { name: "Lumina App Design", status: "Review", category: "UI/UX", updated: "5h ago", image: "https://images.unsplash.com/photo-1633356122544-f134324a6cee?auto=format&fit=crop&q=80&w=400" },
-  { name: "Vertex Motion Clip", status: "Completed", category: "Motion", updated: "1d ago", image: "https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&q=80&w=400" },
-  { name: "Nexus Web Experience", status: "Planning", category: "Web Dev", updated: "3d ago", image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&q=80&w=400" },
-];
-
-const MESSAGES = [
-  { user: "Sarah Jenkins", email: "sarah@lumina.com", subject: "New Project Request", date: "Oct 24" },
-  { user: "David Chen", email: "d.chen@vertex.io", subject: "Feedback on V2", date: "Oct 23" },
-];
+import { cmsService } from "../../lib/cms-service";
 
 export default function AdminDashboard() {
+  const navigate = useNavigate();
+  const [stats, setStats] = useState({
+    projects: 0,
+    reviews: 0,
+    homeCards: 0,
+    messages: 0
+  });
+  const [recentProjects, setRecentProjects] = useState<any[]>([]);
+  const [recentMessages, setRecentMessages] = useState<any[]>([]);
+
+  useEffect(() => {
+    const fetchDashboardData = async () => {
+      try {
+        const [p, r, h, m] = await Promise.all([
+          cmsService.getProjects(),
+          cmsService.getReviews(),
+          cmsService.getHomeCards(),
+          cmsService.getMessages()
+        ]);
+        setStats({
+          projects: p.length,
+          reviews: r.length,
+          homeCards: h.length,
+          messages: m.filter((msg: any) => msg.status === 'unread').length
+        });
+        setRecentProjects(p.slice(0, 4));
+        setRecentMessages(m.slice(0, 3));
+      } catch (err) {
+        console.error(err);
+      }
+    };
+    fetchDashboardData();
+  }, []);
+
+  const dashboardStats = [
+    { label: "Total Projects", value: stats.projects.toString(), change: "LIVE" },
+    { label: "Active Reviews", value: stats.reviews.toString(), change: "LIVE" },
+    { label: "New Messages", value: stats.messages.toString(), change: "UNREAD" },
+    { label: "Website Status", value: "ONLINE", change: "200 OK" },
+  ];
   return (
     <AdminLayout>
       <div className="space-y-32">
@@ -63,7 +87,7 @@ export default function AdminDashboard() {
         {/* SECTION 1: PROJECT OVERVIEW (STATS) */}
         <section>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {STATS.map((stat, i) => (
+            {dashboardStats.map((stat, i) => (
               <motion.div
                 key={stat.label}
                 initial={{ opacity: 0, y: 20 }}
@@ -119,9 +143,9 @@ export default function AdminDashboard() {
                 </tr>
               </thead>
               <tbody>
-                {PROJECTS.map((project, i) => (
+                {recentProjects.map((project, i) => (
                   <motion.tr 
-                    key={project.name}
+                    key={project.id}
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ duration: 0.5, delay: i * 0.1 }}
@@ -130,9 +154,9 @@ export default function AdminDashboard() {
                     <td className="px-8 py-6">
                       <div className="flex items-center gap-4">
                         <div className="w-12 h-12 bg-black/5 overflow-hidden rounded-lg">
-                          <img src={project.image} alt={project.name} className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500" />
+                          <img src={project.coverImage} alt={project.title} className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500" />
                         </div>
-                        <span className="text-sm font-black tracking-tight uppercase">{project.name}</span>
+                        <span className="text-sm font-black tracking-tight uppercase">{project.title}</span>
                       </div>
                     </td>
                     <td className="px-8 py-6">
@@ -250,30 +274,33 @@ export default function AdminDashboard() {
                 <span className="text-[10px] font-black tracking-[0.5em] uppercase opacity-40 mb-2 block">[ INBOX ]</span>
                 <h3 className="font-display text-4xl font-black tracking-tighter uppercase">Studio Comms</h3>
               </div>
-              <span className="text-[10px] font-black tracking-[0.2em] uppercase bg-black text-white px-3 py-1">2 NEW</span>
+              <span className="text-[10px] font-black tracking-[0.2em] uppercase bg-black text-white px-3 py-1">{stats.messages} NEW</span>
             </div>
 
             <div className="space-y-6">
-              {MESSAGES.map((msg, i) => (
+              {recentMessages.map((msg, i) => (
                 <motion.div 
-                  key={i}
+                  key={msg.id}
                   whileHover={{ x: 10 }}
                   className="group p-6 border border-black/5 hover:border-black/20 cursor-pointer flex justify-between items-center"
                 >
                   <div className="flex gap-6 items-center">
                     <div className="w-10 h-10 bg-black/5 rounded-full flex items-center justify-center text-[10px] font-black">
-                      {msg.user[0]}
+                      {msg.name[0]}
                     </div>
                     <div>
-                      <p className="text-sm font-black tracking-tight uppercase mb-0.5">{msg.user}</p>
-                      <p className="text-[10px] font-medium opacity-40 uppercase tracking-tighter">{msg.subject}</p>
+                      <p className="text-sm font-black tracking-tight uppercase mb-0.5">{msg.name}</p>
+                      <p className="text-[10px] font-medium opacity-40 uppercase tracking-tighter truncate max-w-[200px]">{msg.subject}</p>
                     </div>
                   </div>
-                  <span className="text-[9px] font-black opacity-20 uppercase tracking-widest">{msg.date}</span>
+                  <span className="text-[9px] font-black opacity-20 uppercase tracking-widest">
+                    {new Date(msg.created_at).toLocaleDateString()}
+                  </span>
                 </motion.div>
               ))}
               <motion.button 
                 whileHover={{ scale: 1.02 }}
+                onClick={() => navigate("/admin/notifications")}
                 className="w-full py-4 border border-black/10 text-[9px] font-black tracking-[0.2em] uppercase hover:bg-black hover:text-white transition-all"
               >
                 VIEW ALL MESSAGES

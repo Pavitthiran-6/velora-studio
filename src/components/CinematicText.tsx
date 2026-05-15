@@ -110,27 +110,54 @@ export const CinematicText: React.FC<{
 
   const renderChildren = (node: React.ReactNode, startIndex: { value: number }, totalCount: number): React.ReactNode => {
     if (typeof node === "string") {
-      const tokens = split === "char" ? node.split("") : node.split(" ");
-      return tokens.map((token, i) => {
-        const globalIndex = startIndex.value++;
-        return split === "char" ? (
-          <CinematicChar
-            key={globalIndex}
-            char={token}
-            index={globalIndex}
-            total={totalCount}
-            smoothProgress={smoothP}
-            intensity={intensity}
-          />
-        ) : (
-          <CinematicWord
-            key={globalIndex}
-            word={token}
-            smoothProgress={smoothP}
-            intensity={intensity}
-          />
-        );
-      });
+      if (split === "word") {
+        const words = node.split(" ");
+        return words.map((word, i) => {
+          const globalIndex = startIndex.value++;
+          return (
+            <CinematicWord
+              key={globalIndex}
+              word={word}
+              smoothProgress={smoothP}
+              intensity={intensity}
+            />
+          );
+        });
+      } else {
+        // Character split with word preservation
+        const words = node.split(" ");
+        return words.map((word, wordIndex) => {
+          const chars = word.split("");
+          return (
+            <span key={`word-${wordIndex}`} className="inline-block whitespace-nowrap">
+              {chars.map((char, charIndex) => {
+                const globalIndex = startIndex.value++;
+                return (
+                  <CinematicChar
+                    key={globalIndex}
+                    char={char}
+                    index={globalIndex}
+                    total={totalCount}
+                    smoothProgress={smoothP}
+                    intensity={intensity}
+                  />
+                );
+              })}
+              {/* Add a space after the word unless it's the last one */}
+              {wordIndex < words.length - 1 && (
+                <CinematicChar
+                  key={`space-${wordIndex}`}
+                  char=" "
+                  index={startIndex.value++}
+                  total={totalCount}
+                  smoothProgress={smoothP}
+                  intensity={intensity}
+                />
+              )}
+            </span>
+          );
+        });
+      }
     }
 
     if (React.isValidElement(node)) {

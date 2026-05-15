@@ -4,21 +4,36 @@ import { useNavigate } from "react-router-dom";
 import { ArrowRight, Lock, Mail } from "lucide-react";
 import { useTransition } from "../../components/TransitionProvider";
 
+import { supabase } from "../../lib/supabase";
+
 export default function AdminLogin() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
   const { triggerPageTransition } = useTransition();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
+    setError(null);
     
-    // Simulate cinematic transition
-    setTimeout(() => {
-      triggerPageTransition("/admin/dashboard");
-    }, 1500);
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (error) throw error;
+
+      if (data.user) {
+        triggerPageTransition("/admin/dashboard");
+      }
+    } catch (err: any) {
+      setError(err.message || "Authentication failed. Check your credentials.");
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -112,6 +127,16 @@ export default function AdminLogin() {
                   </div>
                 </div>
               </div>
+
+              {error && (
+                <motion.div 
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="p-4 bg-red-50 border border-red-100 rounded-lg text-red-600 text-[10px] font-black uppercase tracking-widest"
+                >
+                  {error}
+                </motion.div>
+              )}
 
               {/* Submit Button */}
               <motion.button

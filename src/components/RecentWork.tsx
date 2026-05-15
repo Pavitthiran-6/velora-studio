@@ -1,9 +1,11 @@
-import React, { useRef, useState, useEffect } from "react";
+import React, { useRef, useState, useEffect, useMemo } from "react";
 import { motion, useScroll, useTransform } from "motion/react";
 import ReactLenis from "lenis/react";
 import { Layout } from "./layout/Layout";
 import { useTransition } from "./TransitionProvider";
 import { CinematicText } from "./CinematicText";
+import { cmsService } from "../lib/cms-service";
+import { Project } from "../types/project";
 
 // Local SVGs to avoid any external icon dependency crashes
 const HexIcon = ({ className = "", fill = "#ef4444" }) => (
@@ -19,46 +21,21 @@ const ArrowIcon = ({ className = "" }) => (
   </svg>
 );
 
-// Default fallback data (preserving original content)
-const INITIAL_PROJECTS = [
-  {
-    title: "SLING SHOT",
-    services: ["UX/UI DESIGN", "DEVELOPMENT", "STRATEGY"],
-    src: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&q=80&w=800",
-  },
-  {
-    title: "OCEAN AGENCY",
-    services: ["BRANDING", "3D ANIMATION", "WEBGL"],
-    src: "https://images.unsplash.com/photo-1633356122544-f134324a6cee?auto=format&fit=crop&q=80&w=800",
-  },
-  {
-    title: "HOBOKEN YOGI",
-    services: ["MARKETING", "SEO", "E-COMMERCE"],
-    src: "https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&q=80&w=800",
-  },
-];
-
 const StickyCard_001 = ({
   i,
-  title,
-  services,
-  src,
+  project,
   progress,
   range,
   targetScale,
 }: {
   i: number;
-  title: string;
-  services: string[];
-  src: string;
+  project: Project;
   progress: any;
   range: [number, number];
   targetScale: number;
 }) => {
   const container = useRef<HTMLDivElement>(null);
-
   const scale = useTransform(progress, range, [1, targetScale]);
-
   const { triggerPageTransition } = useTransition();
 
   return (
@@ -71,24 +48,28 @@ const StickyCard_001 = ({
           scale,
           top: `calc(-5vh + ${i * 20 + 150}px)`,
         }}
-        onClick={() => triggerPageTransition(`/work/${title.toLowerCase().replace(/\s+/g, '-')}`)}
+        onClick={() => triggerPageTransition(`/work/${project.slug}`)}
         className="rounded-4xl relative -top-1/4 flex h-[400px] w-[600px] origin-top flex-col overflow-hidden cursor-pointer"
       >
-        <img src={src} alt={title} className="h-full w-full object-cover" />
+        <img src={project.coverImage} alt={project.title} className="h-full w-full object-cover" />
         <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent flex flex-col justify-end p-8 md:p-10">
           <div className="flex flex-wrap gap-2 mb-4">
-            {services.map((service, index) => (
+            {project.services.length > 0 ? project.services.map((service, index) => (
               <span 
                 key={index} 
                 className="text-[8px] md:text-[10px] font-black tracking-[0.2em] text-white/50 border border-white/10 px-2 py-1 rounded-sm uppercase backdrop-blur-sm"
               >
-                {service}
+                {service.label}
               </span>
-            ))}
+            )) : (
+              <span className="text-[8px] md:text-[10px] font-black tracking-[0.2em] text-[#ef4444] border border-[#ef4444]/20 px-2 py-1 rounded-sm uppercase backdrop-blur-sm">
+                {project.category}
+              </span>
+            )}
           </div>
           <h3 className="text-white text-4xl md:text-5xl font-black uppercase leading-tight tracking-tighter">
-            <span className="text-[#ef4444]">{title.split(' ')[0]}</span>
-            {title.split(' ').length > 1 ? ` ${title.split(' ').slice(1).join(' ')}` : ''}
+            <span className="text-[#ef4444]">{project.title.split(' ')[0]}</span>
+            {project.title.split(' ').length > 1 ? ` ${project.title.split(' ').slice(1).join(' ')}` : ''}
           </h3>
         </div>
       </motion.div>
@@ -96,7 +77,7 @@ const StickyCard_001 = ({
   );
 };
 
-const Skiper16 = ({ projects, scrollYProgress }: { projects: any[], scrollYProgress: any }) => {
+const Skiper16 = ({ projects, scrollYProgress }: { projects: Project[], scrollYProgress: any }) => {
   return (
     <div className="relative mx-auto flex flex-col items-center justify-center pt-[10vh]">
       {projects.map((project, i) => {
@@ -106,11 +87,9 @@ const Skiper16 = ({ projects, scrollYProgress }: { projects: any[], scrollYProgr
         );
         return (
           <StickyCard_001
-            key={`p_${i}`}
+            key={project.id}
             i={i}
-            title={project.title}
-            services={project.services}
-            src={project.src}
+            project={project}
             progress={scrollYProgress}
             range={[i * 0.15, 1]}
             targetScale={targetScale}
@@ -124,45 +103,38 @@ const Skiper16 = ({ projects, scrollYProgress }: { projects: any[], scrollYProgr
 export const RecentWork = ({ containerRef }: { containerRef: React.RefObject<HTMLDivElement | null> }) => {
   const sectionRef = useRef<HTMLDivElement>(null);
   const { triggerPageTransition } = useTransition();
-  const [activeProjects, setActiveProjects] = useState(INITIAL_PROJECTS);
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-  // REAL-TIME CMS CONNECTION
   useEffect(() => {
-    const syncWithCMS = () => {
-      const storedCards = localStorage.getItem("home_cards");
-      if (storedCards) {
-        try {
-          const parsedCards = JSON.parse(storedCards);
-          const formatted = parsedCards
-            .filter((c: any) => c.active)
-            .sort((a: any, b: any) => a.order - b.order)
-            .map((c: any) => ({
-              title: c.title,
-              services: c.tags.split(",").map((s: string) => s.trim()),
-              src: c.image
-            }));
-          
-          if (formatted.length > 0) {
-            setActiveProjects(formatted);
-          }
-        } catch (e) {
-          console.error("CMS Sync Error:", e);
-        }
+    const fetchHomeCards = async () => {
+      try {
+        const cards = await cmsService.getHomeCards();
+        // Filter active cards and sort by order (if not already sorted)
+        const activeCards = cards.filter((c: any) => c.is_active);
+        
+        // Map HomeCards to the expected Project format for the UI
+        const mappedProjects = activeCards.map((c: any) => ({
+          id: c.id,
+          title: c.title,
+          coverImage: c.image_url,
+          // Extract just the ID part if the slug starts with /work/
+          slug: c.slug ? c.slug.replace(/^\/work\//, '') : '',
+          category: c.tags || 'PROJECT',
+          services: c.tags ? c.tags.split(',').map((t: string) => ({ label: t.trim() })) : []
+        }));
+        
+        setProjects(mappedProjects as any);
+      } catch (err) {
+        console.error("Failed to fetch home cards from Supabase:", err);
+      } finally {
+        setIsLoading(false);
       }
     };
 
-    // Initial sync
-    syncWithCMS();
-
-    // Listen for storage changes (for live preview across tabs)
-    window.addEventListener('storage', syncWithCMS);
-    // Poll for changes within the same tab (since admin and home are in the same app)
-    const pollInterval = setInterval(syncWithCMS, 1000);
-
-    return () => {
-      window.removeEventListener('storage', syncWithCMS);
-      clearInterval(pollInterval);
-    };
+    fetchHomeCards();
+    window.addEventListener('cms-update', fetchHomeCards);
+    return () => window.removeEventListener('cms-update', fetchHomeCards);
   }, []);
 
   const { scrollYProgress } = useScroll({
@@ -216,7 +188,7 @@ export const RecentWork = ({ containerRef }: { containerRef: React.RefObject<HTM
               </h2>
             </div>
 
-            <Skiper16 projects={activeProjects} scrollYProgress={scrollYProgress} />
+            <Skiper16 projects={projects} scrollYProgress={scrollYProgress} />
           </div>
         </div>
       </Layout>

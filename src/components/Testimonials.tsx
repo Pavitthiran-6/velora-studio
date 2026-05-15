@@ -29,48 +29,43 @@ const STATS = [
   { label: "Creative Launches", value: "24" }
 ];
 
+import { cmsService } from "../lib/cms-service";
+
 export const Testimonials = () => {
   const containerRef = useRef<HTMLDivElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
   const [dragConstraints, setDragConstraints] = useState({ left: 0, right: 0 });
-  const [activeReviews, setActiveReviews] = useState(INITIAL_TESTIMONIALS);
+  const [activeReviews, setActiveReviews] = useState<any[]>([]);
   const x = useMotionValue(0);
 
-  // REAL-TIME CMS CONNECTION
-  useEffect(() => {
-    const syncWithCMS = () => {
-      const stored = localStorage.getItem("studio_reviews");
-      if (stored) {
-        try {
-          const parsed = JSON.parse(stored);
-          const formatted = parsed
-            .filter((r: any) => r.is_published)
-            .sort((a: any, b: any) => a.review_index - b.review_index)
-            .map((r: any) => ({
-              id: r.id,
-              name: r.reviewer_name,
-              role: r.company_name,
-              text: r.review_text,
-              avatar: r.avatar_url || "https://images.unsplash.com/photo-1633332755192-727a05c4013d?auto=format&fit=crop&q=80&w=100"
-            }));
-          
-          if (formatted.length > 0) {
-            setActiveReviews(formatted);
-          }
-        } catch (e) {
-          console.error("CMS Sync Error:", e);
-        }
+  const fetchReviews = async () => {
+    try {
+      const data = await cmsService.getReviews();
+      const formatted = data
+        .filter((r: any) => r.isActive)
+        .sort((a: any, b: any) => (a.reviewIndex || 0) - (b.reviewIndex || 0))
+        .map((r: any) => ({
+          id: r.id,
+          name: r.name,
+          role: r.company,
+          text: r.content,
+          avatar: r.avatarUrl || "https://images.unsplash.com/photo-1633332755192-727a05c4013d?auto=format&fit=crop&q=80&w=100"
+        }));
+      
+      if (formatted.length > 0) {
+        setActiveReviews(formatted);
+      } else {
+        setActiveReviews(INITIAL_TESTIMONIALS);
       }
-    };
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
-    syncWithCMS();
-    window.addEventListener('storage', syncWithCMS);
-    const interval = setInterval(syncWithCMS, 1500);
-
-    return () => {
-      window.removeEventListener('storage', syncWithCMS);
-      clearInterval(interval);
-    };
+  useEffect(() => {
+    fetchReviews();
+    window.addEventListener('cms-update', fetchReviews);
+    return () => window.removeEventListener('cms-update', fetchReviews);
   }, []);
 
   useEffect(() => {

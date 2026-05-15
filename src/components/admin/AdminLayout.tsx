@@ -17,9 +17,10 @@ import {
   Star
 } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
+import { useRef, useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
 import { SmoothScrollProvider } from "../SmoothScrollProvider";
-import { useRef } from "react";
+import { cmsService } from "../../lib/cms-service";
 
 const NAV_ITEMS = [
   { icon: LayoutDashboard, label: "Dashboard", path: "/admin/dashboard" },
@@ -36,6 +37,24 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
   const navigate = useNavigate();
   const location = useLocation();
   const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const [unreadCount, setUnreadCount] = useState(0);
+
+  useEffect(() => {
+    const fetchUnreadCount = async () => {
+      try {
+        const messages = await cmsService.getMessages();
+        const unread = messages.filter((m: any) => m.status === 'unread').length;
+        setUnreadCount(unread);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
+    fetchUnreadCount();
+    // Refresh every 30 seconds for live-ish updates
+    const interval = setInterval(fetchUnreadCount, 30000);
+    return () => clearInterval(interval);
+  }, [location.pathname]); // Refresh when navigating
 
   return (
     <div 
@@ -100,6 +119,10 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
                     className="ml-auto w-1.5 h-1.5 bg-[#ef4444] rounded-full shadow-[0_0_10px_#ef4444]"
                   />
                 )}
+                
+                {!isActive && item.label === "Messages" && unreadCount > 0 && (
+                  <div className="ml-auto w-2 h-2 bg-[#ef4444] rounded-full animate-pulse shadow-[0_0_8px_#ef4444]" />
+                )}
               </button>
             );
           })}
@@ -145,7 +168,9 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
                   className="p-2 hover:bg-black/5 rounded-full transition-colors relative group/bell"
                 >
                   <Bell className="w-5 h-5 group-hover/bell:scale-110 transition-transform" />
-                  <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-[#ef4444] rounded-full border-2 border-white" />
+                  {unreadCount > 0 && (
+                    <span className="absolute top-1.5 right-1.5 w-2.5 h-2.5 bg-[#ef4444] rounded-full border-2 border-white animate-bounce" />
+                  )}
                 </button>
                 <div className="flex items-center gap-4 border-l border-black/10 pl-6">
                   <div className="text-right">

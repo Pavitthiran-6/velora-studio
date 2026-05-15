@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "motion/react";
 import { MoveLeft, X, ArrowRight } from "lucide-react";
 import { useTransition } from "../components/TransitionProvider";
 import HexIcon from "../components/HexIcon";
+import { cmsService } from "../lib/cms-service";
 
 type ContactStep = "intro" | "projectType" | "budget" | "hearAbout" | "form" | "success";
 
@@ -130,24 +131,19 @@ export const ContactExperience: React.FC<{ isOpen: boolean; onClose: () => void 
             )}
             {step === "form" && (
               <StepFinalForm
-                onSelect={(formData) => {
-                  // BROADCAST TO ADMIN
-                  const inquiry = {
-                    id: Math.random().toString(36).substr(2, 9),
-                    type: "message",
-                    title: `New Inquiry: ${formData.firstName} ${formData.lastName}`,
-                    desc: `${formData.message} | Budget: ${selections.budget} | Interest: ${selections.projectType}`,
-                    email: formData.email,
-                    time: "Just Now",
-                    icon: "MessageSquare",
-                    color: "text-green-500",
-                    meta: selections
-                  };
-                  
-                  const existing = JSON.parse(localStorage.getItem("studio_inquiries") || "[]");
-                  localStorage.setItem("studio_inquiries", JSON.stringify([inquiry, ...existing]));
-                  
-                  nextStep("success");
+                onSelect={async (formData) => {
+                  try {
+                    await cmsService.submitMessage({
+                      name: `${formData.firstName} ${formData.lastName}`,
+                      email: formData.email,
+                      subject: `New Inquiry: ${selections.projectType}`,
+                      message: `${formData.message}\n\nBudget: ${selections.budget}\nSource: ${selections.hearAbout}`
+                    });
+                    nextStep("success");
+                  } catch (err) {
+                    console.error("Failed to submit message:", err);
+                    alert("Something went wrong. Please try again.");
+                  }
                 }}
                 selections={selections}
               />

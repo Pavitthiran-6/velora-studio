@@ -32,8 +32,18 @@ const INITIAL_CARDS = [
   { id: "3", title: "Vertex Motion Clip", tags: "Motion, 3D", slug: "/work/vertex", image: "https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&q=80&w=800", active: true, order: 3 },
 ];
 
+import { cmsService } from "../../lib/cms-service";
+
+const slugify = (text: string) => {
+  return text
+    .toLowerCase()
+    .replace(/[^\w ]+/g, "")
+    .replace(/ +/g, "-");
+};
+
 export default function AdminHomeCards() {
-  const [cards, setCards] = useState(INITIAL_CARDS);
+  const [cards, setCards] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingCard, setEditingCard] = useState<any>(null);
   const [formData, setFormData] = useState({
@@ -43,14 +53,26 @@ export default function AdminHomeCards() {
     image: "",
     active: true
   });
+
+  const fetchCards = async () => {
+    setIsLoading(true);
+    try {
+      const data = await cmsService.getHomeCards();
+      setCards(data);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchCards();
+  }, []);
+
   const modalRootRef = useRef<HTMLDivElement>(null);
   const modalContainerRef = useRef<HTMLDivElement>(null);
   const formScrollRef = useRef<HTMLDivElement>(null);
-
-  // REAL-TIME BROADCAST TO HOMEPAGE
-  useEffect(() => {
-    localStorage.setItem("home_cards", JSON.stringify(cards));
-  }, [cards]);
 
   // Prevent background scrolling when modal is open
   useEffect(() => {
@@ -92,8 +114,8 @@ export default function AdminHomeCards() {
         title: card.title,
         tags: card.tags,
         slug: card.slug,
-        image: card.image,
-        active: card.active
+        image: card.image_url || card.image,
+        active: card.is_active !== false
       });
     } else {
       setEditingCard(null);
@@ -108,30 +130,28 @@ export default function AdminHomeCards() {
     setIsModalOpen(true);
   };
 
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setFormData({ ...formData, image: reader.result as string });
-      };
-      reader.readAsDataURL(file);
+      try {
+        const url = await cmsService.uploadMedia(file, 'gallery-images');
+        setFormData({ ...formData, image: url });
+      } catch (err) {
+        console.error(err);
+      }
     }
   };
 
-  const handleSave = (e: React.FormEvent) => {
+  const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (editingCard) {
-      setCards(cards.map(c => c.id === editingCard.id ? { ...c, ...formData } : c));
-    } else {
-      const newCard = {
-        id: Math.random().toString(36).substr(2, 9),
-        ...formData,
-        order: cards.length + 1
-      };
-      setCards([...cards, newCard]);
+    try {
+      await cmsService.saveHomeCard({ ...formData, order: editingCard?.order || cards.length + 1 }, editingCard?.id);
+      await fetchCards();
+      setIsModalOpen(false);
+      window.dispatchEvent(new Event('cms-update'));
+    } catch (err) {
+      console.error(err);
     }
-    setIsModalOpen(false);
   };
 
   return (
@@ -188,8 +208,8 @@ export default function AdminHomeCards() {
                   </div>
 
                   <div className="w-40 h-24 bg-black/5 overflow-hidden rounded-sm shadow-sm relative">
-                    <img src={card.image} alt={card.title} className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-1000 scale-105 group-hover:scale-100" />
-                    {!card.active && (
+                    <img src={card.image_url || card.image} alt={card.title} className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-1000 scale-105 group-hover:scale-100" />
+                    {card.is_active === false && (
                       <div className="absolute inset-0 bg-white/80 backdrop-blur-sm flex items-center justify-center">
                         <span className="text-[8px] font-black tracking-widest uppercase text-black/40">HIDDEN</span>
                       </div>
@@ -199,7 +219,7 @@ export default function AdminHomeCards() {
                   <div className="flex-1 space-y-2">
                     <div className="flex items-center gap-3">
                       <span className="text-[9px] font-black tracking-[0.25em] text-[#ef4444] uppercase">{card.tags}</span>
-                      {!card.active && <AlertCircle className="w-3 h-3 text-black/20" />}
+                      {card.is_active === false && <AlertCircle className="w-3 h-3 text-black/20" />}
                     </div>
                     <h3 className="text-2xl font-display font-black uppercase tracking-tighter leading-none group-hover:tracking-normal transition-all duration-500">
                       {card.title}
@@ -385,7 +405,15 @@ export default function AdminHomeCards() {
                                   type="text" 
                                   required
                                   value={formData.title}
-                                  onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                                  onChange={(e) => {
+                                    const title = e.target.value;
+                                    const slugify = (str) => str.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
+                                    setFormData({ 
+                                      ...formData, 
+                                      title: title,
+                                      slug: formData.slug || !editingCard ? `/work/${slugify(title)}` : formData.slug
+                                    });
+                                  }}
                                   className="w-full bg-transparent border-b border-black/10 py-2.5 text-lg font-display uppercase outline-none focus:border-black transition-all" 
                                   placeholder="PROJECT NAME"
                                 />

@@ -1,211 +1,260 @@
-import React from "react";
-import { motion } from "framer-motion";
+import React, { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { AdminLayout } from "../../components/admin/AdminLayout";
 import { 
-  Bell, 
-  CheckCircle2, 
-  AlertCircle, 
-  Clock, 
   MessageSquare, 
-  UserPlus,
-  ArrowRight,
-  ShieldAlert,
-  Zap
+  Mail, 
+  Trash2, 
+  Clock, 
+  CheckCircle, 
+  AlertCircle,
+  Search,
+  ChevronRight,
+  Filter,
+  User,
+  ExternalLink
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-
-const NOTIFICATIONS = [
-  { id: "1", type: "system", title: "Core Kernel Update", desc: "Studio OS updated to v2.0.4 with enhanced WebGL performance.", time: "12m ago", icon: Zap, color: "text-blue-500" },
-  { id: "2", type: "alert", title: "Security Breach Attempt", desc: "Unauthorized login attempt from IP 192.168.1.1 blocked.", time: "2h ago", icon: ShieldAlert, color: "text-[#ef4444]" },
-  { id: "3", type: "message", title: "New Inquiry: Sarah Jenkins", desc: "Interested in the 'Nexus Experience' for their upcoming launch.", time: "5h ago", icon: MessageSquare, color: "text-green-500" },
-  { id: "4", type: "user", title: "New Collaborator", desc: "David Miller joined the Creative Team as Motion Designer.", time: "1d ago", icon: UserPlus, color: "text-purple-500" },
-  { id: "5", type: "success", title: "Upload Complete", desc: "8K Cinematic renders for 'Sling Shot' successfully archived.", time: "2d ago", icon: CheckCircle2, color: "text-green-500" },
-];
+import { cmsService } from "../../lib/cms-service";
 
 export default function AdminNotifications() {
-  const [filter, setFilter] = React.useState<"all" | "inquiry" | "error">("all");
-  const [liveInquiries, setLiveInquiries] = React.useState<any[]>([]);
+  const [messages, setMessages] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [filter, setFilter] = useState<"ALL" | "UNREAD" | "ARCHIVED">("ALL");
+  const [selectedMessage, setSelectedMessage] = useState<any>(null);
 
-  React.useEffect(() => {
-    const syncInquiries = () => {
-      const data = JSON.parse(localStorage.getItem("studio_inquiries") || "[]");
-      setLiveInquiries(data);
-    };
-    syncInquiries();
-    window.addEventListener('storage', syncInquiries);
-    const interval = setInterval(syncInquiries, 2000);
-    return () => {
-      window.removeEventListener('storage', syncInquiries);
-      clearInterval(interval);
-    };
+  const fetchMessages = async () => {
+    setIsLoading(true);
+    try {
+      const data = await cmsService.getMessages();
+      setMessages(data);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchMessages();
   }, []);
 
-  const displayNotifications = React.useMemo(() => {
-    const combined = [...liveInquiries, ...SYSTEM_ERRORS, ...NOTIFICATIONS];
-    if (filter === "all") return combined;
-    if (filter === "inquiry") return combined.filter(n => n.type === "message");
-    if (filter === "error") return combined.filter(n => n.type === "alert");
-    return combined;
-  }, [filter, liveInquiries]);
+  const handleStatusUpdate = async (id: string, status: 'read' | 'unread' | 'archived') => {
+    try {
+      await cmsService.updateMessageStatus(id, status);
+      await fetchMessages();
+      if (selectedMessage?.id === id) {
+        setSelectedMessage({ ...selectedMessage, status });
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const handleDelete = async (id: string) => {
+    if (!confirm("Are you sure you want to delete this message?")) return;
+    try {
+      await cmsService.deleteMessage(id);
+      await fetchMessages();
+      if (selectedMessage?.id === id) setSelectedMessage(null);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const filteredMessages = messages.filter((m: any) => {
+    if (filter === "UNREAD") return m.status === 'unread';
+    if (filter === "ARCHIVED") return m.status === 'archived';
+    return true;
+  });
 
   return (
     <AdminLayout>
-      <div className="space-y-16">
-        
-        {/* Header Section */}
+      <div className="space-y-10">
+        {/* Header Area */}
         <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8">
-          <div>
-            <span className="text-[10px] font-black tracking-[0.5em] uppercase opacity-40 mb-4 block">[ SYSTEM ALERTS ]</span>
-            <h1 className="font-display text-[8vw] leading-[0.8] tracking-[-0.06em] uppercase font-black">
-              SIGNALS
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+          >
+            <span className="text-[10px] font-black tracking-[0.5em] uppercase opacity-40 mb-4 block">[ INBOX PROTOCOL ]</span>
+            <h1 className="font-display text-[8vw] lg:text-[6vw] leading-[0.8] tracking-[-0.06em] uppercase font-black">
+              MESSAGES
             </h1>
-          </div>
-          <div className="flex gap-4">
-            <button className="px-8 h-14 border border-black/5 text-[10px] font-black tracking-[0.2em] uppercase hover:bg-black hover:text-white transition-all">
-              MARK ALL AS READ
-            </button>
-          </div>
-        </div>
-
-        {/* Filter System */}
-        <div className="flex flex-wrap items-center gap-4 border-b border-black/5 pb-8">
-          <button 
-            onClick={() => setFilter("all")}
-            className={cn(
-              "px-8 py-4 text-[10px] font-black tracking-[0.2em] uppercase flex items-center gap-4 transition-all",
-              filter === "all" ? "bg-black text-white" : "bg-[#fafafa] text-black border border-black/5 hover:border-black"
-            )}
-          >
-            ALL SIGNALS <span className="opacity-40 text-[9px]">[{displayNotifications.length}]</span>
-          </button>
-          <button 
-            onClick={() => setFilter("inquiry")}
-            className={cn(
-              "px-8 py-4 text-[10px] font-black tracking-[0.2em] uppercase flex items-center gap-4 transition-all",
-              filter === "inquiry" ? "bg-black text-white" : "bg-[#fafafa] text-black border border-black/5 hover:border-black"
-            )}
-          >
-            INQUIRIES <span className={cn("text-[9px]", filter === "inquiry" ? "text-white/40" : "text-[#ef4444]")}>
-              [{liveInquiries.length}]
-            </span>
-          </button>
-          <button 
-            onClick={() => setFilter("error")}
-            className={cn(
-              "px-8 py-4 text-[10px] font-black tracking-[0.2em] uppercase flex items-center gap-4 transition-all",
-              filter === "error" ? "bg-black text-white" : "bg-[#fafafa] text-black border border-black/5 hover:border-black"
-            )}
-          >
-            ERRORS <span className={cn("text-[9px]", filter === "error" ? "text-white/40" : "text-[#ef4444]")}>
-              [{displayNotifications.filter(n => n.type === "alert").length}]
-            </span>
-          </button>
-        </div>
-
-        {/* Notifications Timeline */}
-        <div className="max-w-[1000px]">
-          <div className="space-y-4">
-            {displayNotifications.map((note, i) => {
-              const Icon = note.icon === "MessageSquare" ? MessageSquare : note.icon;
-              return (
-                <motion.div
-                  key={note.id}
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.5, delay: i * 0.1 }}
-                  className="group relative bg-white border border-black/5 p-8 flex items-start gap-8 hover:border-black/20 transition-all cursor-pointer"
-                >
-                  <div className={cn("mt-1 p-3 rounded-xl bg-black/5 transition-colors group-hover:bg-black group-hover:text-white", note.color)}>
-                    <Icon className="w-5 h-5" />
-                  </div>
-                  
-                  <div className="flex-1 space-y-1">
-                    <div className="flex justify-between items-start">
-                      <div className="flex items-center gap-3">
-                        <h3 className="text-base font-black tracking-tight uppercase group-hover:text-[#ef4444] transition-colors">{note.title}</h3>
-                        {note.type === "message" && <span className="px-2 py-0.5 bg-[#ef4444] text-white text-[7px] font-black tracking-widest uppercase rounded-sm">NEW LEAD</span>}
-                      </div>
-                      <span className="text-[9px] font-black opacity-20 uppercase tracking-widest">{note.time}</span>
-                    </div>
-                    <p className="text-xs font-medium opacity-40 uppercase max-w-[800px] leading-relaxed">
-                      {note.desc}
-                    </p>
-                    {note.email && <p className="text-[9px] font-black text-[#ef4444] uppercase mt-2 tracking-widest">{note.email}</p>}
-                  </div>
-
-                  <div className="opacity-0 group-hover:opacity-100 transition-opacity">
-                    <ArrowRight className="w-4 h-4" />
-                  </div>
-                  
-                  <motion.div 
-                    className="absolute bottom-0 left-0 h-[2px] bg-black w-0 group-hover:w-full transition-all duration-700"
-                  />
-                </motion.div>
-              );
-            })}
-            {displayNotifications.length === 0 && (
-              <div className="p-20 border border-dashed border-black/10 flex flex-col items-center justify-center text-center space-y-4">
-                <ShieldAlert className="w-12 h-12 opacity-10" />
-                <p className="text-[10px] font-black tracking-[0.3em] uppercase opacity-20 text-center">NO SIGNALS DETECTED IN THIS FREQUENCY</p>
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* System Health Section */}
-        <section className="p-12 border border-black/5 bg-[#fafafa]">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
-            {[
-              { label: "FRONTEND KERNEL", val: "STABLE", status: "OPTIMAL", color: "text-green-500" },
-              { label: "SUPABASE VAULT", val: "CONNECTED", status: "SECURE", color: "text-green-500" },
-              { label: "BACKEND API", val: "ACTIVE", status: "FAST", color: "text-green-500" }
-            ].map(s => (
-              <div key={s.label} className="space-y-4">
-                <p className="text-[10px] font-black tracking-[0.4em] uppercase opacity-20">{s.label}</p>
-                <div className="flex items-baseline gap-2">
-                  <span className="font-display text-4xl font-black uppercase">{s.val}</span>
-                  <span className={cn("text-[9px] font-black uppercase", s.color)}>{s.status}</span>
-                </div>
-              </div>
+          </motion.div>
+          
+          <div className="flex items-center gap-12 border-b border-black/5 pb-4">
+            {['ALL', 'UNREAD', 'ARCHIVED'].map(f => (
+              <button 
+                key={f} 
+                onClick={() => setFilter(f as any)}
+                className={cn(
+                  "text-[10px] font-black tracking-widest uppercase transition-all relative pb-2",
+                  filter === f ? "text-[#ef4444]" : "opacity-30 hover:opacity-100"
+                )}
+              >
+                {f}
+                {filter === f && <motion.div layoutId="notifFilter" className="absolute bottom-0 left-0 w-full h-[2px] bg-[#ef4444]" />}
+              </button>
             ))}
           </div>
-        </section>
+        </div>
 
+        {/* Content Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
+          
+          {/* List Section (Left) */}
+          <div className="lg:col-span-5 space-y-4">
+            <div className="relative group">
+              <Search className="absolute left-6 top-1/2 -translate-y-1/2 w-4 h-4 opacity-20 group-focus-within:opacity-100 transition-opacity" />
+              <input 
+                type="text" 
+                placeholder="SEARCH INBOX..." 
+                className="w-full bg-white border border-black/5 px-16 py-6 text-[10px] font-black tracking-widest uppercase outline-none focus:border-black transition-all"
+              />
+            </div>
+
+            <div className="space-y-3">
+              {isLoading ? (
+                [...Array(5)].map((_, i) => (
+                  <div key={i} className="h-32 bg-black/5 animate-pulse border border-black/5" />
+                ))
+              ) : filteredMessages.length > 0 ? (
+                filteredMessages.map((msg) => (
+                  <motion.div
+                    key={msg.id}
+                    layoutId={msg.id}
+                    onClick={() => {
+                      setSelectedMessage(msg);
+                      if (msg.status === 'unread') handleStatusUpdate(msg.id, 'read');
+                    }}
+                    className={cn(
+                      "group p-8 border cursor-pointer transition-all duration-500 relative flex items-start gap-6",
+                      selectedMessage?.id === msg.id ? "bg-black text-white border-black" : "bg-white border-black/5 hover:border-black/20"
+                    )}
+                  >
+                    {msg.status === 'unread' && (
+                      <div className="absolute top-8 right-8 w-2 h-2 bg-[#ef4444] rounded-full" />
+                    )}
+                    
+                    <div className={cn(
+                      "w-12 h-12 rounded-full flex items-center justify-center shrink-0 border",
+                      selectedMessage?.id === msg.id ? "bg-white/10 border-white/20" : "bg-black/5 border-black/5"
+                    )}>
+                      <User className="w-5 h-5" />
+                    </div>
+
+                    <div className="flex-1 min-w-0">
+                      <div className="flex justify-between items-start mb-1">
+                        <p className={cn(
+                          "text-[10px] font-black tracking-widest uppercase truncate pr-8",
+                          selectedMessage?.id === msg.id ? "text-white" : "text-black"
+                        )}>
+                          {msg.name}
+                        </p>
+                      </div>
+                      <p className={cn(
+                        "text-[9px] font-black tracking-widest uppercase mb-3",
+                        selectedMessage?.id === msg.id ? "text-[#ef4444]" : "text-[#ef4444]/60"
+                      )}>
+                        {msg.subject || "NO SUBJECT"}
+                      </p>
+                      <p className={cn(
+                        "text-[11px] font-medium uppercase line-clamp-1",
+                        selectedMessage?.id === msg.id ? "opacity-60" : "opacity-30"
+                      )}>
+                        {msg.message}
+                      </p>
+                    </div>
+                  </motion.div>
+                ))
+              ) : (
+                <div className="py-20 text-center border border-dashed border-black/10">
+                  <p className="text-[10px] font-black tracking-widest opacity-20 uppercase">No Messages Found</p>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Details Section (Right) */}
+          <div className="lg:col-span-7 h-fit sticky top-32">
+            <AnimatePresence mode="wait">
+              {selectedMessage ? (
+                <motion.div
+                  key={selectedMessage.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -20 }}
+                  className="bg-white border border-black/5 p-12 lg:p-16 space-y-12 shadow-2xl"
+                >
+                  <div className="flex justify-between items-start">
+                    <div className="space-y-4">
+                      <span className="text-[10px] font-black tracking-[0.4em] uppercase text-[#ef4444]">[ MESSAGE DATA ]</span>
+                      <h2 className="text-4xl lg:text-5xl font-display font-black uppercase tracking-tight leading-none">
+                        {selectedMessage.subject || "No Subject"}
+                      </h2>
+                    </div>
+                    <div className="flex gap-4">
+                      <button 
+                        onClick={() => handleDelete(selectedMessage.id)}
+                        className="w-12 h-12 rounded-full border border-black/5 flex items-center justify-center hover:bg-red-50 hover:text-red-500 hover:border-red-100 transition-all"
+                      >
+                        <Trash2 className="w-5 h-5" />
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-8 py-8 border-y border-black/5">
+                    <div>
+                      <p className="text-[8px] font-black tracking-widest opacity-30 uppercase mb-2">Sender Identity</p>
+                      <p className="text-sm font-black uppercase">{selectedMessage.name}</p>
+                      <p className="text-[10px] font-medium opacity-40 lowercase">{selectedMessage.email}</p>
+                    </div>
+                    <div>
+                      <p className="text-[8px] font-black tracking-widest opacity-30 uppercase mb-2">Received At</p>
+                      <div className="flex items-center gap-2">
+                        <Clock className="w-3 h-3 opacity-30" />
+                        <p className="text-sm font-black uppercase">
+                          {new Date(selectedMessage.created_at).toLocaleDateString()}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="space-y-4">
+                    <p className="text-[8px] font-black tracking-widest opacity-30 uppercase">Inquiry Content</p>
+                    <div className="p-10 bg-[#fafafa] border border-black/5 text-sm font-medium uppercase leading-relaxed text-black/80 whitespace-pre-wrap">
+                      {selectedMessage.message}
+                    </div>
+                  </div>
+
+                  <div className="flex gap-4 pt-6">
+                    <button 
+                      onClick={() => handleStatusUpdate(selectedMessage.id, selectedMessage.status === 'archived' ? 'unread' : 'archived')}
+                      className="px-8 py-4 border border-black text-[10px] font-black tracking-widest uppercase hover:bg-black hover:text-white transition-all"
+                    >
+                      {selectedMessage.status === 'archived' ? 'UNARCHIVE' : 'ARCHIVE MESSAGE'}
+                    </button>
+                    <a 
+                      href={`mailto:${selectedMessage.email}`}
+                      className="px-8 py-4 bg-[#ef4444] text-white text-[10px] font-black tracking-widest uppercase flex items-center gap-3 hover:bg-black transition-all"
+                    >
+                      REPLY VIA EMAIL
+                      <ExternalLink className="w-3 h-3" />
+                    </a>
+                  </div>
+                </motion.div>
+              ) : (
+                <div className="h-[600px] bg-black/5 border border-dashed border-black/10 flex flex-col items-center justify-center text-center p-20">
+                  <Mail className="w-12 h-12 opacity-10 mb-6" />
+                  <h3 className="text-[10px] font-black tracking-[0.5em] uppercase opacity-20">Select a message to view details</h3>
+                </div>
+              )}
+            </AnimatePresence>
+          </div>
+
+        </div>
       </div>
     </AdminLayout>
   );
 }
-
-// MOCK SYSTEM ERRORS (Detecting Stack Failures)
-const SYSTEM_ERRORS = [
-  { 
-    id: "err_1", 
-    type: "alert", 
-    title: "Supabase Vault Timeout", 
-    desc: "Connection to cloud database interrupted. Retrying handshake in 5s...", 
-    time: "4m ago", 
-    icon: ShieldAlert, 
-    color: "text-[#ef4444]",
-    source: "SUPABASE"
-  },
-  { 
-    id: "err_2", 
-    type: "alert", 
-    title: "Backend API 500", 
-    desc: "Endpoint /api/admin/home-cards returned an internal server error. Check stack logs.", 
-    time: "15m ago", 
-    icon: ShieldAlert, 
-    color: "text-[#ef4444]",
-    source: "BACKEND"
-  },
-  { 
-    id: "err_3", 
-    type: "alert", 
-    title: "Frontend Hydration Mismatch", 
-    desc: "React hydration failed on route /work. Possible SSR conflict detected.", 
-    time: "1h ago", 
-    icon: ShieldAlert, 
-    color: "text-[#ef4444]",
-    source: "FRONTEND"
-  }
-];
