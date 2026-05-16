@@ -6,6 +6,7 @@ import { MoveLeft, X, ArrowRight } from "lucide-react";
 import { useTransition } from "../components/TransitionProvider";
 import HexIcon from "../components/HexIcon";
 import { cmsService } from "../lib/cms-service";
+import { cn } from "../lib/utils";
 
 type ContactStep = "intro" | "projectType" | "budget" | "hearAbout" | "form" | "success";
 
@@ -25,6 +26,8 @@ export const ContactExperience: React.FC<{ isOpen: boolean; onClose: () => void 
     budget: "",
     hearAbout: ""
   });
+
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const nextStep = (next: ContactStep) => setStep(next);
   const prevStep = (prev: ContactStep) => setStep(prev);
@@ -60,11 +63,12 @@ export const ContactExperience: React.FC<{ isOpen: boolean; onClose: () => void 
           {/* Selected Tags Capsules */}
           <div className="flex gap-2">
             <AnimatePresence>
-              {[selections.projectType, selections.budget, selections.hearAbout].map((tag, i) => tag && (
+              {step !== "success" && [selections.projectType, selections.budget, selections.hearAbout].map((tag, i) => tag && (
                 <motion.div
                   key={`${tag}-${i}`}
                   initial={{ opacity: 0, y: -20, scale: 0.8 }}
                   animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: -20, scale: 0.8 }}
                   className="px-5 py-2 md:py-3 rounded-full bg-white/5 border border-white/10 text-[9px] md:text-[10px] font-display font-black tracking-[0.2em] uppercase text-white/40 whitespace-nowrap flex items-center gap-3"
                 >
                   <HexIcon className="w-2.5 h-2.5" fill="#ef3b5d" />
@@ -129,7 +133,9 @@ export const ContactExperience: React.FC<{ isOpen: boolean; onClose: () => void 
             )}
             {step === "form" && (
               <StepFinalForm
+                isSubmitting={isSubmitting}
                 onSelect={async (formData) => {
+                  setIsSubmitting(true);
                   try {
                     await cmsService.submitMessage({
                       name: `${formData.firstName} ${formData.lastName}`,
@@ -141,6 +147,8 @@ export const ContactExperience: React.FC<{ isOpen: boolean; onClose: () => void 
                   } catch (err) {
                     console.error("Failed to submit message:", err);
                     alert("Something went wrong. Please try again.");
+                  } finally {
+                    setIsSubmitting(false);
                   }
                 }}
                 selections={selections}
@@ -236,13 +244,31 @@ const StepContent: React.FC<{ title: React.ReactNode; options: string[]; onSelec
   </motion.div>
 );
 
-const StepFinalForm: React.FC<{ selections: SelectionData; onSelect: (formData: any) => void }> = ({ selections, onSelect }) => {
+const StepFinalForm: React.FC<{ selections: SelectionData; onSelect: (formData: any) => void; isSubmitting: boolean }> = ({ selections, onSelect, isSubmitting }) => {
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
     email: "",
     message: ""
   });
+  const [errors, setErrors] = useState<Record<string, string>>({});
+
+  const validate = () => {
+    const newErrors: Record<string, string> = {};
+    if (!formData.firstName.trim()) newErrors.firstName = "REQUIRED FIELD";
+    if (!formData.email.trim()) newErrors.email = "REQUIRED FIELD";
+    else if (!/\S+@\S+\.\S+/.test(formData.email)) newErrors.email = "INVALID EMAIL";
+    if (!formData.message.trim()) newErrors.message = "REQUIRED FIELD";
+    
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleSubmit = () => {
+    if (validate()) {
+      onSelect(formData);
+    }
+  };
 
   return (
     <motion.div
@@ -264,10 +290,14 @@ const StepFinalForm: React.FC<{ selections: SelectionData; onSelect: (formData: 
             label="FIRST NAME" 
             placeholder="JOHN" 
             value={formData.firstName}
-            onChange={(val) => setFormData(f => ({ ...f, firstName: val }))}
+            error={errors.firstName}
+            onChange={(val) => {
+              setFormData(f => ({ ...f, firstName: val }));
+              if (errors.firstName) setErrors(prev => ({ ...prev, firstName: "" }));
+            }}
           />
           <FloatingInput 
-            label="LAST NAME" 
+            label="LAST NAME (OPTIONAL)" 
             placeholder="DOE" 
             value={formData.lastName}
             onChange={(val) => setFormData(f => ({ ...f, lastName: val }))}
@@ -277,24 +307,51 @@ const StepFinalForm: React.FC<{ selections: SelectionData; onSelect: (formData: 
           label="EMAIL" 
           placeholder="HELLO@EXAMPLE.COM" 
           value={formData.email}
-          onChange={(val) => setFormData(f => ({ ...f, email: val }))}
+          error={errors.email}
+          onChange={(val) => {
+            setFormData(f => ({ ...f, email: val }));
+            if (errors.email) setErrors(prev => ({ ...prev, email: "" }));
+          }}
         />
         <FloatingInput 
           label="TELL US ABOUT THE DREAM" 
           placeholder="MY VISION IS..." 
           textarea 
           value={formData.message}
-          onChange={(val) => setFormData(f => ({ ...f, message: val }))}
+          error={errors.message}
+          onChange={(val) => {
+            setFormData(f => ({ ...f, message: val }));
+            if (errors.message) setErrors(prev => ({ ...prev, message: "" }));
+          }}
         />
 
         <div className="pt-8">
           <motion.button
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-            onClick={() => onSelect(formData)}
-            className="w-full h-16 md:h-20 bg-[#ef3b5d] rounded-full flex items-center justify-center gap-4 text-[10px] md:text-xs font-display font-black tracking-[0.4em] uppercase hover:bg-[#ff4d6d] transition-all"
+            whileHover={!isSubmitting ? { scale: 1.02 } : {}}
+            whileTap={!isSubmitting ? { scale: 0.98 } : {}}
+            disabled={isSubmitting}
+            onClick={handleSubmit}
+            className={`w-full h-16 md:h-20 rounded-full flex items-center justify-center gap-4 text-[10px] md:text-xs font-display font-black tracking-[0.4em] uppercase transition-all ${
+              isSubmitting ? "bg-white/10 cursor-not-allowed" : "bg-[#ef3b5d] hover:bg-[#ff4d6d]"
+            }`}
           >
-            SEND MAGIC <ArrowRight className="w-5 h-5" />
+            {isSubmitting ? (
+              <motion.div
+                animate={{ opacity: [0.4, 1, 0.4] }}
+                transition={{ duration: 1.5, repeat: Infinity }}
+                className="flex items-center gap-3"
+              >
+                <span>TRANSMITTING MAGIC...</span>
+                <motion.div
+                  animate={{ rotate: 360 }}
+                  transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                >
+                  <HexIcon className="w-4 h-4" fill="#ef3b5d" />
+                </motion.div>
+              </motion.div>
+            ) : (
+              <>SEND MAGIC <ArrowRight className="w-5 h-5" /></>
+            )}
           </motion.button>
         </div>
       </div>
@@ -304,41 +361,73 @@ const StepFinalForm: React.FC<{ selections: SelectionData; onSelect: (formData: 
 
 const StepSuccess: React.FC<{ onClose: () => void }> = ({ onClose }) => (
   <motion.div
-    initial={{ opacity: 0, scale: 0.9 }}
-    animate={{ opacity: 1, scale: 1 }}
-    className="flex flex-col items-center text-center max-w-4xl mx-auto"
+    initial={{ opacity: 0, y: 20 }}
+    animate={{ opacity: 1, y: 0 }}
+    className="flex flex-col items-center text-center max-w-2xl mx-auto space-y-10"
   >
-    <div className="w-24 h-24 rounded-full border-2 border-[#ef3b5d] flex items-center justify-center mb-12">
+    <div className="w-20 h-20 rounded-full border border-[#ef3b5d]/30 flex items-center justify-center relative">
       <motion.div
-        initial={{ scale: 0 }}
-        animate={{ scale: 1 }}
-        transition={{ delay: 0.3, type: "spring" }}
+        initial={{ scale: 0, rotate: -45 }}
+        animate={{ scale: 1, rotate: 0 }}
+        transition={{ delay: 0.2, type: "spring", damping: 12 }}
       >
-        <HexIcon className="w-12 h-12" fill="#ef3b5d" />
+        <HexIcon className="w-10 h-10" fill="#ef3b5d" />
       </motion.div>
+      <motion.div 
+        animate={{ scale: [1, 1.2, 1], opacity: [0.3, 0.6, 0.3] }}
+        transition={{ duration: 2, repeat: Infinity }}
+        className="absolute inset-0 rounded-full border border-[#ef3b5d]"
+      />
     </div>
-    <h1 className="text-4xl md:text-7xl lg:text-[8vw] font-display font-black tracking-[-0.04em] uppercase leading-[0.85] mb-8">
-      MESSAGE <br /> <span className="text-[#ef3b5d]">RECEIVED.</span>
-    </h1>
+
+    <div className="space-y-4">
+      <p className="text-[10px] font-black tracking-[0.6em] uppercase text-[#ef3b5d] opacity-80">SUCCESSFULLY DISPATCHED</p>
+      <h1 className="text-4xl md:text-5xl lg:text-6xl font-display font-black tracking-[-0.04em] uppercase leading-[0.9]">
+        MESSAGE <br /> <span className="text-[#ef3b5d]">RECEIVED.</span>
+      </h1>
+      <p className="text-xs font-medium uppercase opacity-40 max-w-xs mx-auto leading-relaxed tracking-wide">
+        OUR TEAM IS ANALYZING YOUR VISION. <br /> EXPECT MAGIC SOON.
+      </p>
+    </div>
+
     <motion.button
-      whileHover={{ scale: 1.05 }}
+      whileHover={{ scale: 1.05, backgroundColor: "#ef3b5d", color: "#fff" }}
       whileTap={{ scale: 0.98 }}
       onClick={onClose}
-      className="px-12 py-6 rounded-full bg-white text-[#1f2547] text-xs font-display font-black tracking-[0.4em] uppercase"
+      className="px-10 py-5 rounded-full border border-white/10 text-white text-[10px] font-black tracking-[0.4em] uppercase transition-all duration-300"
     >
       BACK TO STUDIO
     </motion.button>
   </motion.div>
 );
 
-const FloatingInput: React.FC<{ label: string; placeholder: string; textarea?: boolean; value: string; onChange: (val: string) => void }> = ({ label, placeholder, textarea, value, onChange }) => (
+const FloatingInput: React.FC<{ label: string; placeholder: string; textarea?: boolean; value: string; error?: string; onChange: (val: string) => void }> = ({ label, placeholder, textarea, value, error, onChange }) => (
   <div className="relative group w-full">
-    <span className="block text-[10px] font-display font-black tracking-[0.3em] text-[#ef3b5d] mb-1 uppercase">{label}</span>
+    <div className="flex justify-between items-center mb-1">
+      <span className={cn(
+        "block text-[10px] font-display font-black tracking-[0.3em] uppercase transition-colors",
+        error ? "text-red-500" : "text-[#ef3b5d]"
+      )}>
+        {label}
+      </span>
+      {error && (
+        <motion.span
+          initial={{ opacity: 0, x: 10 }}
+          animate={{ opacity: 1, x: 0 }}
+          className="text-[9px] font-black tracking-widest text-red-500 uppercase"
+        >
+          {error}
+        </motion.span>
+      )}
+    </div>
     {textarea ? (
       <textarea
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="w-full bg-transparent border-b border-white/20 py-3 text-base md:text-lg font-display font-black tracking-tight uppercase focus:border-[#ef3b5d] focus:outline-none placeholder:text-white/20 text-white min-h-[80px] md:min-h-[100px]"
+        className={cn(
+          "w-full bg-transparent border-b py-3 text-base md:text-lg font-display font-black tracking-tight uppercase focus:outline-none placeholder:text-white/20 text-white min-h-[80px] md:min-h-[100px] transition-colors",
+          error ? "border-red-500/50" : "border-white/20 focus:border-[#ef3b5d]"
+        )}
         placeholder={placeholder}
       />
     ) : (
@@ -346,10 +435,16 @@ const FloatingInput: React.FC<{ label: string; placeholder: string; textarea?: b
         type="text"
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="w-full bg-transparent border-b border-white/20 py-3 text-base md:text-lg font-display font-black tracking-tight uppercase focus:border-[#ef3b5d] focus:outline-none placeholder:text-white/20 text-white"
+        className={cn(
+          "w-full bg-transparent border-b py-3 text-base md:text-lg font-display font-black tracking-tight uppercase focus:outline-none placeholder:text-white/20 text-white transition-colors",
+          error ? "border-red-500/50" : "border-white/20 focus:border-[#ef3b5d]"
+        )}
         placeholder={placeholder}
       />
     )}
-    <div className="absolute left-0 -bottom-px w-0 h-[1px] bg-[#ef3b5d] group-focus-within:w-full transition-all duration-500" />
+    <div className={cn(
+      "absolute left-0 -bottom-px h-[1px] transition-all duration-500",
+      error ? "bg-red-500 w-full" : "bg-[#ef3b5d] w-0 group-focus-within:w-full"
+    )} />
   </div>
 );

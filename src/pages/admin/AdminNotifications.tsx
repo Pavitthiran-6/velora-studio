@@ -81,7 +81,54 @@ export default function AdminNotifications() {
 
   return (
     <AdminLayout>
-      <div className="space-y-10">
+      <AnimatePresence mode="wait">
+        {isLoading && messages.length === 0 ? (
+          <motion.div
+            key="loading"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[1000] bg-white flex flex-col items-center justify-center p-12"
+          >
+            <div className="w-full max-w-sm space-y-8 text-center">
+              <div className="relative flex justify-center">
+                <motion.div
+                  animate={{ rotate: 360 }}
+                  transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
+                  className="w-24 h-24 border border-black/5 rounded-full flex items-center justify-center"
+                >
+                  <motion.div
+                    animate={{ scale: [0.8, 1.2, 0.8] }}
+                    transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                  >
+                    <MessageSquare className="w-8 h-8 text-[#ef4444]" />
+                  </motion.div>
+                </motion.div>
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <div className="w-32 h-32 border-t-2 border-red-500 rounded-full animate-spin" />
+                </div>
+              </div>
+              <div className="space-y-3">
+                <p className="text-[10px] font-black tracking-[0.6em] uppercase opacity-40">Communication Bridge</p>
+                <h2 className="text-4xl font-display font-black tracking-tighter uppercase">SYNCING INBOX...</h2>
+              </div>
+              <div className="w-full h-px bg-black/5 relative overflow-hidden">
+                <motion.div
+                  initial={{ x: "-100%" }}
+                  animate={{ x: "100%" }}
+                  transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }}
+                  className="absolute inset-0 bg-[#ef4444] w-1/3"
+                />
+              </div>
+            </div>
+          </motion.div>
+        ) : (
+          <motion.div
+            key="content"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="space-y-10"
+          >
         {/* Header Area */}
         <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8">
           <motion.div
@@ -272,7 +319,9 @@ export default function AdminNotifications() {
           </div>
 
         </div>
-      </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </AdminLayout>
   );
 }

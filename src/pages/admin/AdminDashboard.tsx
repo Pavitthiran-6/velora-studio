@@ -110,6 +110,8 @@ export default function AdminDashboard() {
   const [recentMessages, setRecentMessages] = useState<any[]>([]);
   const [recentLogs, setRecentLogs] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [growthData, setGrowthData] = useState<number[]>([0, 0, 0, 0, 0, 0, 0]);
+  const [categoryStats, setCategoryStats] = useState<{ labels: string[], data: number[] }>({ labels: [], data: [] });
 
   const fetchDashboardData = async () => {
     setIsLoading(true);
@@ -136,6 +138,36 @@ export default function AdminDashboard() {
       setRecentProjects(p.slice(0, 5));
       setRecentMessages(m.slice(0, 4));
       setRecentLogs(l.slice(0, 4));
+
+      // Calculate Real Growth Data (Last 7 Days)
+      const dailyCounts = new Array(7).fill(0);
+      const sevenDaysAgo = new Date();
+      sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 6);
+      sevenDaysAgo.setHours(0, 0, 0, 0);
+
+      m.forEach((msg: any) => {
+        const d = new Date(msg.created_at);
+        if (d >= sevenDaysAgo) {
+          const dayIndex = Math.floor((d.getTime() - sevenDaysAgo.getTime()) / (1000 * 60 * 60 * 24));
+          if (dayIndex >= 0 && dayIndex < 7) dailyCounts[dayIndex]++;
+        }
+      });
+      setGrowthData(dailyCounts);
+
+      // Calculate Category Distribution
+      const cats: Record<string, number> = {};
+      p.forEach((proj: any) => {
+        cats[proj.category] = (cats[proj.category] || 0) + 1;
+      });
+      const topCats = Object.entries(cats)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 3);
+      
+      setCategoryStats({
+        labels: topCats.map(([k]) => k),
+        data: topCats.map(([, v]) => v)
+      });
+
     } catch (err) {
       console.error(err);
     } finally {
@@ -158,7 +190,7 @@ export default function AdminDashboard() {
     };
   }, []);
 
-  const trafficData = useMemo(() => Array.from({ length: 12 }, () => Math.floor(Math.random() * 50) + 50), []);
+
 
   const dashboardStats = [
     { label: "Active Projects", value: stats.projects.toString(), icon: Briefcase, color: "text-[#ef4444]", trend: "+12%" },
@@ -205,7 +237,54 @@ export default function AdminDashboard() {
 
   return (
     <AdminLayout>
-      <div className="space-y-16 pb-20">
+      <AnimatePresence mode="wait">
+        {isLoading ? (
+          <motion.div
+            key="loading"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[1000] bg-white flex flex-col items-center justify-center p-12"
+          >
+            <div className="w-full max-w-sm space-y-8 text-center">
+              <div className="relative flex justify-center">
+                <motion.div
+                  animate={{ rotate: 360 }}
+                  transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
+                  className="w-24 h-24 border border-black/5 rounded-full flex items-center justify-center"
+                >
+                  <motion.div
+                    animate={{ scale: [0.8, 1.2, 0.8] }}
+                    transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                  >
+                    <Zap className="w-8 h-8 text-[#ef4444]" />
+                  </motion.div>
+                </motion.div>
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <div className="w-32 h-32 border-t-2 border-red-500 rounded-full animate-spin" />
+                </div>
+              </div>
+              <div className="space-y-3">
+                <p className="text-[10px] font-black tracking-[0.6em] uppercase opacity-40">System Initialization</p>
+                <h2 className="text-4xl font-display font-black tracking-tighter uppercase">CALIBRATING...</h2>
+              </div>
+              <div className="w-full h-px bg-black/5 relative overflow-hidden">
+                <motion.div
+                  initial={{ x: "-100%" }}
+                  animate={{ x: "100%" }}
+                  transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }}
+                  className="absolute inset-0 bg-[#ef4444] w-1/3"
+                />
+              </div>
+            </div>
+          </motion.div>
+        ) : (
+          <motion.div
+            key="content"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="space-y-16 pb-20"
+          >
         
         {/* Header: Cinematic Welcome */}
         <section>
@@ -259,25 +338,25 @@ export default function AdminDashboard() {
 
            {/* Main Visualization Bridge */}
            <div className="lg:col-span-8 bg-black text-white p-10 md:p-14 flex flex-col justify-between min-h-[400px] relative overflow-hidden">
-             <div className="relative z-10 flex justify-between items-start">
+              <div className="relative z-10 flex justify-between items-start">
                 <div>
-                  <span className="text-[10px] font-black tracking-[0.4em] uppercase opacity-60 mb-4 block">[ TRAFFIC ANALYSIS ]</span>
+                  <span className="text-[10px] font-black tracking-[0.4em] uppercase opacity-60 mb-4 block">[ GROWTH ANALYSIS ]</span>
                   <h3 className="font-display text-5xl font-black tracking-tighter uppercase">Global Pulse</h3>
                 </div>
                 <div className="text-right">
-                   <p className="text-3xl font-display font-black text-[#ef4444]">12.4K</p>
-                   <p className="text-[8px] font-black opacity-60 uppercase tracking-widest">ACTIVE SESSIONS</p>
+                   <p className="text-3xl font-display font-black text-[#ef4444]">{growthData.reduce((a, b) => a + b, 0)}</p>
+                   <p className="text-[8px] font-black opacity-60 uppercase tracking-widest">7D INQUIRIES</p>
                 </div>
              </div>
 
              <div className="flex-1 mt-10">
-                <LineGraph data={trafficData} color="#ef4444" height={180} />
+                <LineGraph data={growthData} color="#ef4444" height={180} />
              </div>
 
              <div className="mt-8 flex gap-10 pt-8 border-t border-white/20">
                 <div className="flex-1">
-                  <p className="text-[9px] font-black opacity-60 uppercase tracking-widest mb-4">Device Distribution</p>
-                  <BarGraph data={[65, 28, 7]} labels={["Mobile", "Desktop", "Tab"]} />
+                  <p className="text-[9px] font-black opacity-60 uppercase tracking-widest mb-4">Category Distribution</p>
+                  <BarGraph data={categoryStats.data} labels={categoryStats.labels} />
                 </div>
                 <div className="hidden md:block w-px bg-white/20" />
                 <div className="hidden md:grid grid-cols-2 gap-x-10 gap-y-4 items-center">
@@ -412,7 +491,9 @@ export default function AdminDashboard() {
           </div>
         </section>
 
-      </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </AdminLayout>
   );
 }
