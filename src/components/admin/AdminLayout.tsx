@@ -26,7 +26,6 @@ import { cmsService } from "../../lib/cms-service";
 
 const NAV_ITEMS = [
   { icon: LayoutDashboard, label: "Dashboard", path: "/admin/dashboard" },
-  { icon: BarChart3, label: "Analytics", path: "/admin/analytics" },
   { icon: FolderKanban, label: "Projects", path: "/admin/projects" },
   { icon: Layers, label: "Home Cards", path: "/admin/home-cards" },
   { icon: Bell, label: "Messages", path: "/admin/notifications" },
@@ -93,10 +92,10 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
           
           <button 
             onClick={() => window.open("/", "_blank")}
-            className="w-full flex items-center gap-4 p-4 rounded-xl border border-white/5 hover:border-white/20 hover:bg-white/5 transition-all group"
+            className="w-full flex items-center gap-4 p-4 rounded-xl border border-white/10 hover:border-white/30 hover:bg-white/5 transition-all group"
           >
-            <Monitor className="w-4 h-4 text-white/40 group-hover:text-white transition-colors" />
-            <span className="text-[9px] font-black tracking-[0.2em] uppercase text-white/40 group-hover:text-white">PREVIEW SITE</span>
+            <Monitor className="w-4 h-4 text-white/60 group-hover:text-white transition-colors" />
+            <span className="text-[9px] font-black tracking-[0.2em] uppercase text-white/60 group-hover:text-white">PREVIEW SITE</span>
           </button>
         </div>
 
@@ -110,7 +109,7 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
                 onClick={() => navigate(item.path)}
                 className={cn(
                   "group relative flex items-center gap-4 px-4 py-3.5 rounded-xl transition-all duration-300 outline-none",
-                  isActive ? "bg-white/10 text-white" : "text-white/30 hover:text-white hover:bg-white/5"
+                  isActive ? "bg-white/20 text-white" : "text-white/50 hover:text-white hover:bg-white/5"
                 )}
               >
                 <item.icon className={cn(
@@ -157,15 +156,15 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
           className="flex-1 h-full overflow-y-auto scrollbar-hide relative bg-[#fafafa]"
         >
           {/* Header Overlay */}
-          <div className="sticky top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-b border-black/5 px-8 md:px-16 h-24 flex items-center justify-between">
+          <div className="sticky top-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-md border-b border-black/10 px-8 md:px-16 h-24 flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <span className="text-[10px] font-black tracking-[0.4em] uppercase opacity-40 whitespace-nowrap">
-                SYSTEM STATUS: <span className="text-green-500 opacity-100">OPERATIONAL</span>
+              <span className="text-[10px] font-black tracking-[0.4em] uppercase opacity-70 whitespace-nowrap">
+                SYSTEM STATUS: <span className="text-green-600 opacity-100">OPERATIONAL</span>
               </span>
             </div>
 
             <div className="flex items-center gap-8">
-              <div className="hidden md:flex items-center gap-2 text-[10px] font-black tracking-[0.2em] uppercase opacity-40">
+              <div className="hidden md:flex items-center gap-2 text-[10px] font-black tracking-[0.2em] uppercase opacity-60">
                 <span className="w-1.5 h-1.5 bg-black rounded-full animate-pulse" />
                 LIVE DATA STREAMING
               </div>

@@ -71,10 +71,10 @@
     calc((var(--pointer-from-top) * 20px) - 6px) 20px -5px;
   transition: transform 1s ease;
   transform: translateZ(0) rotateX(0deg) rotateY(0deg);
-  background: #1f2547;
+  background: #2a2f4e;
   backface-visibility: hidden;
   overflow: hidden;
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  border: 1.5px solid rgba(255, 255, 255, 0.12);
 }
 
 .pc-card:hover,
@@ -144,9 +144,9 @@
     repeating-linear-gradient(
       var(--angle),
       #1f2547 0%,
-      hsl(180, 10%, 60%) 3.8%,
-      hsl(180, 29%, 66%) 4.5%,
-      hsl(180, 10%, 60%) 5.2%,
+      hsl(0, 0%, 60%) 3.8%,
+      hsl(0, 0%, 70%) 4.5%,
+      hsl(0, 0%, 60%) 5.2%,
       #1f2547 10%,
       #1f2547 12%
     ),
@@ -236,8 +236,8 @@
   overflow: hidden;
   background-image: radial-gradient(
     farthest-corner circle at var(--pointer-x) var(--pointer-y),
-    hsl(248, 25%, 80%) 12%,
-    hsla(207, 40%, 30%, 0.8) 90%
+    hsl(0, 0%, 90%) 12%,
+    hsla(0, 0%, 20%, 0.6) 90%
   );
   mix-blend-mode: overlay;
   filter: brightness(0.4) contrast(1) opacity(0.2);
@@ -245,7 +245,7 @@
 }
 
 .pc-avatar-content {
-  mix-blend-mode: luminosity;
+  mix-blend-mode: normal;
   overflow: visible;
   transform: translateZ(2);
   backface-visibility: hidden;

@@ -94,21 +94,21 @@ export default function AdminNotifications() {
             </h1>
           </motion.div>
           
-          <div className="flex items-center gap-12 border-b border-black/5 pb-4">
+          <div className="flex items-center gap-12 border-b border-black/10 pb-4">
             <button 
               onClick={handleClearAll}
-              className="text-[10px] font-black tracking-widest uppercase text-red-500/40 hover:text-red-500 transition-all mr-8"
+              className="text-[10px] font-black tracking-widest uppercase text-red-500/60 hover:text-red-500 transition-all mr-8"
             >
               Clear All Messages
             </button>
-            <div className="h-4 w-px bg-black/10 mr-4" />
+            <div className="h-4 w-px bg-black/20 mr-4" />
             {['ALL', 'UNREAD', 'ARCHIVED'].map(f => (
               <button 
                 key={f} 
                 onClick={() => setFilter(f as any)}
                 className={cn(
                   "text-[10px] font-black tracking-widest uppercase transition-all relative pb-2",
-                  filter === f ? "text-[#ef4444]" : "opacity-30 hover:opacity-100"
+                  filter === f ? "text-[#ef4444]" : "opacity-50 hover:opacity-100"
                 )}
               >
                 {f}
@@ -124,11 +124,11 @@ export default function AdminNotifications() {
           {/* List Section (Left) */}
           <div className="lg:col-span-5 space-y-4">
             <div className="relative group">
-              <Search className="absolute left-6 top-1/2 -translate-y-1/2 w-4 h-4 opacity-20 group-focus-within:opacity-100 transition-opacity" />
+              <Search className="absolute left-6 top-1/2 -translate-y-1/2 w-4 h-4 opacity-40 group-focus-within:opacity-100 transition-opacity" />
               <input 
                 type="text" 
                 placeholder="SEARCH INBOX..." 
-                className="w-full bg-white border border-black/5 px-16 py-6 text-[10px] font-black tracking-widest uppercase outline-none focus:border-black transition-all"
+                className="w-full bg-white border border-black/10 px-16 py-6 text-[10px] font-black tracking-widest uppercase outline-none focus:border-black transition-all"
               />
             </div>
 
@@ -148,7 +148,7 @@ export default function AdminNotifications() {
                     }}
                     className={cn(
                       "group p-8 border cursor-pointer transition-all duration-500 relative flex items-start gap-6",
-                      selectedMessage?.id === msg.id ? "bg-black text-white border-black" : "bg-white border-black/5 hover:border-black/20"
+                      selectedMessage?.id === msg.id ? "bg-black text-white border-black" : "bg-white border-black/10 hover:border-black/40"
                     )}
                   >
                     {msg.status === 'unread' && (
@@ -179,7 +179,7 @@ export default function AdminNotifications() {
                       </p>
                       <p className={cn(
                         "text-[11px] font-medium uppercase line-clamp-1",
-                        selectedMessage?.id === msg.id ? "opacity-60" : "opacity-30"
+                        selectedMessage?.id === msg.id ? "opacity-70" : "opacity-60"
                       )}>
                         {msg.message}
                       </p>
@@ -240,8 +240,8 @@ export default function AdminNotifications() {
                   </div>
 
                   <div className="space-y-4">
-                    <p className="text-[8px] font-black tracking-widest opacity-30 uppercase">Inquiry Content</p>
-                    <div className="p-10 bg-[#fafafa] border border-black/5 text-sm font-medium uppercase leading-relaxed text-black/80 whitespace-pre-wrap">
+                    <p className="text-[8px] font-black tracking-widest opacity-60 uppercase">Inquiry Content</p>
+                    <div className="p-10 bg-[#fafafa] border border-black/10 text-sm font-medium uppercase leading-relaxed text-black whitespace-pre-wrap">
                       {selectedMessage.message}
                     </div>
                   </div>

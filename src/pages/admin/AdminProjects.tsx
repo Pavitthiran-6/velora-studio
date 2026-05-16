@@ -206,15 +206,15 @@ export default function AdminProjects() {
         </div>
 
         {/* Project List Table View */}
-        <section className="bg-white border border-black/5 overflow-hidden mx-4">
+        <section className="bg-white border border-black/10 overflow-hidden mx-4">
           <table className="w-full text-left border-collapse">
             <thead>
-              <tr className="border-b border-black/5 bg-[#fafafa]">
-                <th className="px-8 py-6 text-[10px] font-black tracking-[0.2em] uppercase opacity-40">Project Details</th>
-                <th className="px-8 py-6 text-[10px] font-black tracking-[0.2em] uppercase opacity-40">Status</th>
-                <th className="px-8 py-6 text-[10px] font-black tracking-[0.2em] uppercase opacity-40">Category</th>
-                <th className="px-8 py-6 text-[10px] font-black tracking-[0.2em] uppercase opacity-40">Last Sync</th>
-                <th className="px-8 py-6 text-right text-[10px] font-black tracking-[0.2em] uppercase opacity-40">Control</th>
+              <tr className="border-b border-black/10 bg-[#fafafa]">
+                <th className="px-8 py-6 text-[10px] font-black tracking-[0.2em] uppercase opacity-70">Project Details</th>
+                <th className="px-8 py-6 text-[10px] font-black tracking-[0.2em] uppercase opacity-70">Status</th>
+                <th className="px-8 py-6 text-[10px] font-black tracking-[0.2em] uppercase opacity-70">Category</th>
+                <th className="px-8 py-6 text-[10px] font-black tracking-[0.2em] uppercase opacity-70">Last Sync</th>
+                <th className="px-8 py-6 text-right text-[10px] font-black tracking-[0.2em] uppercase opacity-70">Control</th>
               </tr>
             </thead>
             <tbody>
@@ -258,12 +258,12 @@ export default function AdminProjects() {
                   </td>
                   <td className="px-8 py-8">
                     <div className="flex items-center gap-2">
-                      <Tag className="w-3 h-3 opacity-20" />
-                      <span className="text-[10px] font-black tracking-[0.1em] uppercase opacity-40">{project.category}</span>
+                      <Tag className="w-3 h-3 opacity-50" />
+                      <span className="text-[10px] font-black tracking-[0.1em] uppercase opacity-70">{project.category}</span>
                     </div>
                   </td>
                   <td className="px-8 py-8">
-                    <span className="text-[10px] font-medium opacity-40 uppercase">
+                    <span className="text-[10px] font-medium opacity-70 uppercase">
                       {new Date(project.updatedAt).toLocaleDateString()}
                     </span>
                   </td>
@@ -306,8 +306,8 @@ export default function AdminProjects() {
             { label: "DRAFTS", val: projects.filter(p => p.status === 'Draft').length },
             { label: "ARCHIVED", val: projects.filter(p => p.status === 'Archived').length }
           ].map((s) => (
-            <div key={s.label} className="p-10 border border-black/5 bg-white flex flex-col items-center">
-              <span className="text-[10px] font-black tracking-[0.4em] uppercase opacity-20 mb-4">{s.label}</span>
+            <div key={s.label} className="p-10 border border-black/10 bg-white flex flex-col items-center">
+              <span className="text-[10px] font-black tracking-[0.4em] uppercase opacity-50 mb-4">{s.label}</span>
               <span className="font-display text-5xl font-black">{s.val}</span>
             </div>
           ))}

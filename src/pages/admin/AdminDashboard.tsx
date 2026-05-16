@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { motion } from "framer-motion";
+import React, { useState, useEffect, useMemo } from "react";
+import { motion, AnimatePresence } from "motion/react";
 import { AdminLayout } from "../../components/admin/AdminLayout";
 import { 
   FolderKanban, 
@@ -11,13 +11,91 @@ import {
   Trash2,
   Upload,
   ArrowUpRight,
-  ArrowRight
+  ArrowRight,
+  Activity,
+  Briefcase,
+  Users,
+  MessageSquare,
+  Zap,
+  RefreshCcw,
+  ShieldCheck,
+  MousePointer2,
+  Calendar
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useNavigate } from "react-router-dom";
 
 import { cmsService } from "../../lib/cms-service";
 import { supabase } from "../../lib/supabase";
+import { logSystemEvent } from "../../lib/logger";
+
+// --- CUSTOM SVG GRAPH COMPONENTS (From Analytics) ---
+
+const LineGraph = ({ data, color = "#ef4444", height = 120 }: { data: number[], color?: string, height?: number }) => {
+  const max = Math.max(...data, 1);
+  const min = Math.min(...data, 0);
+  const range = max - min;
+  
+  const points = data.map((val, i) => {
+    const x = (i / (data.length - 1)) * 100;
+    const y = 100 - ((val - min) / range) * 80 - 10; 
+    return `${x},${y}`;
+  }).join(" ");
+
+  return (
+    <div className="w-full relative" style={{ height }}>
+      <svg viewBox="0 0 100 100" className="w-full h-full overflow-visible" preserveAspectRatio="none">
+        <defs>
+          <linearGradient id="gradient-line-dash" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor={color} stopOpacity="0.2" />
+            <stop offset="100%" stopColor={color} stopOpacity="0" />
+          </linearGradient>
+        </defs>
+        <motion.path
+          initial={{ pathLength: 0, opacity: 0 }}
+          animate={{ pathLength: 1, opacity: 1 }}
+          transition={{ duration: 1.5, ease: "easeInOut" }}
+          d={`M ${points}`}
+          fill="none"
+          stroke={color}
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+        <motion.path
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 1, delay: 0.5 }}
+          d={`M ${points} L 100,100 L 0,100 Z`}
+          fill="url(#gradient-line-dash)"
+        />
+      </svg>
+    </div>
+  );
+};
+
+const BarGraph = ({ data, labels }: { data: number[], labels: string[] }) => {
+  const max = Math.max(...data, 1);
+  return (
+    <div className="flex items-end gap-1 md:gap-2 h-32 w-full">
+      {data.map((val, i) => (
+        <div key={i} className="flex-1 flex flex-col items-center gap-2 group">
+          <div className="w-full relative bg-black/5 hover:bg-black transition-colors duration-300 overflow-hidden">
+             <motion.div
+               initial={{ height: 0 }}
+               animate={{ height: `${(val / max) * 100}%` }}
+               transition={{ duration: 1, delay: i * 0.05, ease: [0.33, 1, 0.68, 1] }}
+               className="bg-[#ef4444] w-full"
+             />
+          </div>
+          <span className="text-[6px] md:text-[8px] font-black opacity-30 group-hover:opacity-100 transition-opacity uppercase tracking-tighter truncate w-full text-center">
+            {labels[i]}
+          </span>
+        </div>
+      ))}
+    </div>
+  );
+};
 
 export default function AdminDashboard() {
   const navigate = useNavigate();
@@ -25,6 +103,7 @@ export default function AdminDashboard() {
     projects: 0,
     reviews: 0,
     messages: 0,
+    activeCards: 0,
     errors: 0
   });
   const [recentProjects, setRecentProjects] = useState<any[]>([]);
@@ -32,39 +111,41 @@ export default function AdminDashboard() {
   const [recentLogs, setRecentLogs] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
+  const fetchDashboardData = async () => {
+    setIsLoading(true);
+    try {
+      const [p, r, m, l, c] = await Promise.all([
+        cmsService.getProjects(),
+        cmsService.getReviews(),
+        cmsService.getMessages(),
+        cmsService.getSystemLogs(),
+        supabase.from("home_cards").select("*", { count: "exact", head: true })
+      ]);
+      
+      const now = new Date();
+      const last24h = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+      
+      setStats({
+        projects: p.length,
+        reviews: r.length,
+        messages: m.filter((msg: any) => msg.status === 'unread').length,
+        activeCards: c.count || 0,
+        errors: l.filter((log: any) => log.level === 'error' && new Date(log.created_at) > last24h).length
+      });
+      
+      setRecentProjects(p.slice(0, 5));
+      setRecentMessages(m.slice(0, 4));
+      setRecentLogs(l.slice(0, 4));
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   useEffect(() => {
-    const fetchDashboardData = async () => {
-      setIsLoading(true);
-      try {
-        const [p, r, m, l] = await Promise.all([
-          cmsService.getProjects(),
-          cmsService.getReviews(),
-          cmsService.getMessages(),
-          cmsService.getSystemLogs()
-        ]);
-        
-        const now = new Date();
-        const last24h = new Date(now.getTime() - 24 * 60 * 60 * 1000);
-        
-        setStats({
-          projects: p.length,
-          reviews: r.length,
-          messages: m.filter((msg: any) => msg.status === 'unread').length,
-          errors: l.filter((log: any) => log.level === 'error' && new Date(log.created_at) > last24h).length
-        });
-        
-        setRecentProjects(p.slice(0, 5));
-        setRecentMessages(m.slice(0, 4));
-        setRecentLogs(l.slice(0, 4));
-      } catch (err) {
-        console.error(err);
-      } finally {
-        setIsLoading(false);
-      }
-    };
     fetchDashboardData();
 
-    // ⚡ REALTIME: Listen for new logs and update immediately
     const subscription = supabase
       .channel('system_logs_changes')
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'system_logs' }, () => {
@@ -77,11 +158,13 @@ export default function AdminDashboard() {
     };
   }, []);
 
+  const trafficData = useMemo(() => Array.from({ length: 12 }, () => Math.floor(Math.random() * 50) + 50), []);
+
   const dashboardStats = [
-    { label: "Active Projects", value: stats.projects.toString(), icon: FolderKanban, color: "text-black" },
-    { label: "Unread Leads", value: stats.messages.toString(), icon: Bell, color: "text-blue-500" },
-    { label: "System Health", value: stats.errors > 0 ? `${stats.errors} ERRORS` : "NOMINAL", icon: Shield, color: stats.errors > 0 ? "text-red-500" : "text-green-500" },
-    { label: "Total Reviews", value: stats.reviews.toString(), icon: Star, color: "text-yellow-500" },
+    { label: "Active Projects", value: stats.projects.toString(), icon: Briefcase, color: "text-[#ef4444]", trend: "+12%" },
+    { label: "Unread Leads", value: stats.messages.toString(), icon: MessageSquare, color: "text-blue-500", trend: "+5%" },
+    { label: "System Health", value: stats.errors > 0 ? `${stats.errors} ERRORS` : "NOMINAL", icon: ShieldCheck, color: stats.errors > 0 ? "text-red-500" : "text-green-500", trend: "100%" },
+    { label: "Active Cards", value: stats.activeCards.toString(), icon: Zap, color: "text-orange-500", trend: "0" },
   ];
 
   const handleDeleteLog = async (e: React.MouseEvent, id: string) => {
@@ -122,7 +205,7 @@ export default function AdminDashboard() {
 
   return (
     <AdminLayout>
-      <div className="space-y-20">
+      <div className="space-y-16 pb-20">
         
         {/* Header: Cinematic Welcome */}
         <section>
@@ -130,101 +213,167 @@ export default function AdminDashboard() {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
           >
-            <span className="text-[10px] font-black tracking-[0.5em] uppercase opacity-40 mb-6 block">
-              [ COMMAND CENTER PROTOCOL ]
-            </span>
-            <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8 border-b border-black/5 pb-12">
+            <div className="flex items-center gap-4 text-[10px] font-black tracking-[0.5em] uppercase opacity-40 mb-6">
+              <Activity className="w-3 h-3" />
+              <span>[ COMMAND CENTER v3.0 ]</span>
+            </div>
+            <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8 border-b border-black/10 pb-12">
               <h1 className="font-display text-[12vw] lg:text-[8vw] leading-[0.8] tracking-[-0.06em] uppercase font-black">
-                SYSTEM<br />OVERVIEW
+                SYSTEM<br />CONTROL
               </h1>
               <div className="lg:text-right">
                 <p className="text-sm font-black tracking-[0.2em] uppercase mb-1">
                   {new Date().toLocaleDateString('en-US', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}
                 </p>
-                <p className="text-[10px] font-medium opacity-40 uppercase">LIVE DATA STREAMING ACTIVE</p>
+                <div className="flex items-center gap-2 justify-end">
+                   <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+                   <p className="text-[10px] font-medium opacity-60 uppercase tracking-widest">Live Link Established</p>
+                </div>
               </div>
             </div>
           </motion.div>
         </section>
 
-        {/* SECTION 1: DYNAMIC METRICS */}
-        <section>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-1">
-            {dashboardStats.map((stat, i) => (
-              <motion.div
-                key={stat.label}
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: i * 0.1 }}
-                className="bg-white border border-black/5 p-10 hover:bg-black hover:text-white transition-all duration-500 group"
-              >
-                <div className="flex justify-between items-start mb-10">
-                  <span className="text-[10px] font-black tracking-[0.2em] uppercase opacity-40 group-hover:opacity-100 transition-opacity">{stat.label}</span>
-                  <stat.icon className={cn("w-5 h-5", stat.color)} />
+        {/* SECTION 1: DYNAMIC METRICS & GRAPH */}
+        <section className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+           <div className="lg:col-span-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-1 gap-4">
+              {dashboardStats.map((stat, i) => (
+                <motion.div
+                  key={stat.label}
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: i * 0.1 }}
+                  className="bg-white border border-black/10 p-8 hover:border-black transition-all group flex flex-col justify-between min-h-[160px]"
+                >
+                  <div className="flex justify-between items-start">
+                    <span className="text-[10px] font-black tracking-[0.2em] uppercase opacity-60 group-hover:opacity-100 transition-opacity">{stat.label}</span>
+                    <stat.icon className={cn("w-4 h-4", stat.color)} />
+                  </div>
+                  <h2 className="font-display text-5xl font-black tracking-tighter leading-none">{stat.value}</h2>
+                  <div className="h-4 mt-2 opacity-40 group-hover:opacity-100 transition-opacity">
+                    <LineGraph data={[10, 30, 20, 50, 40, 60]} color={stat.color.includes('red') ? '#ef4444' : '#000'} height={24} />
+                  </div>
+                </motion.div>
+              ))}
+           </div>
+
+           {/* Main Visualization Bridge */}
+           <div className="lg:col-span-8 bg-black text-white p-10 md:p-14 flex flex-col justify-between min-h-[400px] relative overflow-hidden">
+             <div className="relative z-10 flex justify-between items-start">
+                <div>
+                  <span className="text-[10px] font-black tracking-[0.4em] uppercase opacity-60 mb-4 block">[ TRAFFIC ANALYSIS ]</span>
+                  <h3 className="font-display text-5xl font-black tracking-tighter uppercase">Global Pulse</h3>
                 </div>
-                <h2 className="font-display text-7xl font-black tracking-tighter leading-none group-hover:scale-110 transition-transform origin-left">{stat.value}</h2>
-              </motion.div>
-            ))}
-          </div>
+                <div className="text-right">
+                   <p className="text-3xl font-display font-black text-[#ef4444]">12.4K</p>
+                   <p className="text-[8px] font-black opacity-60 uppercase tracking-widest">ACTIVE SESSIONS</p>
+                </div>
+             </div>
+
+             <div className="flex-1 mt-10">
+                <LineGraph data={trafficData} color="#ef4444" height={180} />
+             </div>
+
+             <div className="mt-8 flex gap-10 pt-8 border-t border-white/20">
+                <div className="flex-1">
+                  <p className="text-[9px] font-black opacity-60 uppercase tracking-widest mb-4">Device Distribution</p>
+                  <BarGraph data={[65, 28, 7]} labels={["Mobile", "Desktop", "Tab"]} />
+                </div>
+                <div className="hidden md:block w-px bg-white/20" />
+                <div className="hidden md:grid grid-cols-2 gap-x-10 gap-y-4 items-center">
+                   {[
+                     { l: "BOUNCE", v: "24%" },
+                     { l: "LOAD", v: "0.8s" },
+                     { l: "SECURE", v: "YES" },
+                     { l: "CACHE", v: "HIT" },
+                   ].map(x => (
+                     <div key={x.l}>
+                       <p className="text-[8px] font-black opacity-60 uppercase tracking-[0.2em]">{x.l}</p>
+                       <p className="text-sm font-black">{x.v}</p>
+                     </div>
+                   ))}
+                </div>
+             </div>
+
+             
+             <div className="absolute top-0 right-0 w-64 h-64 bg-[#ef4444]/10 blur-[80px] rounded-full" />
+           </div>
         </section>
 
         {/* SECTION 2: LIVE FEED GRID */}
-        <section className="grid grid-cols-1 lg:grid-cols-12 gap-10">
+        <section className="grid grid-cols-1 lg:grid-cols-12 gap-8">
           
           {/* Latest Project Pipeline */}
-          <div className="lg:col-span-7 space-y-8">
+          <div className="lg:col-span-7 space-y-6">
             <div className="flex items-center justify-between">
-              <h3 className="text-[10px] font-black tracking-[0.4em] uppercase opacity-40">[ PROJECT PIPELINE ]</h3>
+              <h3 className="text-[10px] font-black tracking-[0.4em] uppercase opacity-60">[ PROJECT PIPELINE ]</h3>
               <button onClick={() => navigate("/admin/projects")} className="text-[10px] font-black tracking-widest uppercase hover:text-red-500 transition-colors">View All</button>
             </div>
-            <div className="bg-white border border-black/5 divide-y divide-black/5">
+            <div className="bg-white border border-black/10 divide-y divide-black/10">
               {recentProjects.map((project) => (
-                <div key={project.id} className="p-6 flex items-center justify-between hover:bg-black/5 transition-colors group">
+                <div key={project.id} className="p-5 flex items-center justify-between hover:bg-black/5 transition-colors group cursor-pointer" onClick={() => navigate(`/admin/projects`)}>
                   <div className="flex items-center gap-6">
-                    <div className="w-12 h-12 bg-black/5 rounded overflow-hidden">
+                    <div className="w-10 h-10 bg-black/10 overflow-hidden">
                       <img src={project.coverImage} className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all" />
                     </div>
                     <div>
                       <p className="text-sm font-black uppercase tracking-tight">{project.title}</p>
-                      <p className="text-[9px] font-medium opacity-40 uppercase">{project.category}</p>
+                      <p className="text-[9px] font-medium opacity-60 uppercase">{project.category}</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-4">
-                    <span className="text-[9px] font-black px-3 py-1 border border-black/10 uppercase">{project.status}</span>
+                    <span className="text-[8px] font-black px-2 py-1 border border-black/20 uppercase">{project.status}</span>
+                    <ArrowUpRight className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity" />
                   </div>
                 </div>
               ))}
             </div>
           </div>
 
+
           {/* System Diagnostics (LIVE LOGS) */}
-          <div className="lg:col-span-5 space-y-8">
+          <div className="lg:col-span-5 space-y-6">
             <div className="flex items-center justify-between">
-              <h3 className="text-[10px] font-black tracking-[0.4em] uppercase opacity-40">[ SYSTEM DIAGNOSTICS ]</h3>
+              <h3 className="text-[10px] font-black tracking-[0.4em] uppercase opacity-60">[ SYSTEM DIAGNOSTICS ]</h3>
               <div className="flex gap-4">
-                <button onClick={handleClearAllLogs} className="text-[10px] font-black tracking-widest uppercase text-red-500/40 hover:text-red-500 transition-colors">Clear All</button>
-                <button onClick={() => navigate("/admin/system-logs")} className="text-[10px] font-black tracking-widest uppercase hover:text-red-500 transition-colors">Terminal</button>
+                <button 
+                  onClick={() => logSystemEvent("Manual Test Trigger", "admin_dashboard", "error")}
+                  className="text-[10px] font-black tracking-widest uppercase text-[#ef4444] hover:bg-[#ef4444]/20 px-2 py-1 transition-all font-bold"
+                >
+                  Test Trigger
+                </button>
+                <button onClick={handleClearAllLogs} className="text-[10px] font-black tracking-widest uppercase text-red-500/60 hover:text-red-500 transition-colors px-2 py-1">Clear</button>
+                <button onClick={() => navigate("/admin/system-logs")} className="text-[10px] font-black tracking-widest uppercase hover:text-red-500 transition-colors px-2 py-1">Terminal</button>
               </div>
             </div>
-            <div className="bg-black text-white/80 p-8 space-y-6 font-mono text-[10px] min-h-[300px] overflow-hidden">
+            <div className="bg-black text-white p-8 space-y-5 font-mono text-[9px] min-h-[300px] max-h-[400px] overflow-y-auto scrollbar-hide border border-white/10">
               {recentLogs.length > 0 ? recentLogs.map((log) => (
-                <div key={log.id} className="flex items-center group/log">
-                  <div className="flex gap-4 border-l border-white/10 pl-4 hover:border-red-500 transition-colors flex-1 min-w-0">
-                    <span className={cn("shrink-0", log.level === 'error' ? "text-red-500" : "text-yellow-500")}>
-                      [{log.level.toUpperCase()}]
-                    </span>
-                    <p className="truncate opacity-60">{log.message}</p>
-                    <span className="ml-auto opacity-20 hidden md:block">{new Date(log.created_at).toLocaleTimeString()}</span>
+                <div key={log.id} className="flex flex-col gap-1 group/log border-l border-white/20 pl-4 hover:border-red-500 transition-colors">
+                  <div className="flex items-center justify-between">
+                    <div className="flex gap-3 items-center">
+                      <span className={cn(
+                        "px-1.5 py-0.5 rounded-[2px] font-black text-[7px]",
+                        log.level === 'error' ? "bg-red-500 text-white" : "bg-yellow-500 text-black"
+                      )}>
+                        {log.level.toUpperCase()}
+                      </span>
+                      <span className="opacity-50 uppercase tracking-tighter text-[7px] font-bold text-white">{log.source}</span>
+                    </div>
+                    <div className="flex items-center gap-4">
+                       <span className="opacity-40 text-[7px]">{new Date(log.created_at).toLocaleTimeString()}</span>
+
+                       <button 
+                        onClick={(e) => handleDeleteLog(e, log.id)}
+                        className="opacity-0 group-hover/log:opacity-100 hover:text-red-500 transition-all"
+                      >
+                        <Trash2 className="w-3 h-3" />
+                      </button>
+                    </div>
                   </div>
-                  <button 
-                    onClick={(e) => handleDeleteLog(e, log.id)}
-                    className="ml-4 opacity-0 group-hover/log:opacity-100 hover:text-red-500 transition-all"
-                  >
-                    <Trash2 className="w-3.5 h-3.5" />
-                  </button>
+                  <p className="opacity-60 leading-relaxed">{log.message}</p>
                 </div>
               )) : (
-                <div className="flex items-center justify-center h-full opacity-20 py-20 uppercase tracking-[0.5em]">
+                <div className="flex items-center justify-center h-full opacity-20 py-16 uppercase tracking-[0.5em]">
                   Integrity Nominal
                 </div>
               )}
@@ -233,16 +382,16 @@ export default function AdminDashboard() {
         </section>
 
         {/* SECTION 3: INCOMING COMMUNICATIONS */}
-        <section className="space-y-8">
+        <section className="space-y-6">
           <div className="flex items-center justify-between">
             <h3 className="text-[10px] font-black tracking-[0.4em] uppercase opacity-40">[ INCOMING COMMUNICATIONS ]</h3>
-            <button onClick={handleClearAllMessages} className="text-[10px] font-black tracking-widest uppercase text-red-500/40 hover:text-red-500 transition-colors">Clear All Messages</button>
+            <button onClick={handleClearAllMessages} className="text-[10px] font-black tracking-widest uppercase text-red-500/40 hover:text-red-500 transition-colors">Wipe Inbox</button>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             {recentMessages.map((msg) => (
               <motion.div 
                 key={msg.id}
-                whileHover={{ y: -5 }}
+                whileHover={{ y: -3 }}
                 onClick={() => navigate("/admin/notifications")}
                 className="bg-white border border-black/5 p-8 space-y-4 cursor-pointer hover:border-black transition-all relative group/msg"
               >
@@ -253,10 +402,10 @@ export default function AdminDashboard() {
                   <Trash2 className="w-4 h-4" />
                 </button>
                 <div className="flex items-center gap-4">
-                  <div className="w-8 h-8 rounded-full bg-black/5 flex items-center justify-center text-[10px] font-black">{msg.name[0]}</div>
-                  <p className="text-[10px] font-black uppercase tracking-tight">{msg.name}</p>
+                  <div className="w-7 h-7 rounded-full bg-black/5 flex items-center justify-center text-[9px] font-black">{msg.name[0]}</div>
+                  <p className="text-[10px] font-black uppercase tracking-tight truncate flex-1">{msg.name}</p>
                 </div>
-                <p className="text-xs font-medium opacity-60 leading-relaxed line-clamp-2 uppercase">{msg.message}</p>
+                <p className="text-[11px] font-medium opacity-60 leading-relaxed line-clamp-2 uppercase">{msg.message}</p>
                 <p className="text-[8px] font-black opacity-20 uppercase tracking-[0.2em]">{new Date(msg.created_at).toLocaleDateString()}</p>
               </motion.div>
             ))}

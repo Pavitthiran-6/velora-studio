@@ -55,8 +55,8 @@ const StickyCard_001 = ({
         <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent flex flex-col justify-end p-8 md:p-10">
           <div className="flex flex-wrap gap-2 mb-4">
             {project.services.length > 0 ? project.services.map((service, index) => (
-              <span 
-                key={index} 
+              <span
+                key={index}
                 className="text-[8px] md:text-[10px] font-black tracking-[0.2em] text-white/50 border border-white/10 px-2 py-1 rounded-sm uppercase backdrop-blur-sm"
               >
                 {service.label}
@@ -112,7 +112,7 @@ export const RecentWork = ({ containerRef }: { containerRef: React.RefObject<HTM
         const cards = await cmsService.getHomeCards();
         // Filter active cards and sort by order (if not already sorted)
         const activeCards = cards.filter((c: any) => c.is_active);
-        
+
         // Map HomeCards to the expected Project format for the UI
         const mappedProjects = activeCards.map((c: any) => ({
           id: c.id,
@@ -123,7 +123,7 @@ export const RecentWork = ({ containerRef }: { containerRef: React.RefObject<HTM
           category: c.tags || 'PROJECT',
           services: c.tags ? c.tags.split(',').map((t: string) => ({ label: t.trim() })) : []
         }));
-        
+
         setProjects(mappedProjects as any);
       } catch (err) {
         console.error("Failed to fetch home cards from Supabase:", err);
@@ -150,7 +150,7 @@ export const RecentWork = ({ containerRef }: { containerRef: React.RefObject<HTM
     >
       <Layout className="relative h-full">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 h-full items-start">
-          
+
           {/* Left Column: Fixed Title Area */}
           <div className="lg:col-span-5 h-full pt-32 hidden lg:block">
             <div className="sticky top-40 flex flex-col gap-6">
@@ -184,7 +184,7 @@ export const RecentWork = ({ containerRef }: { containerRef: React.RefObject<HTM
           <div className="col-span-1 lg:col-span-7 relative h-full flex flex-col items-center justify-start">
             <div className="lg:hidden pt-20 mb-12">
               <h2 className="text-white text-6xl font-display font-black uppercase leading-tight tracking-tighter">
-                RECENT<br/><span className="text-[#ef4444]">WORK.</span>
+                RECENT<br /><span className="text-[#ef4444]">WORK.</span>
               </h2>
             </div>
 
@@ -195,7 +195,7 @@ export const RecentWork = ({ containerRef }: { containerRef: React.RefObject<HTM
 
       {/* Progress Line */}
       <div className="absolute bottom-12 left-1/2 -translate-x-1/2 w-48 h-px bg-white/10 overflow-hidden z-50">
-        <motion.div 
+        <motion.div
           style={{ scaleX: scrollYProgress }}
           className="h-full bg-[#ef4444] origin-left"
         />

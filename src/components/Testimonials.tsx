@@ -202,14 +202,11 @@ const ReviewCard: React.FC<{ data: { name: string; role: string; text: string; a
       {/* Content Area */}
       <div className="flex-1 flex flex-col justify-center gap-8">
         <div className="flex gap-6 items-start">
-          <div 
-            className="w-16 h-16 md:w-20 md:h-20 border border-white/10 overflow-hidden shrink-0 bg-white/5"
-            style={{ clipPath: "polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%)" }}
-          >
+          <div className="w-16 h-16 md:w-20 md:h-20 border border-white/10 overflow-hidden shrink-0 bg-white/5 rounded-full">
             <img 
               src={data.avatar} 
               alt={data.name} 
-              className="w-full h-full object-cover grayscale opacity-80 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-700"
+              className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
             />
           </div>
           <div className="flex-1">

@@ -23,7 +23,6 @@ import AdminProjects from './pages/admin/AdminProjects';
 import AdminProjectEditor from './pages/admin/AdminProjectEditor';
 import AdminNotifications from './pages/admin/AdminNotifications';
 import AdminHomeCards from './pages/admin/AdminHomeCards';
-import AdminAnalytics from './pages/admin/AdminAnalytics';
 import AdminReviews from './pages/admin/AdminReviews';
 import AdminSettings from './pages/admin/AdminSettings';
 import AdminSystemLogs from './pages/admin/AdminSystemLogs';
@@ -82,7 +81,7 @@ createRoot(document.getElementById('root')!).render(
           <Route path="/admin/projects/:id/edit" element={<ProtectedRoute><AdminProjectEditor /></ProtectedRoute>} />
           <Route path="/admin/home-cards" element={<ProtectedRoute><AdminHomeCards /></ProtectedRoute>} />
           <Route path="/admin/notifications" element={<ProtectedRoute><AdminNotifications /></ProtectedRoute>} />
-          <Route path="/admin/analytics" element={<ProtectedRoute><AdminAnalytics /></ProtectedRoute>} />
+
           <Route path="/admin/reviews" element={<ProtectedRoute><AdminReviews /></ProtectedRoute>} />
           <Route path="/admin/settings" element={<ProtectedRoute><AdminSettings /></ProtectedRoute>} />
           <Route path="/admin/system-logs" element={<ProtectedRoute><AdminSystemLogs /></ProtectedRoute>} />

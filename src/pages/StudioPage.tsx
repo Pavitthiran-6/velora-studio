@@ -304,7 +304,9 @@ const TeamGridSection = () => {
               <ProfileCard
                 {...profile}
                 behindGlowEnabled
-                innerGradient="linear-gradient(145deg, rgba(239, 68, 68, 0.1) 0%, rgba(31, 37, 71, 0.4) 100%)"
+                behindGlowColor="rgba(239, 68, 68, 0.35)"
+                behindGlowSize="70%"
+                innerGradient="linear-gradient(165deg, rgba(255,255,255,0.08) 0%, rgba(10,12,24,0.6) 100%)"
               />
             </motion.div>
           ))}
