@@ -4,7 +4,6 @@ import { AdminLayout } from "../../components/admin/AdminLayout";
 import {
   Plus,
   Search,
-  Filter,
   Trash2,
   Edit3,
   Eye,
@@ -194,7 +193,7 @@ export default function AdminProjects() {
                   </motion.div>
                 </motion.div>
                 <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="w-32 h-32 border-t-2 border-red-500 rounded-full animate-spin" />
+                  <div className="w-32 h-32 border-t-2 border-[#ef4444] rounded-full animate-spin" />
                 </div>
               </div>
               <div className="space-y-3">
@@ -219,7 +218,7 @@ export default function AdminProjects() {
             className="space-y-16"
           >
         {/* Header Section */}
-        <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8 px-4">
+        <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8 px-0">
           <div>
             <span className="text-[10px] font-black tracking-[0.5em] uppercase opacity-40 mb-4 block">[ PORTFOLIO MANAGEMENT ]</span>
             <h1 className="font-display text-[8vw] leading-[0.8] tracking-[-0.06em] uppercase font-black">
@@ -237,9 +236,6 @@ export default function AdminProjects() {
                 className="bg-transparent border border-black/5 px-12 h-14 text-[10px] font-black tracking-[0.2em] uppercase focus:border-black outline-none transition-all w-[300px]"
               />
             </div>
-            <button className="h-14 w-14 border border-black/5 flex items-center justify-center hover:bg-black hover:text-white transition-all">
-              <Filter className="w-4 h-4" />
-            </button>
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
@@ -253,7 +249,7 @@ export default function AdminProjects() {
         </div>
 
         {/* Project List Table View */}
-        <section className="bg-white border border-black/10 overflow-hidden mx-4">
+        <section className="hidden md:block bg-white border border-black/10 overflow-hidden mx-0">
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="border-b border-black/10 bg-[#fafafa]">
@@ -346,8 +342,82 @@ export default function AdminProjects() {
           </table>
         </section>
 
+        {/* Mobile View: Card List (Hidden on desktop) */}
+        <div className="space-y-4 md:hidden mx-0">
+          {filteredProjects.map((project) => (
+            <div 
+              key={project.id}
+              className="bg-white border border-black/10 p-6 flex flex-col gap-4 relative cursor-pointer"
+              onClick={() => handleEdit(project.id)}
+            >
+              <div className="flex gap-4 items-start">
+                {/* Cover Image */}
+                <div className="w-20 h-24 bg-black/5 overflow-hidden relative shrink-0">
+                  <img src={project.coverImage} alt={project.title} className="w-full h-full object-cover" />
+                </div>
+                
+                {/* Details */}
+                <div className="flex-1 min-w-0 space-y-2">
+                  <span className="text-[10px] font-black tracking-[0.2em] text-[#ef4444] uppercase block">
+                    {project.category}
+                  </span>
+                  <h3 className="text-lg font-black tracking-tighter uppercase truncate">
+                    {project.title}
+                  </h3>
+                  <div className="flex items-center gap-1 opacity-40 text-[9px] font-black tracking-[0.15em]">
+                    <LinkIcon className="w-3 h-3" />
+                    <span>/{project.slug}</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Divider */}
+              <div className="h-px bg-black/5 w-full" />
+
+              {/* Footer controls & status */}
+              <div className="flex items-center justify-between mt-1">
+                {/* Status Badge */}
+                <button 
+                  onClick={(e) => { e.stopPropagation(); toggleStatus(project); }}
+                  className={cn(
+                    "text-[9px] font-black tracking-[0.2em] uppercase px-3 py-1.5 rounded-full border transition-all",
+                    project.status === "Published" ? "border-green-500 text-green-500 bg-green-50/50" :
+                    project.status === "Draft" ? "border-yellow-500 text-yellow-500 bg-yellow-50/50" :
+                    "border-black/20 text-black/40"
+                  )}
+                >
+                  {project.status}
+                </button>
+
+                {/* Action buttons (Always visible on mobile!) */}
+                <div className="flex gap-2" onClick={(e) => e.stopPropagation()}>
+                  <motion.button
+                    whileTap={{ scale: 0.9 }}
+                    onClick={() => handleEdit(project.id)}
+                    className="w-10 h-10 border border-black/10 flex items-center justify-center rounded-full bg-black text-white"
+                  >
+                    <Edit3 className="w-4 h-4" />
+                  </motion.button>
+                  <motion.button
+                    whileTap={{ scale: 0.9 }}
+                    onClick={async () => {
+                      if (confirm("ARCHIVE THIS WORK?")) {
+                        await cmsService.deleteProject(project.id);
+                        window.dispatchEvent(new Event('cms-update'));
+                      }
+                    }}
+                    className="w-10 h-10 border border-black/10 flex items-center justify-center rounded-full bg-[#ef4444] text-white"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </motion.button>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+
         {/* Footer Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 pb-32 px-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 pb-32 px-0">
           {[
             { label: "PUBLISHED", val: projects.filter(p => p.status === 'Published').length },
             { label: "DRAFTS", val: projects.filter(p => p.status === 'Draft').length },

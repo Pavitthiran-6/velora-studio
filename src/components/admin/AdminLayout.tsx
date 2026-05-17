@@ -1,5 +1,5 @@
 import React from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { 
   LayoutDashboard, 
   FolderKanban, 
@@ -15,7 +15,9 @@ import {
   Monitor,
   Layers,
   Star,
-  Terminal
+  Terminal,
+  Menu,
+  X
 } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useRef, useState, useEffect } from "react";
@@ -41,6 +43,7 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [unreadCount, setUnreadCount] = useState(0);
   const [studioName, setStudioName] = useState("W2C Studios");
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -71,23 +74,50 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
       {/* Cinematic Grain Overlay */}
       <div className="fixed inset-0 pointer-events-none opacity-[0.05] mix-blend-multiply bg-[url('https://grainy-gradients.vercel.app/noise.svg')] z-[9999]" />
 
-      {/* Premium Static Navigation */}
+      {/* Sidebar Drawer Backdrop Overlay (Mobile/Tablet only) */}
+      <AnimatePresence>
+        {isSidebarOpen && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 0.6 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setIsSidebarOpen(false)}
+            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[99] lg:hidden"
+          />
+        )}
+      </AnimatePresence>
+
+      {/* Premium Static/Collapsible Navigation */}
       <motion.nav 
         initial={{ x: -100, opacity: 0 }}
         animate={{ x: 0, opacity: 1 }}
         transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
-        className="relative w-64 md:w-72 bg-black text-white flex flex-col py-10 z-[100] shrink-0 overflow-hidden"
+        className={cn(
+          "bg-black text-white flex flex-col py-10 z-[100] shrink-0 overflow-hidden transition-transform duration-300",
+          "fixed inset-y-0 left-0 w-64 md:w-72 -translate-x-full lg:relative lg:translate-x-0 lg:flex",
+          isSidebarOpen && "translate-x-0"
+        )}
       >
         {/* Admin Branding & View Site */}
         <div className="px-8 mb-10">
-          <div className="flex items-center gap-4 mb-8">
-            <div className="w-12 h-12 flex items-center justify-center cursor-pointer group overflow-hidden transition-all" onClick={() => triggerLogoTransition()}>
-              <img src="/W2C Studios.png" alt="W2C Studios" className="w-full h-full object-contain p-1" />
+          <div className="flex items-center justify-between mb-8">
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 flex items-center justify-center cursor-pointer group overflow-hidden transition-all" onClick={() => triggerLogoTransition()}>
+                <img src="/W2C Studios.png" alt="W2C Studios" className="w-full h-full object-contain p-1" />
+              </div>
+              <div>
+                <p className="text-[10px] font-black tracking-[0.2em] uppercase leading-tight">{studioName}</p>
+                <p className="text-[8px] font-medium opacity-40 uppercase tracking-widest">CONTROL CENTER</p>
+              </div>
             </div>
-            <div>
-              <p className="text-[10px] font-black tracking-[0.2em] uppercase leading-tight">{studioName}</p>
-              <p className="text-[8px] font-medium opacity-40 uppercase tracking-widest">CONTROL CENTER</p>
-            </div>
+            
+            {/* Mobile/Tablet Close Button */}
+            <button 
+              onClick={() => setIsSidebarOpen(false)}
+              className="lg:hidden p-2 -mr-2 text-white/50 hover:text-white transition-colors"
+            >
+              <X className="w-5 h-5" />
+            </button>
           </div>
           
           <button 
@@ -156,9 +186,16 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
           className="flex-1 h-full overflow-y-auto scrollbar-hide relative bg-[#fafafa]"
         >
           {/* Header Overlay */}
-          <div className="sticky top-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-md border-b border-black/10 px-8 md:px-16 h-24 flex items-center justify-between">
+          <div className="sticky top-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-md border-b border-black/10 px-6 md:px-16 h-24 flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <span className="text-[10px] font-black tracking-[0.4em] uppercase opacity-70 whitespace-nowrap">
+              {/* Mobile/Tablet Hamburger Toggle */}
+              <button 
+                onClick={() => setIsSidebarOpen(true)}
+                className="lg:hidden p-3 -ml-3 hover:bg-black/5 rounded-full transition-colors shrink-0"
+              >
+                <Menu className="w-6 h-6" />
+              </button>
+              <span className="text-[10px] font-black tracking-[0.4em] uppercase opacity-70 whitespace-nowrap hidden sm:inline-block">
                 SYSTEM STATUS: <span className="text-green-600 opacity-100">OPERATIONAL</span>
               </span>
             </div>
@@ -200,9 +237,9 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
           {/* Global Footer Decoration */}
           <div className="px-8 md:px-16 lg:px-24 pb-12 opacity-20">
             <div className="h-px bg-black w-full mb-8" />
-            <div className="flex justify-between items-center text-[10px] font-black tracking-[0.5em] uppercase">
+            <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-[8px] md:text-[10px] font-black tracking-[0.2em] md:tracking-[0.5em] uppercase text-center md:text-left">
               <span>W2C Studios OS v2.0.4</span>
-              <span>EST. 2016 — 2026</span>
+              <span>EST. 2026</span>
             </div>
           </div>
         </main>

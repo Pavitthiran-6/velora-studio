@@ -16,7 +16,8 @@ import {
   Layout as LayoutIcon,
   Play,
   X,
-  Eye
+  Eye,
+  Menu
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Project, ProjectService, ProjectMetric, ProjectMilestone, ProjectMobileView } from "../../types/project";
@@ -47,6 +48,8 @@ export function ProjectEditorEngine({ projectId, onClose }: ProjectEditorEngineP
   const [activeSection, setActiveSection] = useState('core');
   const [isSaving, setIsSaving] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isMobileDrawerOpen, setIsMobileDrawerOpen] = useState(false);
   const formScrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -105,17 +108,170 @@ export function ProjectEditorEngine({ projectId, onClose }: ProjectEditorEngineP
     </div>
   );
 
+  if (!project) {
+    return (
+      <div className="w-full h-full bg-[#171c44] flex flex-col items-center justify-center p-12 text-white">
+        <div className="w-full max-w-sm space-y-8 text-center">
+          <div className="relative flex justify-center">
+            <motion.div
+              animate={{ rotate: 360 }}
+              transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
+              className="w-24 h-24 border border-white/10 rounded-full flex items-center justify-center"
+            >
+              <motion.div
+                animate={{ scale: [0.8, 1.2, 0.8] }}
+                transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+              >
+                <Zap className="w-8 h-8 text-[#ef4444]" />
+              </motion.div>
+            </motion.div>
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="w-32 h-32 border-t-2 border-[#ef4444] rounded-full animate-spin" />
+            </div>
+          </div>
+          <div className="space-y-3">
+            <p className="text-[10px] font-black tracking-[0.6em] uppercase opacity-40">Editor Access</p>
+            <h2 className="text-4xl font-display font-black tracking-tighter uppercase">INITIALIZING ENGINE...</h2>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="flex flex-col lg:flex-row h-full overflow-hidden">
+    <div className="flex flex-col lg:flex-row h-full overflow-hidden relative">
       
-      {/* LEFT: PREVIEW & NAVIGATION (40%) */}
-      <aside className="lg:w-[35%] bg-[#171c44] flex flex-col relative overflow-hidden border-r border-white/5 shrink-0">
+      {/* Mobile Top Header (Visible under 1024px/lg breakpoint) */}
+      <div className="lg:hidden h-16 border-b border-black/5 bg-white flex items-center justify-between px-6 shrink-0 z-40 w-full select-none">
+        <button
+          type="button"
+          onClick={() => setIsMobileDrawerOpen(true)}
+          className="flex items-center gap-3 text-black hover:opacity-75 transition-opacity"
+        >
+          <Menu className="w-5 h-5 text-black" />
+          <span className="text-[10px] font-black tracking-[0.2em] uppercase">MENU</span>
+        </button>
+        
+        <div className="flex items-center gap-2">
+           <span className={cn(
+             "w-2 h-2 rounded-full",
+             project.status === 'Published' ? "bg-green-500" : "bg-yellow-500"
+           )} />
+           <span className="text-[9px] font-black tracking-[0.2em] text-black/40 uppercase">{project.status}</span>
+        </div>
+      </div>
+
+      {/* Backdrop for Slide-in Mobile Drawer */}
+      <AnimatePresence>
+        {isMobileDrawerOpen && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 0.6 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setIsMobileDrawerOpen(false)}
+              className="lg:hidden fixed inset-0 bg-black z-[100] backdrop-blur-sm"
+            />
+            
+            {/* Slide-in Drawer Container */}
+            <motion.div
+              initial={{ x: "-100%" }}
+              animate={{ x: 0 }}
+              exit={{ x: "-100%" }}
+              transition={{ type: "spring", damping: 25, stiffness: 200 }}
+              className="lg:hidden fixed top-0 left-0 bottom-0 w-[80vw] max-w-[320px] bg-[#171c44] z-[101] shadow-2xl flex flex-col overflow-hidden"
+            >
+              <div className="absolute inset-0 opacity-40 pointer-events-none">
+                <div className="absolute top-0 right-0 w-full h-full bg-[radial-gradient(circle_at_60%_40%,#ef44440a_0%,transparent_60%)]" />
+                <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] mix-blend-overlay opacity-30" />
+              </div>
+
+              {/* Drawer Content */}
+              <div className="relative z-10 p-6 flex flex-col h-full min-h-0">
+                <div className="flex justify-between items-center mb-8">
+                  <div className="flex items-center gap-3 text-[9px] font-black tracking-[0.4em] uppercase text-white/30">
+                    <Zap className="w-3 h-3 text-[#ef4444]" />
+                    <span>[ SYSTEM NAVIGATION ]</span>
+                  </div>
+                  <button 
+                    onClick={() => setIsMobileDrawerOpen(false)}
+                    className="p-1 text-white/40 hover:text-white transition-colors"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+
+                <div className="mb-6">
+                  <motion.button
+                    whileTap={{ scale: 0.98 }}
+                    onClick={() => {
+                      handleSave();
+                      setIsMobileDrawerOpen(false);
+                    }}
+                    disabled={isSaving}
+                    className="w-full h-14 bg-[#ef4444] text-white flex items-center justify-center gap-4 shadow-xl transition-all"
+                  >
+                    {isSaving ? (
+                      <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                    ) : showSuccess ? (
+                      <Check className="w-5 h-5" />
+                    ) : (
+                      <>
+                        <Save className="w-4 h-4" />
+                        <span className="text-[10px] font-black tracking-[0.3em] uppercase">SYNC SYSTEM</span>
+                      </>
+                    )}
+                  </motion.button>
+                </div>
+
+                {/* Mobile Drawer Navigation List */}
+                <div className="flex-1 min-h-0 overflow-y-auto pr-2 custom-scrollbar-light space-y-1">
+                  {SECTIONS.map(s => (
+                    <button
+                      key={s.id}
+                      onClick={() => {
+                        setActiveSection(s.id);
+                        setIsMobileDrawerOpen(false);
+                      }}
+                      className={cn(
+                        "w-full flex items-center gap-4 px-4 py-3 rounded-xl transition-all text-left group",
+                        activeSection === s.id ? "bg-white/10 text-white" : "hover:bg-white/5 text-white/40 hover:text-white"
+                      )}
+                    >
+                      {React.createElement(s.icon, { 
+                        className: cn("w-4 h-4 shrink-0", activeSection === s.id ? "text-[#ef4444]" : "text-white/20 group-hover:text-white/40") 
+                      })}
+                      <span className="text-[10px] font-black tracking-[0.2em] uppercase truncate">{s.label}</span>
+                    </button>
+                  ))}
+                </div>
+
+                {/* Preview Card in Drawer */}
+                <div className="mt-6 pt-4 border-t border-white/10 shrink-0">
+                  <div className="p-4 bg-white/5 border border-white/10 rounded-2xl flex items-center gap-4 group cursor-default">
+                    <div className="w-10 h-14 bg-white/5 overflow-hidden rounded-lg shrink-0">
+                       <img src={project.coverImage} className="w-full h-full object-cover grayscale opacity-50" alt="" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                       <p className="text-[9px] font-black text-white/40 uppercase tracking-widest mb-0.5 truncate">{project.category}</p>
+                       <p className="text-xs font-display font-black text-white uppercase truncate">{project.title}</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+
+      {/* LEFT: PREVIEW & NAVIGATION (Desktop Split Sidebar) */}
+      <aside className="hidden lg:flex lg:w-[35%] bg-[#171c44] flex-col relative overflow-hidden border-r border-white/5 shrink-0">
         <div className="absolute inset-0 opacity-40 pointer-events-none">
           <div className="absolute top-0 right-0 w-full h-full bg-[radial-gradient(circle_at_60%_40%,#ef44440a_0%,transparent_60%)]" />
           <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] mix-blend-overlay opacity-30" />
         </div>
 
-        <div className="relative z-10 p-8 lg:p-12 flex flex-col h-full min-h-0">
+        <div className="relative z-10 p-12 flex flex-col h-full min-h-0">
           <div className="flex justify-between items-center mb-12">
             <div className="flex items-center gap-4 text-[9px] font-black tracking-[0.4em] uppercase text-white/30">
               <Zap className="w-3 h-3" />
@@ -151,7 +307,8 @@ export function ProjectEditorEngine({ projectId, onClose }: ProjectEditorEngineP
             </motion.button>
           </div>
 
-          <div className="space-y-2 flex-1 min-h-0 overflow-y-auto pr-4 custom-scrollbar">
+          {/* Desktop Navigation List */}
+          <div className="hidden lg:flex lg:flex-col lg:gap-2 flex-1 min-h-0 overflow-y-auto pr-4 custom-scrollbar">
             {SECTIONS.map(s => (
               <button
                 key={s.id}
@@ -184,8 +341,8 @@ export function ProjectEditorEngine({ projectId, onClose }: ProjectEditorEngineP
         </div>
       </aside>
 
-      {/* RIGHT: EDITOR SURFACE (65%) */}
-      <main className="lg:w-[65%] bg-white flex flex-col relative overflow-hidden">
+      {/* RIGHT: EDITOR SURFACE (100% on mobile, 65% on desktop) */}
+      <main className="w-full lg:w-[65%] bg-white flex flex-col relative overflow-hidden">
         <div className="px-8 md:px-12 lg:px-[64px] pt-8 md:pt-12 lg:pt-[64px] pb-6 shrink-0 flex justify-between items-start">
            <div />
            <button 
@@ -251,7 +408,7 @@ export function ProjectEditorEngine({ projectId, onClose }: ProjectEditorEngineP
                           />
                           <button 
                             onClick={() => setProject({ ...project, services: project.services.filter(serv => serv.id !== s.id) })}
-                            className="opacity-0 group-hover:opacity-100 p-2 hover:text-red-500 transition-all"
+                            className="opacity-0 group-hover:opacity-100 p-2 hover:text-[#ef4444] transition-all"
                           >
                             <Trash2 className="w-4 h-4" />
                           </button>
@@ -276,7 +433,7 @@ export function ProjectEditorEngine({ projectId, onClose }: ProjectEditorEngineP
                         <div key={m.id} className="p-8 border border-black/5 bg-[#fafafa] relative group">
                           <button 
                             onClick={() => setProject({ ...project, metrics: project.metrics.filter(met => met.id !== m.id) })}
-                            className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 p-2 hover:text-red-500"
+                            className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 p-2 hover:text-[#ef4444]"
                           >
                             <Trash2 className="w-4 h-4" />
                           </button>
@@ -447,7 +604,7 @@ export function ProjectEditorEngine({ projectId, onClose }: ProjectEditorEngineP
                           <div className="col-span-1 flex justify-center">
                             <button 
                               onClick={() => setProject({ ...project, milestones: project.milestones.filter(mile => mile.id !== m.id) })}
-                              className="opacity-0 group-hover:opacity-100 p-2 hover:text-red-500"
+                              className="opacity-0 group-hover:opacity-100 p-2 hover:text-[#ef4444]"
                             >
                               <Trash2 className="w-4 h-4" />
                             </button>
@@ -465,7 +622,31 @@ export function ProjectEditorEngine({ projectId, onClose }: ProjectEditorEngineP
                   </div>
                 )}
 
-
+                {/* Mobile-only Next Section Navigation Row */}
+                {SECTIONS.findIndex(s => s.id === activeSection) < SECTIONS.length - 1 && (
+                  <div className="lg:hidden pt-8 border-t border-black/5 mt-16">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const currentIndex = SECTIONS.findIndex(s => s.id === activeSection);
+                        if (currentIndex !== -1 && currentIndex < SECTIONS.length - 1) {
+                          const nextSec = SECTIONS[currentIndex + 1].id;
+                          setActiveSection(nextSec);
+                          if (formScrollRef.current) {
+                            formScrollRef.current.scrollTop = 0;
+                          }
+                        }
+                      }}
+                      className="w-full h-16 bg-black text-white hover:bg-[#ef4444] transition-all flex items-center justify-center gap-4 group rounded-xl"
+                    >
+                      <span className="text-[10px] font-black tracking-[0.3em] uppercase">NEXT: {SECTIONS[SECTIONS.findIndex(s => s.id === activeSection) + 1].label}</span>
+                      {React.createElement(
+                        SECTIONS[SECTIONS.findIndex(s => s.id === activeSection) + 1].icon,
+                        { className: "w-4 h-4 text-white/50 group-hover:text-white transition-colors shrink-0" }
+                      )}
+                    </button>
+                  </div>
+                )}
 
               </motion.div>
             </AnimatePresence>

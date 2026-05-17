@@ -89,31 +89,33 @@ export default function AdminSystemLogs() {
             </h1>
           </motion.div>
           
-          <div className="flex items-center gap-8 border-b border-black/5 pb-4">
+          <div className="flex flex-wrap items-center gap-y-4 gap-x-4 sm:gap-x-8 border-b border-black/5 pb-4 w-full lg:w-auto">
             <button 
               onClick={handleClearAll}
-              className="text-[10px] font-black tracking-widest uppercase text-red-500/40 hover:text-red-500 transition-all mr-4"
+              className="text-[10px] font-black tracking-widest uppercase text-[#ef4444]/40 hover:text-[#ef4444] transition-all shrink-0"
             >
               Clear All Logs
             </button>
-            <div className="h-4 w-px bg-black/10 mr-4" />
-            <button onClick={fetchLogs} className="p-2 hover:bg-black/5 rounded-full transition-all">
+            <div className="h-4 w-px bg-black/10 hidden sm:block shrink-0" />
+            <button onClick={fetchLogs} className="p-2 hover:bg-black/5 rounded-full transition-all shrink-0">
               <RefreshCcw className={cn("w-4 h-4 opacity-40", isLoading && "animate-spin opacity-100")} />
             </button>
-            <div className="h-4 w-px bg-black/10" />
-            {['ALL', 'error', 'warning', 'info'].map(f => (
-              <button 
-                key={f} 
-                onClick={() => setFilter(f as any)}
-                className={cn(
-                  "text-[10px] font-black tracking-widest uppercase transition-all relative pb-2",
-                  filter === f ? "text-red-500" : "opacity-30 hover:opacity-100"
-                )}
-              >
-                {f}
-                {filter === f && <motion.div layoutId="logFilter" className="absolute bottom-0 left-0 w-full h-[2px] bg-red-500" />}
-              </button>
-            ))}
+            <div className="h-4 w-px bg-black/10 hidden sm:block shrink-0" />
+            <div className="flex items-center gap-4 sm:gap-6 shrink-0">
+              {['ALL', 'error', 'warning', 'info'].map(f => (
+                <button 
+                  key={f} 
+                  onClick={() => setFilter(f as any)}
+                  className={cn(
+                    "text-[10px] font-black tracking-widest uppercase transition-all relative pb-2 shrink-0",
+                    filter === f ? "text-[#ef4444]" : "opacity-30 hover:opacity-100"
+                  )}
+                >
+                  {f}
+                  {filter === f && <motion.div layoutId="logFilter" className="absolute bottom-0 left-0 w-full h-[2px] bg-[#ef4444]" />}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
 
@@ -170,32 +172,32 @@ export default function AdminSystemLogs() {
                   initial={{ opacity: 0, scale: 0.98 }}
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0, scale: 0.98 }}
-                  className="bg-white border border-black p-10 lg:p-12 space-y-10"
+                  className="bg-white border border-black p-6 sm:p-10 lg:p-12 space-y-8 sm:space-y-10"
                 >
-                  <div className="flex justify-between items-start">
-                    <div className="space-y-4">
+                  <div className="flex justify-between items-start gap-4">
+                    <div className="flex-1 min-w-0 space-y-4">
                       <div className="flex items-center gap-3">
                         <span className={cn(
                           "px-3 py-1 text-[8px] font-black uppercase tracking-widest",
-                          selectedLog.level === 'error' ? "bg-red-500 text-white" : "bg-yellow-400 text-black"
+                          selectedLog.level === 'error' ? "bg-[#ef4444] text-white" : "bg-yellow-400 text-black"
                         )}>
                           {selectedLog.level}
                         </span>
                         <span className="text-[10px] font-black tracking-[0.4em] uppercase opacity-40">[ {selectedLog.source} ]</span>
                       </div>
-                      <h2 className="text-3xl font-display font-black uppercase tracking-tight leading-tight">
+                      <h2 className="text-2xl sm:text-3xl font-display font-black uppercase tracking-tight leading-tight break-words">
                         {selectedLog.message}
                       </h2>
                     </div>
                     <button 
                       onClick={() => handleDelete(selectedLog.id)}
-                      className="p-4 rounded-full border border-black/5 hover:bg-red-50 hover:text-red-500 transition-all"
+                      className="p-4 rounded-full border border-black/5 hover:bg-red-50 hover:text-[#ef4444] transition-all shrink-0"
                     >
                       <Trash2 className="w-5 h-5" />
                     </button>
                   </div>
 
-                  <div className="grid grid-cols-2 gap-8 py-6 border-y border-black/5">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-8 py-6 border-y border-black/5">
                     <div>
                       <p className="text-[8px] font-black tracking-widest opacity-30 uppercase mb-2">Timestamp</p>
                       <p className="text-sm font-black uppercase">{new Date(selectedLog.created_at).toLocaleString()}</p>
@@ -212,7 +214,7 @@ export default function AdminSystemLogs() {
                         <Code className="w-3 h-3" />
                         Stack Trace
                       </div>
-                      <div className="p-8 bg-black text-white/70 font-mono text-[10px] overflow-x-auto whitespace-pre-wrap max-h-[300px] leading-relaxed">
+                      <div className="p-4 sm:p-8 bg-black text-white/70 font-mono text-[9px] sm:text-[10px] overflow-x-auto whitespace-pre-wrap break-all max-h-[300px] leading-relaxed">
                         {selectedLog.stack_trace}
                       </div>
                     </div>
@@ -221,7 +223,7 @@ export default function AdminSystemLogs() {
                   {selectedLog.metadata && (
                     <div className="space-y-4">
                       <p className="text-[8px] font-black tracking-widest opacity-30 uppercase">Context Metadata</p>
-                      <pre className="p-6 bg-black/5 border border-black/5 text-[10px] font-mono">
+                      <pre className="p-4 sm:p-6 bg-black/5 border border-black/5 text-[9px] sm:text-[10px] font-mono whitespace-pre-wrap break-all">
                         {JSON.stringify(selectedLog.metadata, null, 2)}
                       </pre>
                     </div>

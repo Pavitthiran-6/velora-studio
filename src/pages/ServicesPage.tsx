@@ -179,10 +179,10 @@ function ServicesHero() {
         >
           <span className="text-[10px] font-black tracking-[0.3em] uppercase opacity-40 leading-none">W2C Studios</span>
         </button>
-        <HexIcon className="w-2.5 h-2.5" fill="#ef3b5d" />
+        <HexIcon className="w-2.5 h-2.5" fill="#ef4444" />
         <span
           onClick={() => triggerPageTransition("/services")}
-          className="text-[10px] font-black tracking-[0.3em] uppercase text-[#ef3b5d] hover:text-white transition-colors cursor-pointer"
+          className="text-[10px] font-black tracking-[0.3em] uppercase text-[#ef4444] hover:text-white transition-colors cursor-pointer"
         >
           SERVICES
         </span>
@@ -195,7 +195,7 @@ function ServicesHero() {
               <AnimatePresence mode="wait">
                 <motion.h1
                   key={index}
-                  className="text-[10vw] md:text-[8.5vw] font-display font-black tracking-[-0.04em] uppercase leading-[0.8] text-[#ef3b5d] flex overflow-hidden"
+                  className="text-[10vw] md:text-[8.5vw] font-display font-black tracking-[-0.04em] uppercase leading-[0.8] text-[#ef4444] flex overflow-hidden"
                 >
                   {ROTATING_TITLES[index].split("").map((char, i) => (
                     <motion.span
@@ -219,12 +219,12 @@ function ServicesHero() {
 
             <div className="flex items-center gap-6 md:gap-10 pl-[5vw] md:pl-[10vw]">
               <div className="relative group shrink-0">
-                <div className="absolute inset-0 bg-[#ef3b5d]/20 rounded-full animate-ping" />
+                <div className="absolute inset-0 bg-[#ef4444]/20 rounded-full animate-ping" />
                 <motion.button
                   whileHover={{ scale: 1.1 }}
                   whileTap={{ scale: 0.95 }}
                   onClick={rotateHero}
-                  className="w-16 h-16 md:w-24 md:h-24 rounded-full bg-[#ef3b5d] flex items-center justify-center relative z-10 shadow-[0_0_30px_rgba(239,59,93,0.3)]"
+                  className="w-16 h-16 md:w-24 md:h-24 rounded-full bg-[#ef4444] flex items-center justify-center relative z-10 shadow-[0_0_30px_rgba(239,59,93,0.3)]"
                 >
                   <RotateCcw className={`text-white w-6 h-6 md:w-10 md:h-10 transition-transform duration-700 ${isAnimating ? "rotate-180" : "group-hover:rotate-45"}`} />
                 </motion.button>
@@ -260,7 +260,7 @@ function ServicesHero() {
 function WhatWeDo() {
   const { triggerLogoTransition, triggerPageTransition } = useTransition();
   return (
-    <section className="min-h-screen py-32 md:py-48 border-t border-white/5 bg-[#1a1f40]">
+    <section className="min-h-screen py-32 md:py-48 border-t border-white/5 bg-[#1f2547]">
       <Layout>
         <div className="grid grid-cols-1 md:grid-cols-12 gap-12 md:gap-24">
           <div className="md:col-span-5 flex flex-col items-start gap-8">
@@ -268,7 +268,7 @@ function WhatWeDo() {
             <CinematicText as="h2" className="text-5xl md:text-6xl font-display font-black tracking-[-0.04em] uppercase leading-[0.95] text-white">
               <span className="whitespace-nowrap">WE DESIGN,</span><br />
               <span className="whitespace-nowrap">BUILD & SCALE</span><br />
-              <span className="text-[#ef3b5d] whitespace-nowrap">YOUR VISION.</span>
+              <span className="text-[#ef4444] whitespace-nowrap">YOUR VISION.</span>
             </CinematicText>
             <p className="text-lg md:text-xl font-display font-black tracking-[-0.02em] leading-relaxed opacity-40 uppercase">
               At W2C Studios, we craft immersive digital ecosystems that merge design, storytelling, motion, and engineering into memorable brand experiences.
@@ -307,7 +307,7 @@ function WhatWeDo() {
                 }}
                 className="group flex flex-col"
               >
-                <div className="w-full h-px bg-white/10 group-hover:bg-[#ef3b5d] transition-colors duration-500 scale-x-0 group-hover:scale-x-100 origin-left" />
+                <div className="w-full h-px bg-white/10 group-hover:bg-[#ef4444] transition-colors duration-500 scale-x-0 group-hover:scale-x-100 origin-left" />
                 <div className="w-full h-px bg-white/5" />
                 <div className="py-6 md:py-8 flex items-center justify-between cursor-pointer group" onClick={() => {
                   const slug = service.toLowerCase().replace(/ /g, "-");
@@ -340,9 +340,9 @@ function WorkflowSection() {
           <CinematicText className="text-[10px] font-black tracking-[0.3em] uppercase opacity-40 mb-6">THE BUZZ PROCESS</CinematicText>
           <div className="flex items-baseline gap-4">
             <CinematicText as="h2" className="text-5xl md:text-8xl font-display font-black tracking-[-0.04em] uppercase leading-none text-white">
-              HOW WE <span className="text-[#ef3b5d]">WORK</span>
+              HOW WE <span className="text-[#ef4444]">WORK</span>
             </CinematicText>
-            <HexIcon className="w-[3vw] h-[3vw]" fill="#ef3b5d" />
+            <HexIcon className="w-[3vw] h-[3vw]" fill="#ef4444" />
           </div>
         </div>
 
@@ -380,7 +380,7 @@ function WorkflowSection() {
                   "absolute top-8 flex items-center gap-3 z-20 transition-all duration-500",
                   isExpanded ? "left-12" : "left-1/2 -translate-x-1/2"
                 )}>
-                  <HexIcon className="w-3 h-3" fill="#ef3b5d" />
+                  <HexIcon className="w-3 h-3" fill="#ef4444" />
                   <span className="text-[10px] md:text-xs font-display font-black tracking-widest text-[#1f2547]/40">
                     {step.id}
                   </span>
@@ -449,13 +449,13 @@ function WorkflowSection() {
 
 function ResultsDriven() {
   return (
-    <section className="min-h-screen py-32 bg-[#1a1f40] flex flex-col items-center text-center">
+    <section className="min-h-screen py-32 bg-[#1f2547] flex flex-col items-center text-center">
       <Layout>
         <div className="max-w-4xl mb-32 mx-auto">
           <CinematicText className="text-[10px] font-black tracking-[0.3em] uppercase opacity-40 block mb-6">RESULTS DRIVEN</CinematicText>
           <CinematicText as="h2" className="text-5xl md:text-8xl lg:text-[7vw] font-display font-black tracking-[-0.04em] uppercase leading-[0.85] mb-12 text-white">
             DRIVING SUCCESS,<br />
-            <span className="text-[#ef3b5d]">DELIVERING RESULTS.</span>
+            <span className="text-[#ef4444]">DELIVERING RESULTS.</span>
           </CinematicText>
           <p className="text-sm md:text-xl font-display font-black tracking-[-0.02em] uppercase opacity-40 max-w-2xl mx-auto leading-relaxed text-white">
             We don't just build websites; we build performance engines. Every pixel and line of code is optimized for maximum conversion and brand equity.
@@ -528,7 +528,7 @@ function ResultCard({ res, delay }: any) {
         <div className="p-8 flex flex-col items-start text-left bg-gradient-to-t from-black/80 to-transparent absolute bottom-0 left-0 right-0 h-1/2 justify-end">
           <span className="text-[10px] font-black tracking-[0.3em] uppercase opacity-40 mb-2">{res.name}</span>
           <div className="flex flex-col gap-1 items-start">
-            <span className="text-3xl md:text-5xl font-display font-black tracking-[-0.04em] text-[#ef3b5d] leading-none">{res.metric}</span>
+            <span className="text-3xl md:text-5xl font-display font-black tracking-[-0.04em] text-[#ef4444] leading-none">{res.metric}</span>
             <span className="text-[10px] font-black tracking-[0.2em] opacity-40">{res.label}</span>
           </div>
           <div className="text-left">

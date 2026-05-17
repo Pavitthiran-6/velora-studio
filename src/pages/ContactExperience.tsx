@@ -46,7 +46,7 @@ export const ContactExperience: React.FC<{ isOpen: boolean; onClose: () => void 
     >
       <div 
         onScroll={(e) => (e.currentTarget.scrollTop = 0)}
-        className="relative w-full h-full rounded-[16px] md:rounded-[28px] lg:rounded-[40px] overflow-hidden bg-[#1f2547] flex flex-col border border-white/5 shadow-[0_20px_50px_rgba(0,0,0,0.4)] p-8 md:p-12 lg:p-16 text-[#f4f4f4] selection:bg-[#ef3b5d] selection:text-white"
+        className="relative w-full h-full rounded-[16px] md:rounded-[28px] lg:rounded-[40px] overflow-hidden bg-[#1f2547] flex flex-col border border-white/5 shadow-[0_20px_50px_rgba(0,0,0,0.4)] p-8 md:p-12 lg:p-16 text-[#f4f4f4] selection:bg-[#ef4444] selection:text-white"
       >
         {/* TOP LAYER: LOGO + TAGS + DECO */}
         <div className="flex justify-between items-start z-10">
@@ -71,7 +71,7 @@ export const ContactExperience: React.FC<{ isOpen: boolean; onClose: () => void 
                   exit={{ opacity: 0, y: -20, scale: 0.8 }}
                   className="px-5 py-2 md:py-3 rounded-full bg-white/5 border border-white/10 text-[9px] md:text-[10px] font-display font-black tracking-[0.2em] uppercase text-white/40 whitespace-nowrap flex items-center gap-3"
                 >
-                  <HexIcon className="w-2.5 h-2.5" fill="#ef3b5d" />
+                  <HexIcon className="w-2.5 h-2.5" fill="#ef4444" />
                   {tag}
                 </motion.div>
               ))}
@@ -92,7 +92,7 @@ export const ContactExperience: React.FC<{ isOpen: boolean; onClose: () => void 
             {step === "intro" && (
               <StepContent
                 key="intro"
-                title={<>HOW CAN WE <span className="text-[#ef3b5d]">HELP?</span></>}
+                title={<>HOW CAN WE <span className="text-[#ef4444]">HELP?</span></>}
                 options={["START A PROJECT", "JOIN OUR TEAM", "DROP US A LINE"]}
                 onSelect={(val) => {
                   if (val === "START A PROJECT") {
@@ -107,7 +107,7 @@ export const ContactExperience: React.FC<{ isOpen: boolean; onClose: () => void 
             {step === "projectType" && (
               <StepContent
                 key="projectType"
-                title={<>WHAT TYPE OF <span className="text-[#ef3b5d]">PROJECT?</span></>}
+                title={<>WHAT TYPE OF <span className="text-[#ef4444]">PROJECT?</span></>}
                 options={["FULL WEBSITE", "UX/UI DESIGN", "WEB DEVELOPMENT", "BRANDING", "MARKETING"]}
                 onSelect={(val) => { setSelections(s => ({ ...s, projectType: val })); nextStep("budget"); }}
                 showDots={true}
@@ -116,7 +116,7 @@ export const ContactExperience: React.FC<{ isOpen: boolean; onClose: () => void 
             {step === "budget" && (
               <StepContent
                 key="budget"
-                title={<>BUDGET <span className="text-[#ef3b5d]">RANGE</span></>}
+                title={<>BUDGET <span className="text-[#ef4444]">RANGE</span></>}
                 options={["15K–30K", "30K–50K", "50K–75K", "75K–100K", "100K+"]}
                 onSelect={(val) => { setSelections(s => ({ ...s, budget: val })); nextStep("hearAbout"); }}
                 showDots={true}
@@ -125,7 +125,7 @@ export const ContactExperience: React.FC<{ isOpen: boolean; onClose: () => void 
             {step === "hearAbout" && (
               <StepContent
                 key="hearAbout"
-                title={<>HOW DID YOU <span className="text-[#ef3b5d]">HEAR ABOUT US?</span></>}
+                title={<>HOW DID YOU <span className="text-[#ef4444]">HEAR ABOUT US?</span></>}
                 options={["AWWWARDS", "FRIEND REFERRAL", "WE DID A PROJECT", "GOOGLE", "ARTICLE"]}
                 onSelect={(val) => { setSelections(s => ({ ...s, hearAbout: val })); nextStep("form"); }}
                 showDots={true}
@@ -192,11 +192,11 @@ export const ContactExperience: React.FC<{ isOpen: boolean; onClose: () => void 
               <span className="text-[10px] md:text-xs font-black tracking-[0.2em] opacity-40">05</span>
             </div>
             <div className="w-full h-0.5 bg-white/10 relative">
-              <HexIcon className="absolute top-1/2 left-0 -translate-y-1/2 w-3 h-3" fill="#ef3b5d" />
+              <HexIcon className="absolute top-1/2 left-0 -translate-y-1/2 w-3 h-3" fill="#ef4444" />
               <motion.div
                 initial={{ width: "20%" }}
                 animate={{ width: `${(progress / 5) * 100}%` }}
-                className="absolute h-full bg-[#ef3b5d] left-0 top-0 transition-all duration-500"
+                className="absolute h-full bg-[#ef4444] left-0 top-0 transition-all duration-500"
               />
               <HexIcon className="absolute top-1/2 right-0 -translate-y-1/2 w-3 h-3" fill="#1f2547" />
             </div>
@@ -235,7 +235,7 @@ const StepContent: React.FC<{ title: React.ReactNode; options: string[]; onSelec
           className="px-10 md:px-14 py-6 md:py-8 hexa-box bg-white/5 border border-white/10 flex items-center gap-4 group transition-colors duration-300"
         >
           {(showDots || opt === "START A PROJECT") && (
-            <HexIcon className="w-3 h-3" fill="#ef3b5d" />
+            <HexIcon className="w-3 h-3" fill="#ef4444" />
           )}
           <span className="text-[10px] md:text-xs font-display font-black tracking-[0.2em] uppercase whitespace-nowrap">{opt}</span>
         </motion.button>
@@ -279,7 +279,7 @@ const StepFinalForm: React.FC<{ selections: SelectionData; onSelect: (formData: 
     >
       <div className="flex flex-col justify-center">
         <h1 className="text-4xl md:text-6xl lg:text-[5.5vw] font-display font-black tracking-[-0.04em] uppercase leading-[0.85] mb-8">
-          READY TO <br /> CREATE <br /> <span className="text-[#ef3b5d]">MAGIC?</span>
+          READY TO <br /> CREATE <br /> <span className="text-[#ef4444]">MAGIC?</span>
         </h1>
         <p className="text-xs md:text-sm font-display font-black tracking-[0.3em] uppercase opacity-30">W2C Studios — PROJECT INTAKE</p>
       </div>
@@ -332,7 +332,7 @@ const StepFinalForm: React.FC<{ selections: SelectionData; onSelect: (formData: 
             disabled={isSubmitting}
             onClick={handleSubmit}
             className={`w-full h-16 md:h-20 rounded-full flex items-center justify-center gap-4 text-[10px] md:text-xs font-display font-black tracking-[0.4em] uppercase transition-all ${
-              isSubmitting ? "bg-white/10 cursor-not-allowed" : "bg-[#ef3b5d] hover:bg-[#ff4d6d]"
+              isSubmitting ? "bg-white/10 cursor-not-allowed" : "bg-[#ef4444] hover:bg-[#ef4444]"
             }`}
           >
             {isSubmitting ? (
@@ -346,7 +346,7 @@ const StepFinalForm: React.FC<{ selections: SelectionData; onSelect: (formData: 
                   animate={{ rotate: 360 }}
                   transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
                 >
-                  <HexIcon className="w-4 h-4" fill="#ef3b5d" />
+                  <HexIcon className="w-4 h-4" fill="#ef4444" />
                 </motion.div>
               </motion.div>
             ) : (
@@ -365,25 +365,25 @@ const StepSuccess: React.FC<{ onClose: () => void }> = ({ onClose }) => (
     animate={{ opacity: 1, y: 0 }}
     className="flex flex-col items-center text-center max-w-2xl mx-auto space-y-10"
   >
-    <div className="w-20 h-20 rounded-full border border-[#ef3b5d]/30 flex items-center justify-center relative">
+    <div className="w-20 h-20 rounded-full border border-[#ef4444]/30 flex items-center justify-center relative">
       <motion.div
         initial={{ scale: 0, rotate: -45 }}
         animate={{ scale: 1, rotate: 0 }}
         transition={{ delay: 0.2, type: "spring", damping: 12 }}
       >
-        <HexIcon className="w-10 h-10" fill="#ef3b5d" />
+        <HexIcon className="w-10 h-10" fill="#ef4444" />
       </motion.div>
       <motion.div 
         animate={{ scale: [1, 1.2, 1], opacity: [0.3, 0.6, 0.3] }}
         transition={{ duration: 2, repeat: Infinity }}
-        className="absolute inset-0 rounded-full border border-[#ef3b5d]"
+        className="absolute inset-0 rounded-full border border-[#ef4444]"
       />
     </div>
 
     <div className="space-y-4">
-      <p className="text-[10px] font-black tracking-[0.6em] uppercase text-[#ef3b5d] opacity-80">SUCCESSFULLY DISPATCHED</p>
+      <p className="text-[10px] font-black tracking-[0.6em] uppercase text-[#ef4444] opacity-80">SUCCESSFULLY DISPATCHED</p>
       <h1 className="text-4xl md:text-5xl lg:text-6xl font-display font-black tracking-[-0.04em] uppercase leading-[0.9]">
-        MESSAGE <br /> <span className="text-[#ef3b5d]">RECEIVED.</span>
+        MESSAGE <br /> <span className="text-[#ef4444]">RECEIVED.</span>
       </h1>
       <p className="text-xs font-medium uppercase opacity-40 max-w-xs mx-auto leading-relaxed tracking-wide">
         OUR TEAM IS ANALYZING YOUR VISION. <br /> EXPECT MAGIC SOON.
@@ -391,7 +391,7 @@ const StepSuccess: React.FC<{ onClose: () => void }> = ({ onClose }) => (
     </div>
 
     <motion.button
-      whileHover={{ scale: 1.05, backgroundColor: "#ef3b5d", color: "#fff" }}
+      whileHover={{ scale: 1.05, backgroundColor: "#ef4444", color: "#fff" }}
       whileTap={{ scale: 0.98 }}
       onClick={onClose}
       className="px-10 py-5 rounded-full border border-white/10 text-white text-[10px] font-black tracking-[0.4em] uppercase transition-all duration-300"
@@ -406,7 +406,7 @@ const FloatingInput: React.FC<{ label: string; placeholder: string; textarea?: b
     <div className="flex justify-between items-center mb-1">
       <span className={cn(
         "block text-[10px] font-display font-black tracking-[0.3em] uppercase transition-colors",
-        error ? "text-red-500" : "text-[#ef3b5d]"
+        error ? "text-[#ef4444]" : "text-[#ef4444]"
       )}>
         {label}
       </span>
@@ -414,7 +414,7 @@ const FloatingInput: React.FC<{ label: string; placeholder: string; textarea?: b
         <motion.span
           initial={{ opacity: 0, x: 10 }}
           animate={{ opacity: 1, x: 0 }}
-          className="text-[9px] font-black tracking-widest text-red-500 uppercase"
+          className="text-[9px] font-black tracking-widest text-[#ef4444] uppercase"
         >
           {error}
         </motion.span>
@@ -426,7 +426,7 @@ const FloatingInput: React.FC<{ label: string; placeholder: string; textarea?: b
         onChange={(e) => onChange(e.target.value)}
         className={cn(
           "w-full bg-transparent border-b py-3 text-base md:text-lg font-display font-black tracking-tight uppercase focus:outline-none placeholder:text-white/20 text-white min-h-[80px] md:min-h-[100px] transition-colors",
-          error ? "border-red-500/50" : "border-white/20 focus:border-[#ef3b5d]"
+          error ? "border-[#ef4444]/50" : "border-white/20 focus:border-[#ef4444]"
         )}
         placeholder={placeholder}
       />
@@ -437,14 +437,14 @@ const FloatingInput: React.FC<{ label: string; placeholder: string; textarea?: b
         onChange={(e) => onChange(e.target.value)}
         className={cn(
           "w-full bg-transparent border-b py-3 text-base md:text-lg font-display font-black tracking-tight uppercase focus:outline-none placeholder:text-white/20 text-white transition-colors",
-          error ? "border-red-500/50" : "border-white/20 focus:border-[#ef3b5d]"
+          error ? "border-[#ef4444]/50" : "border-white/20 focus:border-[#ef4444]"
         )}
         placeholder={placeholder}
       />
     )}
     <div className={cn(
       "absolute left-0 -bottom-px h-[1px] transition-all duration-500",
-      error ? "bg-red-500 w-full" : "bg-[#ef3b5d] w-0 group-focus-within:w-full"
+      error ? "bg-[#ef4444] w-full" : "bg-[#ef4444] w-0 group-focus-within:w-full"
     )} />
   </div>
 );

@@ -146,13 +146,15 @@ export default function AdminSettings() {
                     whileTap={{ scale: 0.99 }}
                     onClick={handleSave}
                     disabled={isSaving}
-                    className="w-full h-16 bg-black text-white text-[10px] font-black tracking-[0.3em] uppercase flex items-center justify-center gap-3 hover:bg-[#ef4444] transition-colors shadow-2xl disabled:opacity-50"
+                    className="w-full h-16 bg-black text-white text-[10px] font-black tracking-[0.15em] sm:tracking-[0.3em] uppercase flex items-center justify-center gap-3 hover:bg-[#ef4444] transition-colors shadow-2xl disabled:opacity-50 whitespace-nowrap px-4"
                   >
-                    {isSaving ? "INITIALIZING..." : (
-                      <>
-                        <Save className="w-4 h-4" />
-                        SAVE PROTOCOLS
-                      </>
+                    {isSaving ? (
+                      <span className="flex items-center gap-2">INITIALIZING...</span>
+                    ) : (
+                      <span className="flex flex-row items-center justify-center gap-3">
+                        <Save className="w-4 h-4 shrink-0" />
+                        <span>SAVE PROTOCOLS</span>
+                      </span>
                     )}
                   </motion.button>
                 </div>

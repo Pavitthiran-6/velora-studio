@@ -62,15 +62,15 @@ export default function EmailMarketingPage() {
                   </button>
                   <div className="hidden md:flex items-center gap-2">
                     <span className="text-[10px] font-black tracking-[0.3em] uppercase opacity-40 leading-none">W2C Studios</span>
-                    <HexIcon className="w-2.5 h-2.5" fill="#ef3b5d" />
+                    <HexIcon className="w-2.5 h-2.5" fill="#ef4444" />
                     <span 
                       onClick={() => triggerPageTransition("/services")}
                       className="text-[10px] font-black tracking-[0.3em] uppercase opacity-40 hover:opacity-100 cursor-pointer transition-opacity leading-none"
                     >
                       SERVICES
                     </span>
-                    <HexIcon className="w-2.5 h-2.5" fill="#ef3b5d" />
-                    <span className="text-[10px] font-black tracking-[0.3em] uppercase text-[#ef3b5d] leading-none">EMAIL MARKETING</span>
+                    <HexIcon className="w-2.5 h-2.5" fill="#ef4444" />
+                    <span className="text-[10px] font-black tracking-[0.3em] uppercase text-[#ef4444] leading-none">EMAIL MARKETING</span>
                   </div>
                 </div>
                 <button onClick={() => setIsWaveOpen(!isWaveOpen)} className="relative z-[100] flex gap-3 md:gap-4 h-14 md:h-20 items-center cursor-pointer group pointer-events-auto">
@@ -99,13 +99,13 @@ function HeroSection() {
       <Layout>
 
         <div className="flex flex-col mb-6 md:mb-10">
-          <CinematicText as="h1" className="text-[12vw] md:text-[10vw] font-display font-black tracking-[-0.04em] uppercase leading-[0.85] text-[#ef3b5d]" intensity={1.2}>EMAIL</CinematicText>
+          <CinematicText as="h1" className="text-[12vw] md:text-[10vw] font-display font-black tracking-[-0.04em] uppercase leading-[0.85] text-[#ef4444]" intensity={1.2}>EMAIL</CinematicText>
           <CinematicText as="h1" className="text-[12vw] md:text-[10vw] font-display font-black tracking-[-0.04em] uppercase leading-[0.85] text-white" intensity={1.2}>MARKETING</CinematicText>
         </div>
         <div className="w-full space-y-4 md:space-y-6">
           <motion.div initial={{ scaleX: 0 }} animate={{ scaleX: 1 }} transition={{ duration: 1.5, ease: [0.22, 1, 0.36, 1] }} className="w-full h-px bg-white/10 origin-center" />
           <div className="grid grid-cols-1 md:grid-cols-12 gap-6 md:gap-8">
-            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.4 }} className="md:col-span-2 flex items-center gap-3"><HexIcon className="w-3 h-3" fill="#ef3b5d" /><CinematicText className="text-[10px] font-black tracking-[0.3em] uppercase text-white">THE SERVICE</CinematicText></motion.div>
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.4 }} className="md:col-span-2 flex items-center gap-3"><HexIcon className="w-3 h-3" fill="#ef4444" /><CinematicText className="text-[10px] font-black tracking-[0.3em] uppercase text-white">THE SERVICE</CinematicText></motion.div>
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.5 }} className="md:col-span-4"><p className="text-xl md:text-2xl font-display font-black tracking-[-0.02em] leading-tight uppercase text-white">WE ARCHITECT HIGH-PERFORMANCE EMAIL ECOSYSTEMS THAT MERGE PERSUASIVE COPYWRITING WITH SURGICAL AUTOMATION.</p></motion.div>
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.6 }} className="md:col-span-6"><p className="text-base md:text-lg font-display font-black tracking-[-0.01em] leading-relaxed opacity-40 uppercase">Email marketing at W2C Studios is not about blasting a list, but about architecting definitive brand conversations. We blend technical excellence in automation with cinematic creative design to ensure your brand remains top-of-mind and commands action. By focusing on surgical list segmentation and high-intent copy, we deliver sustainable growth that compounds over time, making your inbox presence a definitive revenue driver.</p></motion.div>
           </div>
@@ -137,7 +137,7 @@ function ProcessSection({ containerRef }: { containerRef: React.RefObject<HTMLDi
         <motion.div style={{ opacity: bgOpacity }} className="absolute inset-0 flex items-center justify-center pointer-events-none select-none overflow-hidden">
           <div className="relative">
             <h2 className="text-[20vw] font-display font-black uppercase tracking-[-0.04em] text-white/5 leading-none text-center whitespace-nowrap">{"PROCESS".split("").map((char, i) => ( <WaveLetter key={i} char={char} index={i} progress={smoothProgress} /> ))}</h2>
-            <motion.div style={{ clipPath: fillClipPath }} className="absolute inset-0 flex justify-center items-center"><h2 className="text-[20vw] font-display font-black uppercase tracking-[-0.04em] text-[#ef3b5d] leading-none text-center whitespace-nowrap">{"PROCESS".split("").map((char, i) => ( <WaveLetter key={i} char={char} index={i} progress={smoothProgress} /> ))}</h2></motion.div>
+            <motion.div style={{ clipPath: fillClipPath }} className="absolute inset-0 flex justify-center items-center"><h2 className="text-[20vw] font-display font-black uppercase tracking-[-0.04em] text-[#ef4444] leading-none text-center whitespace-nowrap">{"PROCESS".split("").map((char, i) => ( <WaveLetter key={i} char={char} index={i} progress={smoothProgress} /> ))}</h2></motion.div>
           </div>
         </motion.div>
         <div className="relative z-10 w-full"><div className="flex items-center"><motion.div ref={trackRef} style={{ x }} className="flex flex-row gap-8 md:gap-16 items-center"><div className="flex-shrink-0 w-[100vw]" />{PROCESS_STEPS.map((step, i) => ( <ProcessCard key={step.id} step={step} index={i} /> ))}<div className="flex-shrink-0 w-[20vw]" /></motion.div></div></div>
@@ -149,12 +149,12 @@ function ProcessSection({ containerRef }: { containerRef: React.RefObject<HTMLDi
 function ProcessCard({ step, index }: { step: any; index: number }) {
   const shiftClass = index % 2 === 0 ? "translate-y-8 md:translate-y-12" : "-translate-y-8 md:-translate-y-12";
   return (
-    <div className={cn("flex-shrink-0 w-[85vw] md:w-[450px] min-h-[400px] md:h-[550px] group relative bg-[#1a1f3d] p-10 md:p-16 rounded-[32px] border border-white/10 hover:border-white/20 transition-all duration-500 hover:shadow-[0_40px_80px_rgba(0,0,0,0.5)] flex flex-col", shiftClass)}>
+    <div className={cn("flex-shrink-0 w-[85vw] md:w-[450px] min-h-[400px] md:h-[550px] group relative bg-[#1f2547] p-10 md:p-16 rounded-[32px] border border-white/10 hover:border-white/20 transition-all duration-500 hover:shadow-[0_40px_80px_rgba(0,0,0,0.5)] flex flex-col", shiftClass)}>
       <div className="flex flex-col h-full">
         <div className="flex justify-between items-start mb-12"><span className="text-xs font-black tracking-[0.4em] opacity-50 group-hover:opacity-100 transition-opacity uppercase">{step.id} / STEP</span></div>
-        <h3 className="text-4xl md:text-6xl font-display font-black tracking-[-0.04em] uppercase leading-none mb-8 group-hover:text-[#ef3b5d] transition-colors text-white">{step.title}</h3>
+        <h3 className="text-4xl md:text-6xl font-display font-black tracking-[-0.04em] uppercase leading-none mb-8 group-hover:text-[#ef4444] transition-colors text-white">{step.title}</h3>
         <p className="text-base md:text-lg font-display font-black tracking-[-0.01em] leading-relaxed text-white/70 group-hover:text-white transition-colors uppercase mb-12">{step.desc}</p>
-        <div className="mt-auto flex justify-between items-center"><HexIcon className="w-6 h-6 opacity-40 group-hover:opacity-100 transition-opacity" fill="#ef3b5d" /></div>
+        <div className="mt-auto flex justify-between items-center"><HexIcon className="w-6 h-6 opacity-40 group-hover:opacity-100 transition-opacity" fill="#ef4444" /></div>
       </div>
     </div>
   );
@@ -166,12 +166,12 @@ function LatestProjects() {
       <Layout>
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-20">
           <div className="lg:col-span-4 lg:sticky lg:top-40 h-fit space-y-6">
-            <div className="flex items-center gap-3"><HexIcon className="w-3 h-3" fill="#ef3b5d" /><CinematicText className="text-[10px] font-black tracking-[0.3em] uppercase text-white">PORTFOLIO</CinematicText></div>
-            <CinematicText as="h2" className="text-6xl md:text-8xl font-display font-black tracking-[-0.04em] uppercase leading-none text-white">LATEST<br /><span className="text-[#ef3b5d]">PROJECTS<span className="text-white">.</span></span></CinematicText>
+            <div className="flex items-center gap-3"><HexIcon className="w-3 h-3" fill="#ef4444" /><CinematicText className="text-[10px] font-black tracking-[0.3em] uppercase text-white">PORTFOLIO</CinematicText></div>
+            <CinematicText as="h2" className="text-6xl md:text-8xl font-display font-black tracking-[-0.04em] uppercase leading-none text-white">LATEST<br /><span className="text-[#ef4444]">PROJECTS<span className="text-white">.</span></span></CinematicText>
           </div>
           <div className="lg:col-span-8 grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-16 pt-0 lg:pt-24">{PROJECTS.map((proj, i) => ( <ProjectCard key={proj.name} project={proj} index={i} /> ))}</div>
         </div>
-        <div className="mt-32 flex justify-center"><motion.button whileHover={{ y: -5 }} className="group flex flex-col items-center gap-4"><span className="text-xs font-black tracking-[0.4em] uppercase text-white/40 group-hover:text-white transition-colors">VIEW ALL WORK</span><div className="w-12 h-[1px] bg-white/20 relative overflow-hidden"><motion.div initial={{ x: "-100%" }} whileHover={{ x: "100%" }} transition={{ duration: 0.6, ease: "easeInOut" }} className="absolute inset-0 bg-[#ef3b5d]" /></div></motion.button></div>
+        <div className="mt-32 flex justify-center"><motion.button whileHover={{ y: -5 }} className="group flex flex-col items-center gap-4"><span className="text-xs font-black tracking-[0.4em] uppercase text-white/40 group-hover:text-white transition-colors">VIEW ALL WORK</span><div className="w-12 h-[1px] bg-white/20 relative overflow-hidden"><motion.div initial={{ x: "-100%" }} whileHover={{ x: "100%" }} transition={{ duration: 0.6, ease: "easeInOut" }} className="absolute inset-0 bg-[#ef4444]" /></div></motion.button></div>
       </Layout>
     </section>
   );
@@ -186,8 +186,8 @@ function ProjectCard({ project, index }: { project: any; index: number }) {
         <motion.img src={project.img} alt={project.name} whileHover={{ scale: 1.05 }} transition={{ duration: 0.8, ease: "easeOut" }} className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700" />
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
         <div className="absolute bottom-10 left-10 opacity-0 group-hover:opacity-100 transition-all duration-500 translate-y-4 group-hover:translate-y-0">
-          <span className="text-xs font-black tracking-[0.3em] uppercase text-[#ef3b5d] mb-2 block">{project.id}</span>
-          <div className="relative inline-block"><h4 className="text-3xl font-display font-black tracking-[-0.02em] uppercase text-white">{project.name}</h4><div className="absolute -bottom-1 left-0 w-full h-[2px] bg-[#ef3b5d] scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left" /></div>
+          <span className="text-xs font-black tracking-[0.3em] uppercase text-[#ef4444] mb-2 block">{project.id}</span>
+          <div className="relative inline-block"><h4 className="text-3xl font-display font-black tracking-[-0.02em] uppercase text-white">{project.name}</h4><div className="absolute -bottom-1 left-0 w-full h-[2px] bg-[#ef4444] scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left" /></div>
           <span className="text-[10px] font-black tracking-[0.2em] uppercase text-white/60 block mt-2">{project.category}</span>
         </div>
       </div>
@@ -230,7 +230,7 @@ function OtherServices({ containerRef }: { containerRef: React.RefObject<HTMLDiv
         <div className="grid grid-cols-1 md:grid-cols-12 gap-12 md:gap-24">
           <div className="md:col-span-4 flex flex-col items-start gap-8">
             <div className="flex items-center gap-3">
-              <HexIcon className="w-3 h-3" fill="#ef3b5d" />
+              <HexIcon className="w-3 h-3" fill="#ef4444" />
               <CinematicText className="text-[10px] font-black tracking-[0.3em] uppercase text-white">OTHER SERVICES</CinematicText>
             </div>
           </div>
@@ -249,11 +249,11 @@ function OtherServices({ containerRef }: { containerRef: React.RefObject<HTMLDiv
 
             {OTHER_SERVICES.map((service) => (
               <motion.div key={service} initial={{ opacity: 0, y: 10 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="group flex flex-col">
-                <div className="w-full h-px bg-[#ef3b5d] transition-transform duration-500 scale-x-0 group-hover:scale-x-100 origin-left z-10" />
+                <div className="w-full h-px bg-[#ef4444] transition-transform duration-500 scale-x-0 group-hover:scale-x-100 origin-left z-10" />
                 <div className="w-full h-px bg-white/5" />
                 <div className="py-8 md:py-12 flex items-center justify-between cursor-pointer group" onClick={() => triggerPageTransition(`/${service.toLowerCase().replace(/ /g, "-")}`)}>
                   <WaveText text={service} containerRef={containerRef} className="text-3xl md:text-5xl font-display font-black text-white transition-all duration-300 group-hover:translate-x-8 uppercase tracking-[-0.04em]" />
-                  <ArrowUpRight className="w-8 h-8 md:w-10 md:h-10 opacity-0 group-hover:opacity-100 transition-all group-hover:translate-x-[-10px] text-[#ef3b5d]" />
+                  <ArrowUpRight className="w-8 h-8 md:w-10 md:h-10 opacity-0 group-hover:opacity-100 transition-all group-hover:translate-x-[-10px] text-[#ef4444]" />
                 </div>
               </motion.div>
             ))}

@@ -63,7 +63,7 @@ export function MediaUploader({
         {value && (
           <button 
             onClick={() => onChange("")}
-            className="text-[10px] font-black tracking-[0.1em] uppercase text-red-500 hover:opacity-70 transition-opacity flex items-center gap-2"
+            className="text-[10px] font-black tracking-[0.1em] uppercase text-[#ef4444] hover:opacity-70 transition-opacity flex items-center gap-2"
           >
             <X className="w-3 h-3" />
             CLEAR ASSET

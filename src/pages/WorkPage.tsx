@@ -84,7 +84,7 @@ export default function WorkPage() {
             <Layout className="flex flex-col gap-8 h-full relative">
               <div className="z-10 flex flex-col items-center text-center pointer-events-none">
                 <CinematicText as="h1" className="text-[12vw] md:text-[8vw] font-display font-black tracking-[-0.06em] leading-[0.8] uppercase text-white" intensity={1.2}>
-                  SELECTED <span className="text-[#ef3b5d]">PROJECTS</span>
+                  SELECTED <span className="text-[#ef4444]">PROJECTS</span>
                 </CinematicText>
               </div>
               <div className="absolute inset-0 w-full h-full flex items-center justify-center pt-24">

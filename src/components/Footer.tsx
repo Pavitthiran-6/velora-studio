@@ -53,7 +53,7 @@ export const Footer = ({ isLight = false }: { isLight?: boolean }) => {
   const hoverColor = isLight ? "#8b5cf6" : "#ef4444"; // Violet for light mode, Red for dark
   const bgStyle = isLight 
     ? { background: "#f5f5f3" } 
-    : { background: "linear-gradient(160deg, #181c3a 0%, #1f2547 50%, #1a1f40 100%)" };
+    : { background: "linear-gradient(160deg, #181c3a 0%, #1f2547 50%, #1f2547 100%)" };
 
   return (
     <footer className={`min-h-screen flex flex-col justify-between relative overflow-hidden ${textColor} font-sans py-8 md:py-10`}

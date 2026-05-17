@@ -154,6 +154,17 @@ export default function AdminHomeCards() {
     }
   };
 
+  const handleDelete = async (id: string) => {
+    if (!confirm("Are you sure you want to delete this home card?")) return;
+    try {
+      await cmsService.deleteHomeCard(id);
+      await fetchCards();
+      window.dispatchEvent(new Event('cms-update'));
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   return (
     <AdminLayout>
       <div className="space-y-16 pb-32">
@@ -201,40 +212,45 @@ export default function AdminHomeCards() {
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ duration: 0.5, delay: i * 0.1 }}
-                  className="group bg-white border border-black/5 p-8 flex items-center gap-10 hover:border-black transition-all duration-500 relative"
+                  className="group bg-white border border-black/5 p-6 md:p-8 flex flex-col sm:flex-row sm:items-center justify-between gap-6 hover:border-black transition-all duration-500 relative"
                 >
-                  <div className="cursor-grab active:cursor-grabbing text-black/10 group-hover:text-black/30 transition-colors">
-                    <GripVertical className="w-6 h-6" />
-                  </div>
-
-                  <div className="w-40 h-24 bg-black/5 overflow-hidden rounded-sm shadow-sm relative">
-                    <img src={card.image_url || card.image} alt={card.title} className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-1000 scale-105 group-hover:scale-100" />
-                    {card.is_active === false && (
-                      <div className="absolute inset-0 bg-white/80 backdrop-blur-sm flex items-center justify-center">
-                        <span className="text-[8px] font-black tracking-widest uppercase text-black/40">HIDDEN</span>
-                      </div>
-                    )}
-                  </div>
-
-                  <div className="flex-1 space-y-2">
-                    <div className="flex items-center gap-3">
-                      <span className="text-[9px] font-black tracking-[0.25em] text-[#ef4444] uppercase">{card.tags}</span>
-                      {card.is_active === false && <AlertCircle className="w-3 h-3 text-black/20" />}
+                  <div className="flex flex-1 items-center gap-4 md:gap-8 min-w-0 w-full">
+                    <div className="cursor-grab active:cursor-grabbing text-black/10 group-hover:text-black/30 transition-colors shrink-0">
+                      <GripVertical className="w-6 h-6" />
                     </div>
-                    <h3 className="text-2xl font-display font-black uppercase tracking-tighter leading-none group-hover:tracking-normal transition-all duration-500">
-                      {card.title}
-                    </h3>
-                    <p className="text-[9px] font-medium opacity-20 uppercase tracking-widest">{card.slug}</p>
+
+                    <div className="w-24 h-16 sm:w-40 sm:h-24 bg-black/5 overflow-hidden rounded-sm shadow-sm relative shrink-0">
+                      <img src={card.image_url || card.image} alt={card.title} className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-1000 scale-105 group-hover:scale-100" />
+                      {card.is_active === false && (
+                        <div className="absolute inset-0 bg-white/80 backdrop-blur-sm flex items-center justify-center">
+                          <span className="text-[8px] font-black tracking-widest uppercase text-black/40">HIDDEN</span>
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="flex-1 min-w-0 space-y-1 sm:space-y-2">
+                      <div className="flex items-center gap-3">
+                        <span className="text-[9px] font-black tracking-[0.25em] text-[#ef4444] uppercase truncate">{card.tags}</span>
+                        {card.is_active === false && <AlertCircle className="w-3 h-3 text-black/20 shrink-0" />}
+                      </div>
+                      <h3 className="text-xl sm:text-2xl font-display font-black uppercase tracking-tighter leading-none group-hover:tracking-normal transition-all duration-500 truncate">
+                        {card.title}
+                      </h3>
+                      <p className="text-[9px] font-medium opacity-20 uppercase tracking-widest truncate">{card.slug}</p>
+                    </div>
                   </div>
 
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-3 shrink-0 self-end sm:self-auto ml-auto sm:ml-0">
                     <button 
                       onClick={() => handleOpenModal(card)}
-                      className="w-12 h-12 border border-black/5 flex items-center justify-center hover:bg-black hover:text-white transition-all rounded-full group/btn"
+                      className="w-12 h-12 border border-black/5 flex items-center justify-center hover:bg-black hover:text-white transition-all rounded-full group/btn shrink-0"
                     >
                       <Edit3 className="w-4 h-4 group-hover/btn:scale-110 transition-transform" />
                     </button>
-                    <button className="w-12 h-12 border border-black/5 flex items-center justify-center hover:bg-[#ef4444] hover:text-white transition-all rounded-full group/btn">
+                    <button 
+                      onClick={() => handleDelete(card.id)}
+                      className="w-12 h-12 border border-black/5 flex items-center justify-center hover:bg-[#ef4444] hover:text-white transition-all rounded-full group/btn shrink-0"
+                    >
                       <Trash2 className="w-4 h-4 group-hover/btn:scale-110 transition-transform" />
                     </button>
                   </div>

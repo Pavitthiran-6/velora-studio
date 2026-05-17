@@ -436,14 +436,14 @@ export default function AdminReviews() {
 
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 items-start px-8">
             <div className="lg:col-span-12 space-y-10">
-              <div className="flex items-center justify-between border-b border-black/5 pb-10">
-                <div className="flex items-center gap-16">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 border-b border-black/5 pb-10">
+                <div className="flex flex-wrap items-center gap-x-6 gap-y-4 sm:gap-x-16">
                   {['ALL', 'PUBLISHED', 'DRAFTS'].map(f => (
                     <button 
                       key={f} 
                       onClick={() => setFilter(f as any)}
                       className={cn(
-                        "text-[10px] font-black tracking-widest uppercase transition-all relative pb-2",
+                        "text-[10px] font-black tracking-widest uppercase transition-all relative pb-2 shrink-0",
                         filter === f ? "text-[#ef4444]" : "opacity-30 hover:opacity-100"
                       )}
                     >
@@ -465,7 +465,7 @@ export default function AdminReviews() {
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ duration: 0.5, delay: i * 0.05 }}
-                    className="group bg-white border border-black/5 p-10 flex flex-col md:flex-row items-center gap-12 hover:border-black/20 hover:shadow-xl transition-all duration-500 relative"
+                    className="group bg-white border border-black/5 p-6 md:p-10 flex flex-col md:flex-row items-center gap-6 md:gap-12 hover:border-black/20 hover:shadow-xl transition-all duration-500 relative"
                   >
                     <div className={cn(
                       "absolute top-0 left-0 w-[3px] h-full transition-all duration-500 group-hover:w-[6px]",
@@ -476,21 +476,21 @@ export default function AdminReviews() {
                       <img src={review.avatarUrl || "https://images.unsplash.com/photo-1633332755192-727a05c4013d?auto=format&fit=crop&q=80&w=100"} className="w-full h-full object-cover grayscale brightness-110 group-hover:grayscale-0" alt="" />
                     </div>
 
-                    <div className="flex-1 space-y-3">
-                      <div className="flex items-center gap-5">
-                        <h3 className="text-2xl font-black uppercase tracking-tight leading-none">{review.name}</h3>
-                        <div className="px-3 py-1 bg-black/5 rounded-full text-[8px] font-black uppercase tracking-widest opacity-40">SQ-00{review.reviewIndex}</div>
+                    <div className="flex-1 min-w-0 w-full space-y-3">
+                      <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
+                        <h3 className="text-xl sm:text-2xl font-black uppercase tracking-tight leading-none break-words">{review.name}</h3>
+                        <div className="px-3 py-1 bg-black/5 rounded-full text-[8px] font-black uppercase tracking-widest opacity-40 shrink-0">SQ-00{review.reviewIndex}</div>
                       </div>
-                      <div className="flex items-center gap-4">
-                        <span className="text-[10px] font-black tracking-[0.2em] text-[#ef4444] uppercase">{review.company}</span>
-                        <div className="w-1 h-1 bg-black/10 rounded-full" />
-                        <div className="flex gap-0.5">
+                      <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
+                        <span className="text-[10px] font-black tracking-[0.2em] text-[#ef4444] uppercase truncate">{review.company}</span>
+                        <div className="w-1 h-1 bg-black/10 rounded-full hidden sm:block" />
+                        <div className="flex gap-0.5 shrink-0">
                           {[...Array(5)].map((_, i) => (
                             <Star key={i} className={cn("w-3 h-3", i < review.rating ? "fill-black text-black" : "text-black/10")} />
                           ))}
                         </div>
                       </div>
-                      <p className="text-xs font-medium opacity-40 uppercase line-clamp-1 italic pr-12 group-hover:opacity-100 transition-opacity">
+                      <p className="text-xs font-medium opacity-40 uppercase line-clamp-2 italic pr-0 md:pr-12 group-hover:opacity-100 transition-opacity break-words">
                         "{review.content}"
                       </p>
                     </div>
@@ -508,7 +508,7 @@ export default function AdminReviews() {
                           whileHover={{ scale: 1.1, backgroundColor: "#000", color: "#fff" }}
                           whileTap={{ scale: 0.9 }}
                           onClick={() => handleOpenModal(review)}
-                          className="w-14 h-14 border border-black/5 flex items-center justify-center transition-all rounded-full group/btn"
+                          className="w-14 h-14 border border-black/5 flex items-center justify-center transition-all rounded-full group/btn shrink-0"
                         >
                           <Edit3 className="w-5 h-5 group-hover/btn:scale-110 transition-transform" />
                         </motion.button>
@@ -520,7 +520,7 @@ export default function AdminReviews() {
                               setReviews(reviews.filter((r: any) => r.id !== review.id));
                             }
                           }}
-                          className="w-14 h-14 border border-black/5 flex items-center justify-center transition-all rounded-full group/btn shadow-none"
+                          className="w-14 h-14 border border-black/5 flex items-center justify-center transition-all rounded-full group/btn shadow-none shrink-0"
                         >
                           <Trash2 className="w-5 h-5 group-hover/btn:scale-110 transition-transform" />
                         </motion.button>

@@ -28,6 +28,22 @@ export default function AdminLogin() {
       if (error) throw error;
 
       if (data.user) {
+        const userEmail = data.user.email?.toLowerCase();
+        if (!userEmail) {
+          await supabase.auth.signOut();
+          throw new Error("Access denied. Invalid user identity.");
+        }
+
+        const allowedEmails = [
+          'w2cstudios@gmail.com',
+          'pavitthiran66@gmail.com'
+        ];
+
+        if (!allowedEmails.includes(userEmail)) {
+          await supabase.auth.signOut();
+          throw new Error("UNAUTHORIZED: Access restricted to administrators only.");
+        }
+
         triggerPageTransition("/admin/dashboard");
       }
     } catch (err: any) {

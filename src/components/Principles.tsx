@@ -184,7 +184,7 @@ export const Principles = ({ containerRef }: { containerRef: React.RefObject<HTM
                   <div
                     key={p.title}
                     className={cn(
-                      "principle-card flex-shrink-0 w-[85vw] md:w-[400px] min-h-[400px] md:h-[500px] rounded-[24px] bg-[#1a1f3d] p-8 md:p-12 flex flex-col gap-6 shadow-2xl border border-white/5 transition-transform duration-500 transform-gpu will-change-transform",
+                      "principle-card flex-shrink-0 w-[85vw] md:w-[400px] min-h-[400px] md:h-[500px] rounded-[24px] bg-[#1f2547] p-8 md:p-12 flex flex-col gap-6 shadow-2xl border border-white/5 transition-transform duration-500 transform-gpu will-change-transform",
                       shiftClass
                     )}
                   >

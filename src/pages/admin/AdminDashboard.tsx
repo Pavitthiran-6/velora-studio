@@ -195,7 +195,7 @@ export default function AdminDashboard() {
   const dashboardStats = [
     { label: "Active Projects", value: stats.projects.toString(), icon: Briefcase, color: "text-[#ef4444]", trend: "+12%" },
     { label: "Unread Leads", value: stats.messages.toString(), icon: MessageSquare, color: "text-blue-500", trend: "+5%" },
-    { label: "System Health", value: stats.errors > 0 ? `${stats.errors} ERRORS` : "NOMINAL", icon: ShieldCheck, color: stats.errors > 0 ? "text-red-500" : "text-green-500", trend: "100%" },
+    { label: "System Health", value: stats.errors > 0 ? `${stats.errors} ERRORS` : "NOMINAL", icon: ShieldCheck, color: stats.errors > 0 ? "text-[#ef4444]" : "text-green-500", trend: "100%" },
     { label: "Active Cards", value: stats.activeCards.toString(), icon: Zap, color: "text-orange-500", trend: "0" },
   ];
 
@@ -261,7 +261,7 @@ export default function AdminDashboard() {
                   </motion.div>
                 </motion.div>
                 <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="w-32 h-32 border-t-2 border-red-500 rounded-full animate-spin" />
+                  <div className="w-32 h-32 border-t-2 border-[#ef4444] rounded-full animate-spin" />
                 </div>
               </div>
               <div className="space-y-3">
@@ -384,9 +384,9 @@ export default function AdminDashboard() {
           
           {/* Latest Project Pipeline */}
           <div className="lg:col-span-7 space-y-6">
-            <div className="flex items-center justify-between">
-              <h3 className="text-[10px] font-black tracking-[0.4em] uppercase opacity-60">[ PROJECT PIPELINE ]</h3>
-              <button onClick={() => navigate("/admin/projects")} className="text-[10px] font-black tracking-widest uppercase hover:text-red-500 transition-colors">View All</button>
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <h3 className="text-[10px] font-black tracking-[0.4em] uppercase opacity-60 shrink-0">[ PROJECT PIPELINE ]</h3>
+              <button onClick={() => navigate("/admin/projects")} className="text-[10px] font-black tracking-widest uppercase hover:text-[#ef4444] transition-colors shrink-0 text-left sm:text-right">View All</button>
             </div>
             <div className="bg-white border border-black/10 divide-y divide-black/10">
               {recentProjects.map((project) => (
@@ -412,27 +412,27 @@ export default function AdminDashboard() {
 
           {/* System Diagnostics (LIVE LOGS) */}
           <div className="lg:col-span-5 space-y-6">
-            <div className="flex items-center justify-between">
-              <h3 className="text-[10px] font-black tracking-[0.4em] uppercase opacity-60">[ SYSTEM DIAGNOSTICS ]</h3>
-              <div className="flex gap-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <h3 className="text-[10px] font-black tracking-[0.4em] uppercase opacity-60 shrink-0">[ SYSTEM DIAGNOSTICS ]</h3>
+              <div className="flex gap-2 sm:gap-4 shrink-0 flex-wrap">
                 <button 
                   onClick={() => logSystemEvent("Manual Test Trigger", "admin_dashboard", "error")}
                   className="text-[10px] font-black tracking-widest uppercase text-[#ef4444] hover:bg-[#ef4444]/20 px-2 py-1 transition-all font-bold"
                 >
                   Test Trigger
                 </button>
-                <button onClick={handleClearAllLogs} className="text-[10px] font-black tracking-widest uppercase text-red-500/60 hover:text-red-500 transition-colors px-2 py-1">Clear</button>
-                <button onClick={() => navigate("/admin/system-logs")} className="text-[10px] font-black tracking-widest uppercase hover:text-red-500 transition-colors px-2 py-1">Terminal</button>
+                <button onClick={handleClearAllLogs} className="text-[10px] font-black tracking-widest uppercase text-[#ef4444]/60 hover:text-[#ef4444] transition-colors px-2 py-1">Clear</button>
+                <button onClick={() => navigate("/admin/system-logs")} className="text-[10px] font-black tracking-widest uppercase hover:text-[#ef4444] transition-colors px-2 py-1">Terminal</button>
               </div>
             </div>
             <div className="bg-black text-white p-8 space-y-5 font-mono text-[9px] min-h-[300px] max-h-[400px] overflow-y-auto scrollbar-hide border border-white/10">
               {recentLogs.length > 0 ? recentLogs.map((log) => (
-                <div key={log.id} className="flex flex-col gap-1 group/log border-l border-white/20 pl-4 hover:border-red-500 transition-colors">
+                <div key={log.id} className="flex flex-col gap-1 group/log border-l border-white/20 pl-4 hover:border-[#ef4444] transition-colors">
                   <div className="flex items-center justify-between">
                     <div className="flex gap-3 items-center">
                       <span className={cn(
                         "px-1.5 py-0.5 rounded-[2px] font-black text-[7px]",
-                        log.level === 'error' ? "bg-red-500 text-white" : "bg-yellow-500 text-black"
+                        log.level === 'error' ? "bg-[#ef4444] text-white" : "bg-yellow-500 text-black"
                       )}>
                         {log.level.toUpperCase()}
                       </span>
@@ -443,7 +443,7 @@ export default function AdminDashboard() {
 
                        <button 
                         onClick={(e) => handleDeleteLog(e, log.id)}
-                        className="opacity-0 group-hover/log:opacity-100 hover:text-red-500 transition-all"
+                        className="opacity-0 group-hover/log:opacity-100 hover:text-[#ef4444] transition-all"
                       >
                         <Trash2 className="w-3 h-3" />
                       </button>
@@ -464,7 +464,7 @@ export default function AdminDashboard() {
         <section className="space-y-6">
           <div className="flex items-center justify-between">
             <h3 className="text-[10px] font-black tracking-[0.4em] uppercase opacity-40">[ INCOMING COMMUNICATIONS ]</h3>
-            <button onClick={handleClearAllMessages} className="text-[10px] font-black tracking-widest uppercase text-red-500/40 hover:text-red-500 transition-colors">Wipe Inbox</button>
+            <button onClick={handleClearAllMessages} className="text-[10px] font-black tracking-widest uppercase text-[#ef4444]/40 hover:text-[#ef4444] transition-colors">Wipe Inbox</button>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             {recentMessages.map((msg) => (
@@ -476,7 +476,7 @@ export default function AdminDashboard() {
               >
                 <button 
                   onClick={(e) => handleDeleteMessage(e, msg.id)}
-                  className="absolute top-4 right-4 opacity-0 group-hover/msg:opacity-100 hover:text-red-500 transition-all p-2"
+                  className="absolute top-4 right-4 opacity-0 group-hover/msg:opacity-100 hover:text-[#ef4444] transition-all p-2"
                 >
                   <Trash2 className="w-4 h-4" />
                 </button>

@@ -105,7 +105,7 @@ export default function AdminNotifications() {
                   </motion.div>
                 </motion.div>
                 <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="w-32 h-32 border-t-2 border-red-500 rounded-full animate-spin" />
+                  <div className="w-32 h-32 border-t-2 border-[#ef4444] rounded-full animate-spin" />
                 </div>
               </div>
               <div className="space-y-3">
@@ -141,27 +141,29 @@ export default function AdminNotifications() {
             </h1>
           </motion.div>
           
-          <div className="flex items-center gap-12 border-b border-black/10 pb-4">
+          <div className="flex flex-wrap items-center gap-y-4 gap-x-6 sm:gap-x-12 border-b border-black/10 pb-4 w-full lg:w-auto">
             <button 
               onClick={handleClearAll}
-              className="text-[10px] font-black tracking-widest uppercase text-red-500/60 hover:text-red-500 transition-all mr-8"
+              className="text-[10px] font-black tracking-widest uppercase text-[#ef4444]/60 hover:text-[#ef4444] transition-all shrink-0"
             >
               Clear All Messages
             </button>
-            <div className="h-4 w-px bg-black/20 mr-4" />
-            {['ALL', 'UNREAD', 'ARCHIVED'].map(f => (
-              <button 
-                key={f} 
-                onClick={() => setFilter(f as any)}
-                className={cn(
-                  "text-[10px] font-black tracking-widest uppercase transition-all relative pb-2",
-                  filter === f ? "text-[#ef4444]" : "opacity-50 hover:opacity-100"
-                )}
-              >
-                {f}
-                {filter === f && <motion.div layoutId="notifFilter" className="absolute bottom-0 left-0 w-full h-[2px] bg-[#ef4444]" />}
-              </button>
-            ))}
+            <div className="h-4 w-px bg-black/20 hidden sm:block shrink-0" />
+            <div className="flex items-center gap-6 shrink-0">
+              {['ALL', 'UNREAD', 'ARCHIVED'].map(f => (
+                <button 
+                  key={f} 
+                  onClick={() => setFilter(f as any)}
+                  className={cn(
+                    "text-[10px] font-black tracking-widest uppercase transition-all relative pb-2 shrink-0",
+                    filter === f ? "text-[#ef4444]" : "opacity-50 hover:opacity-100"
+                  )}
+                >
+                  {f}
+                  {filter === f && <motion.div layoutId="notifFilter" className="absolute bottom-0 left-0 w-full h-[2px] bg-[#ef4444]" />}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
 
@@ -262,14 +264,14 @@ export default function AdminNotifications() {
                     <div className="flex gap-4">
                       <button 
                         onClick={() => handleDelete(selectedMessage.id)}
-                        className="w-12 h-12 rounded-full border border-black/5 flex items-center justify-center hover:bg-red-50 hover:text-red-500 hover:border-red-100 transition-all"
+                        className="w-12 h-12 rounded-full border border-black/5 flex items-center justify-center hover:bg-red-50 hover:text-[#ef4444] hover:border-red-100 transition-all"
                       >
                         <Trash2 className="w-5 h-5" />
                       </button>
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-2 gap-8 py-8 border-y border-black/5">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-8 py-8 border-y border-black/5">
                     <div>
                       <p className="text-[8px] font-black tracking-widest opacity-30 uppercase mb-2">Sender Identity</p>
                       <p className="text-sm font-black uppercase">{selectedMessage.name}</p>
@@ -293,16 +295,16 @@ export default function AdminNotifications() {
                     </div>
                   </div>
 
-                  <div className="flex gap-4 pt-6">
+                  <div className="flex flex-col sm:flex-row gap-4 pt-6">
                     <button 
                       onClick={() => handleStatusUpdate(selectedMessage.id, selectedMessage.status === 'archived' ? 'unread' : 'archived')}
-                      className="px-8 py-4 border border-black text-[10px] font-black tracking-widest uppercase hover:bg-black hover:text-white transition-all"
+                      className="px-8 py-4 border border-black text-[10px] font-black tracking-widest uppercase hover:bg-black hover:text-white transition-all text-center w-full sm:w-auto"
                     >
                       {selectedMessage.status === 'archived' ? 'UNARCHIVE' : 'ARCHIVE MESSAGE'}
                     </button>
                     <a 
                       href={`mailto:${selectedMessage.email}`}
-                      className="px-8 py-4 bg-[#ef4444] text-white text-[10px] font-black tracking-widest uppercase flex items-center gap-3 hover:bg-black transition-all"
+                      className="px-8 py-4 bg-[#ef4444] text-white text-[10px] font-black tracking-widest uppercase flex items-center justify-center gap-3 hover:bg-black transition-all text-center w-full sm:w-auto"
                     >
                       REPLY VIA EMAIL
                       <ExternalLink className="w-3 h-3" />

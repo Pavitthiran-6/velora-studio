@@ -10,23 +10,69 @@ export const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ childr
 
   useEffect(() => {
     const checkAuth = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) {
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!session) {
+          navigate('/admin');
+          setLoading(false);
+          return;
+        }
+
+        const userEmail = session.user?.email?.toLowerCase();
+        if (!userEmail) {
+          await supabase.auth.signOut();
+          navigate('/admin');
+          setLoading(false);
+          return;
+        }
+
+        const allowedEmails = [
+          'w2cstudios@gmail.com',
+          'pavitthiran66@gmail.com'
+        ];
+
+        if (!allowedEmails.includes(userEmail)) {
+          console.warn(`Unauthorized dashboard access attempt by ${userEmail}`);
+          await supabase.auth.signOut();
+          navigate('/admin');
+        } else {
+          setAuthenticated(true);
+        }
+      } catch (err) {
+        console.error("Auth verification failed:", err);
         navigate('/admin');
-      } else {
-        setAuthenticated(true);
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
     };
 
     checkAuth();
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
       if (!session) {
         navigate('/admin');
         setAuthenticated(false);
       } else {
-        setAuthenticated(true);
+        const userEmail = session.user?.email?.toLowerCase();
+        if (!userEmail) {
+          await supabase.auth.signOut();
+          navigate('/admin');
+          setAuthenticated(false);
+          return;
+        }
+
+        const allowedEmails = [
+          'w2cstudios@gmail.com',
+          'pavitthiran66@gmail.com'
+        ];
+
+        if (!allowedEmails.includes(userEmail)) {
+          await supabase.auth.signOut();
+          navigate('/admin');
+          setAuthenticated(false);
+        } else {
+          setAuthenticated(true);
+        }
       }
     });
 

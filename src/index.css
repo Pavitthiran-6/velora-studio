@@ -77,3 +77,280 @@
     perspective: 1000px;
   }
 }
+
+/* ==========================================
+   MOBILE & TABLET RESPONSIVE SYSTEM LAYER
+   ========================================== */
+
+@media (max-width: 1023px) {
+  /* 1. LAYOUT & GRID OVERRIDES */
+  .grid {
+    gap: 16px !important;
+  }
+  
+  /* Convert lg:col-span-x grids to full columns */
+  .lg\:col-span-4, .lg\:col-span-5, .lg\:col-span-7, .lg\:col-span-8, .lg\:col-span-12 {
+    grid-column: span 12 / span 12 !important;
+  }
+  
+  /* Force dashboard main control titles and flex sections to stack nicely */
+  .flex-col.lg\:flex-row {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 16px !important;
+  }
+
+  /* 2. TABLE RESPONSIVENESS & SCROLL */
+  /* Enable horizontal scroll on any container wrapping a table */
+  section.overflow-hidden,
+  .overflow-hidden {
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  /* Prevent tables from squishing */
+  table {
+    min-width: 850px !important;
+    width: 100% !important;
+  }
+  
+  /* 3. CINEMATIC MODAL & ENGINE RESPONSIVENESS */
+  /* Stack split-panel editor/CMS engines vertically */
+  .relative.w-\[92vw\].md\:w-\[88vw\].max-w-\[1450px\] {
+    display: flex !important;
+    width: 95vw !important;
+    height: 92vh !important;
+    max-height: 92vh !important;
+    flex-direction: column !important;
+    border-radius: 16px !important;
+  }
+  
+  /* Left aside/preview panel */
+  aside.lg\:w-\[35\%\],
+  div.lg\:w-\[35\%\] {
+    width: 100% !important;
+    height: auto !important;
+    min-height: unset !important;
+    max-height: 250px !important;
+    border-right: none !important;
+    border-b: 1px solid rgba(255, 255, 255, 0.1) !important;
+    padding: 16px !important;
+  }
+  
+  /* Hide heavy preview cards / static footer elements inside modal aside on smaller viewports */
+  aside.lg\:w-\[35\%\] .mt-8,
+  div.lg\:w-\[35\%\] .group.mt-8,
+  div.lg\:w-\[35\%\] .absolute.top-8.left-8,
+  aside.lg\:w-\[35\%\] .mb-12 {
+    display: none !important;
+  }
+  
+  /* Convert vertical navigation links inside aside into an inline scrollable row */
+  aside.lg\:w-\[35\%\] .space-y-2 {
+    display: flex !important;
+    flex-direction: row !important;
+    margin-top: 12px !important;
+    gap: 8px !important;
+    overflow-x: auto !important;
+    padding-bottom: 8px !important;
+    scrollbar-width: none;
+  }
+  
+  aside.lg\:w-\[35\%\] .space-y-2::-webkit-scrollbar {
+    display: none;
+  }
+  
+  aside.lg\:w-\[35\%\] .space-y-2 button {
+    width: auto !important;
+    flex-shrink: 0 !important;
+    white-space: nowrap !important;
+    padding: 10px 16px !important;
+  }
+
+  /* Compact the Live Preview Glass Card */
+  div.lg\:w-\[35\%\] .relative.w-full.max-w-\[300px\] {
+    height: 180px !important;
+    max-height: 180px !important;
+    margin-top: 0 !important;
+    padding: 16px !important;
+  }
+  div.lg\:w-\[35\%\] .relative.w-full.max-w-\[300px\] .absolute {
+    display: none !important;
+  }
+  div.lg\:w-\[35\%\] .relative.w-full.max-w-\[300px\] p.text-2xl {
+    font-size: 16px !important;
+    line-clamp: 2 !important;
+  }
+
+  /* Right form area */
+  main.lg\:w-\[65\%\],
+  div.lg\:w-\[65\%\] {
+    width: 100% !important;
+    flex: 1 !important;
+    height: 0 !important;
+    min-height: 0 !important;
+    overflow-y: auto !important;
+  }
+  
+  /* Modal header and spacing */
+  div.lg\:w-\[65\%\] .pt-8.md\:pt-12,
+  main.lg\:w-\[65\%\] .pt-8.md\:pt-12 {
+    padding-top: 16px !important;
+    padding-bottom: 12px !important;
+  }
+  
+  div.lg\:w-\[65\%\] h3,
+  main.lg\:w-\[65\%\] h2 {
+    font-size: 28px !important;
+  }
+
+  /* Padding adjustments inside forms */
+  .px-8.md\:px-12.lg\:px-\[56px\],
+  .px-8.md\:px-12.lg\:px-\[64px\] {
+    padding-left: 20px !important;
+    padding-right: 20px !important;
+  }
+
+  /* Compact form spacing */
+  .space-y-12 > * + * {
+    margin-top: 24px !important;
+  }
+  
+  /* Inputs inside grid columns */
+  .grid-cols-1.md\:grid-cols-2 {
+    grid-template-columns: 1fr !important;
+    gap: 20px !important;
+  }
+
+  /* 4. TYPOGRAPHY SCALING */
+  /* Scale gigantic Big Shoulders Display headings dynamically */
+  h1.font-display.text-\[12vw\],
+  h1.font-display.text-\[8vw\],
+  h1.font-display.text-\[9vw\] {
+    font-size: 50px !important;
+    line-height: 0.9 !important;
+  }
+  
+  h1.font-display.text-\[18vw\],
+  h1.font-display.text-\[15vw\] {
+    font-size: 72px !important;
+  }
+
+  /* 5. GENERAL POLISHING */
+  /* Dashboard layout padding and margins */
+  .p-10.md\:p-14 {
+    padding: 24px !important;
+  }
+  
+  .p-8.hover\:border-black {
+    padding: 20px !important;
+  }
+  
+  .divide-y.divide-black\/10 > * {
+    padding: 16px !important;
+  }
+  
+  /* Inbox grid */
+  .grid-cols-1.md\:grid-cols-2.lg\:grid-cols-4 {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+@media (max-width: 767px) {
+  /* Scale headings even more on narrow mobile */
+  h1.font-display {
+    font-size: 42px !important;
+  }
+  
+  /* Stats and metric indicators stack vertically on mobile */
+  .grid-cols-1.md\:grid-cols-4 {
+    grid-template-columns: 1fr !important;
+  }
+  
+  .px-8 {
+    padding-left: 16px !important;
+    padding-right: 16px !important;
+  }
+  
+  /* Make lists of cards flex columns */
+  .flex-col.md\:flex-row {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 16px !important;
+  }
+  
+  .group.bg-white.border.border-black\/5.p-10 {
+    padding: 20px !important;
+    gap: 16px !important;
+  }
+
+  /* 5. MOBILE CMS MODAL & UNIFIED SCROLL OVERRIDES (<768px) */
+  /* Remove outer padding to let the modal span 100% width and sit at the bottom edge */
+  div.fixed.inset-0.z-\[1100\].p-4 {
+    padding: 0 !important;
+    align-items: flex-end !important;
+  }
+
+  /* Full mobile viewport height, top-rounded only container */
+  .relative.w-\[92vw\].md\:w-\[88vw\].max-w-\[1450px\] {
+    display: flex !important;
+    flex-direction: column !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    max-height: 100vh !important;
+    border-radius: 24px 24px 0 0 !important;
+    border-bottom-left-radius: 0 !important;
+    border-bottom-right-radius: 0 !important;
+    margin: 0 !important;
+    overflow: hidden !important; /* Lock outer wrapper, let child main scroll natively */
+  }
+
+  /* Right Panel: White Form Editor Surface (takes full width & remaining height) */
+  main.lg\:w-\[65\%\],
+  div.lg\:w-\[65\%\] {
+    width: 100% !important;
+    height: 100% !important;
+    flex: 1 !important;
+    min-height: 0 !important;
+    max-height: none !important;
+    overflow: hidden !important; /* Lock main container */
+  }
+
+  /* Enable independent scrolling on the form content container */
+  main.lg\:w-\[65\%\] .overflow-y-auto,
+  div.lg\:w-\[65\%\] .overflow-y-auto {
+    overflow-y: auto !important; /* Enable native vertical scrolling */
+    height: 100% !important;
+    padding-bottom: 96px !important; /* Elegant spacing for bottom inputs */
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Sticky Close Button Row inside the White Panel */
+  main.lg\:w-\[65\%\] > div.shrink-0.flex,
+  div.lg\:w-\[65\%\] > div.shrink-0.flex {
+    position: sticky !important;
+    top: 0 !important;
+    right: 0 !important;
+    z-index: 30 !important;
+    background-color: rgba(255, 255, 255, 0.9) !important;
+    backdrop-filter: blur(8px) !important;
+    padding-top: 16px !important;
+    padding-bottom: 16px !important;
+    margin-bottom: 8px !important;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05) !important;
+    justify-content: flex-end !important;
+  }
+
+  /* Size optimizations for sticky close button on mobile screen */
+  main.lg\:w-\[65\%\] button.rounded-full,
+  div.lg\:w-\[65\%\] button.rounded-full {
+    width: 40px !important;
+    height: 40px !important;
+  }
+  
+  main.lg\:w-\[65\%\] button.rounded-full svg,
+  div.lg\:w-\[65\%\] button.rounded-full svg {
+    width: 18px !important;
+    height: 18px !important;
+  }
+}
