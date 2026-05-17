@@ -120,8 +120,11 @@ export const RecentWork = ({ containerRef }: { containerRef: React.RefObject<HTM
           coverImage: c.image_url,
           // Extract just the ID part if the slug starts with /work/
           slug: c.slug ? c.slug.replace(/^\/work\//, '') : '',
-          category: c.tags || 'PROJECT',
-          services: c.tags ? c.tags.split(',').map((t: string) => ({ label: t.trim() })) : []
+          category: (c.tags || 'PROJECT').toUpperCase() === 'BRADING' ? 'BRANDING' : (c.tags || 'PROJECT'),
+          services: c.tags ? c.tags.split(',').map((t: string) => {
+            const cleanT = t.trim();
+            return { label: cleanT.toUpperCase() === 'BRADING' ? 'BRANDING' : cleanT };
+          }) : []
         }));
 
         setProjects(mappedProjects as any);

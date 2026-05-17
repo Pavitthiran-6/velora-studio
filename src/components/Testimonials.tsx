@@ -127,7 +127,7 @@ export const Testimonials = () => {
           </div>
 
           {/* Right Side: Circular Stats */}
-          <div className="md:col-span-6 flex flex-wrap md:flex-nowrap gap-6 md:gap-4 lg:gap-8 justify-start md:justify-end w-full pt-12 md:pt-24">
+          <div className="md:col-span-6 grid grid-cols-2 md:flex md:flex-nowrap gap-6 md:gap-4 lg:gap-8 justify-items-center justify-center md:justify-end w-full pt-12 md:pt-24">
             {STATS.map((stat, i) => (
               <motion.div
                 key={i}
@@ -135,7 +135,9 @@ export const Testimonials = () => {
                 whileInView={{ opacity: 1, scale: 1 }}
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.1, duration: 0.8 }}
-                className="w-32 h-32 md:w-36 md:h-36 lg:w-44 lg:h-44 flex flex-col items-center justify-center relative group"
+                className={`w-32 h-32 md:w-36 md:h-36 lg:w-44 lg:h-44 flex flex-col items-center justify-center relative group ${
+                  i === 2 ? "col-span-2 md:col-span-1" : "col-span-1"
+                }`}
               >
                 <HexIcon className="absolute inset-0 w-full h-full opacity-10 group-hover:opacity-30 transition-opacity duration-500" fill="white" />
                 <div className="relative z-10 flex flex-col items-center justify-center p-4 text-center">

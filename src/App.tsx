@@ -17,7 +17,7 @@
 import { motion, AnimatePresence, useScroll, useTransform } from "motion/react";
 import { useNavigate } from "react-router-dom";
 import { Pencil } from "lucide-react";
-import { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { SmoothScrollProvider } from "./components/SmoothScrollProvider";
 import { CinematicText } from "./components/CinematicText";
 import { KineticHeroText } from "./components/KineticHeroText";
@@ -78,6 +78,7 @@ export default function App() {
   const { isTransitioning, isLoading, triggerLogoTransition, triggerPageTransition, heroKey } = useTransition();
   const [msgIndex, setMsgIndex] = useState(0);
   const [isWaveOpen, setIsWaveOpen] = useState(false);
+  const [showStickyBrandText, setShowStickyBrandText] = useState(true);
   const navigate = useNavigate();
   const waveRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -85,6 +86,11 @@ export default function App() {
   const handleLogoClick = () => {
     if (isTransitioning) return;
     triggerLogoTransition();
+  };
+
+  const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
+    const scrollTop = e.currentTarget.scrollTop;
+    setShowStickyBrandText(scrollTop < 50);
   };
 
   // Parallax Scroll logic for sections
@@ -119,7 +125,11 @@ export default function App() {
             <WaveMenu isOpen={isWaveOpen} onClose={() => setIsWaveOpen(false)} />
 
             {/* INTERNAL SCROLLABLE AREA */}
-            <div ref={containerRef} className="flex-1 overflow-y-auto overflow-x-visible relative scrollbar-hide">
+            <div 
+              ref={containerRef} 
+              onScroll={handleScroll}
+              className="flex-1 overflow-y-auto overflow-x-visible relative scrollbar-hide"
+            >
 
               {/* STICKY ICONS LAYER */}
               <div className="sticky top-0 left-0 right-0 z-[200] h-0 overflow-visible pointer-events-none">
@@ -127,12 +137,25 @@ export default function App() {
                   {/* Logo (Left) */}
                   <motion.button
                     animate={{ opacity: (isWaveOpen || isTransitioning) ? 0 : 1 }}
-                    className="flex items-center pointer-events-auto cursor-pointer bg-transparent border-none p-0 outline-none"
+                    className="flex items-center gap-3 pointer-events-auto cursor-pointer bg-transparent border-none p-0 outline-none"
                     onClick={handleLogoClick}
                   >
-                    <div className="w-10 h-10 md:w-14 md:h-14 rounded-full flex items-center justify-center overflow-hidden">
+                    <div className="w-10 h-10 md:w-14 md:h-14 rounded-full flex items-center justify-center overflow-hidden shrink-0">
                       <img src="/W2C Studios.png" alt="W2C Studios" className="w-full h-full object-contain" />
                     </div>
+                    <AnimatePresence>
+                      {showStickyBrandText && (
+                        <motion.span
+                          initial={{ opacity: 0, width: 0, x: -10 }}
+                          animate={{ opacity: 0.9, width: "auto", x: 0 }}
+                          exit={{ opacity: 0, width: 0, x: -10 }}
+                          transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+                          className="text-[10px] font-display font-black tracking-[0.25em] uppercase text-white leading-none whitespace-nowrap md:hidden overflow-hidden"
+                        >
+                          W2C Studios
+                        </motion.span>
+                      )}
+                    </AnimatePresence>
                   </motion.button>
 
                   {/* Settings Icon (Right) */}
@@ -180,7 +203,7 @@ export default function App() {
                   className="flex-1 flex flex-col z-10"
                 >
                   {/* Hero Header (Brand Name only - scrolls with hero) */}
-                  <Layout className="pt-8 md:pt-12 pb-6 flex items-center pointer-events-auto">
+                  <Layout className="pt-8 md:pt-12 pb-6 hidden md:flex items-center pointer-events-auto">
                     <div className="w-10 h-10 md:w-14 md:h-14 opacity-0 shrink-0" />
                     <button onClick={() => triggerLogoTransition()} className="ml-3 md:ml-5 hover:opacity-80 transition-opacity flex items-center gap-2">
                       <span className="text-[9px] md:text-xs font-display font-black tracking-[0.2em] md:tracking-[0.3em] uppercase text-white/90 leading-none">
@@ -190,7 +213,7 @@ export default function App() {
                   </Layout>
 
                   {/* Main Hero Content */}
-                  <main className="flex-1 relative flex flex-col justify-center pt-0 pointer-events-none">
+                  <main className="flex-1 relative flex flex-col justify-center pt-0 -mt-12 md:mt-0 pointer-events-none">
                     {/* Hexagonal Molecular Structure Background */}
                     <div className="absolute inset-0 pointer-events-none z-10 overflow-hidden">
                       <motion.div
@@ -219,7 +242,7 @@ export default function App() {
                     </div>
 
                     {/* Rotating Holographic Globe */}
-                    <div className="absolute left-1/2 top-[66%] -translate-x-1/2 -translate-y-1/2 w-[50vw] md:w-[35vw] lg:w-[28vw] h-auto z-10 opacity-30 mix-blend-screen pointer-events-none overflow-hidden [mask-image:radial-gradient(circle,white_45%,transparent_70%)]">
+                    <div className="absolute left-1/2 top-[66%] -translate-x-1/2 -translate-y-1/2 w-[50vw] md:w-[35vw] lg:w-[28vw] h-auto z-10 opacity-50 mix-blend-screen pointer-events-none overflow-hidden [mask-image:radial-gradient(circle,white_45%,transparent_70%)]">
                       <motion.img
                         src={globeImg}
                         animate={{ rotate: 360 }}
@@ -229,7 +252,7 @@ export default function App() {
                     </div>
 
                     {/* Typography Grid Overlay */}
-                    <Layout className="relative z-20 flex flex-col md:grid md:grid-cols-12 gap-2 md:gap-4">
+                    <Layout className="relative z-20 flex flex-col md:grid md:grid-cols-12 gap-2 md:gap-4 px-6 md:px-32 lg:px-40">
                       <div className="md:col-span-12 lg:col-span-7 flex items-center justify-center md:justify-start">
                         <KineticHeroText
                           key={`creative-${heroKey}`}
@@ -262,13 +285,13 @@ export default function App() {
                   </main>
 
                   {/* Footer Area inside Hero */}
-                  <Layout className="grid grid-cols-1 md:grid-cols-12 gap-8 py-8 md:py-12 items-center md:items-end">
-                    <div className="md:col-span-12 lg:col-span-4 flex items-center md:items-end pointer-events-none h-[220px]">
+                  <Layout className="grid grid-cols-12 gap-4 md:gap-8 pt-0 pb-4 md:py-12 -mt-12 md:mt-0 items-center md:items-end px-6 md:px-32 lg:px-40">
+                    <div className="hidden md:flex md:col-span-12 lg:col-span-4 items-center justify-center md:justify-start md:items-end pointer-events-none md:h-[220px]">
                       <span className="text-[10px] md:text-xs font-black tracking-[0.4em] uppercase text-white/30 whitespace-nowrap">
                         [ SCROLL ]
                       </span>
                     </div>
-                    <div className="col-span-1 md:col-start-6 md:col-span-10 lg:col-start-7 lg:col-span-6 space-y-6 flex flex-col items-center md:items-start lg:items-end w-full">
+                    <div className="col-span-12 md:col-start-6 md:col-span-10 lg:col-start-7 lg:col-span-6 space-y-4 md:space-y-6 flex flex-col items-center md:items-start lg:items-end w-full">
                       <motion.div
                         whileHover={{ scale: 1.01 }}
                         whileTap={{ scale: 0.98 }}
@@ -282,8 +305,8 @@ export default function App() {
                         <span className="text-[8px] sm:text-[9px] md:text-xs font-black tracking-[0.2em] md:tracking-[0.25em] uppercase text-white whitespace-nowrap shrink-0">SLING SHOT</span>
                       </motion.div>
                       <p className="text-[10px] md:text-[12px] lg:text-[13px] leading-[1.6] text-white/50 font-black tracking-tighter uppercase text-center md:text-left lg:text-right max-w-full md:max-w-[450px] lg:max-w-[500px]">
-                        WE SPECIALIZE IN CREATING MEANINGFUL DIGITAL<br className="hidden md:block" />
-                        EXPERIENCES INFUSED WITH EMOTION, DRIVEN BY<br className="hidden md:block" />
+                        WE SPECIALIZE IN CREATING MEANINGFUL DIGITAL <br className="hidden md:block" />
+                        EXPERIENCES INFUSED WITH EMOTION, DRIVEN BY <br className="hidden md:block" />
                         INNOVATION, EVOKING A SENSE OF AWE AND WONDER.
                       </p>
                     </div>
@@ -315,7 +338,7 @@ export default function App() {
                       WITH A DECADE OF<br />
                       EXPERIENCE UNDER OUR<br />
                       BELTS, W2C Studios HAS<br />
-                      BECOMED A WORLD -<br />
+                      BECOME A WORLD -<br />
                       RENOWNED STUDIO
                     </p>
                   </div>

@@ -20,6 +20,7 @@ export const Alliance = ({ containerRef }: { containerRef: React.RefObject<HTMLD
   const topRowRef = useRef<HTMLDivElement>(null);
   const bottomRowRef = useRef<HTMLDivElement>(null);
   const [scrollRange, setScrollRange] = useState(0);
+  const [sectionHeight, setSectionHeight] = useState<number | null>(null);
 
   const { scrollYProgress } = useScroll({
     target: sectionRef,
@@ -47,36 +48,72 @@ export const Alliance = ({ containerRef }: { containerRef: React.RefObject<HTMLD
     restDelta: 0.001
   });
 
+  const [isMobile, setIsMobile] = useState(false);
+
   useEffect(() => {
     const calculateRange = () => {
       if (topRowRef.current && sectionRef.current) {
         const rowWidth = topRowRef.current.scrollWidth;
         const containerWidth = sectionRef.current.clientWidth;
-        // Calculate how much we need to move to show all cards
-        // We start slightly offset (15%) and end when the last card is aligned
-        setScrollRange(rowWidth - containerWidth + (containerWidth * 0.15));
+        
+        if (isMobile) {
+          const transformDistance = Math.max(0, rowWidth - containerWidth);
+          setScrollRange(transformDistance);
+          const vh = window.innerHeight;
+          // Generate a premium scroll duration of 2.5 times the viewport height
+          const stickyHeight = Math.max(vh * 2.5, vh + transformDistance + 200);
+          setSectionHeight(stickyHeight);
+        } else {
+          const transformDistance = Math.max(0, rowWidth - containerWidth + 24);
+          setScrollRange(transformDistance);
+          setSectionHeight(null);
+        }
       }
     };
 
-    calculateRange();
-    window.addEventListener("resize", calculateRange);
-    return () => window.removeEventListener("resize", calculateRange);
-  }, []);
+    // Use requestAnimationFrame to ensure layout is complete before measuring
+    const rafId = requestAnimationFrame(() => {
+      calculateRange();
+      requestAnimationFrame(calculateRange);
+    });
 
-  // Upper row: RIGHT -> LEFT
-  // 0 -> 0.2: Settle phase (moving to horizontal "center" alignment)
-  // 0.2 -> 1: Glide phase (cinematic horizontal scroll)
+    // ResizeObserver ensures accurate measurements when cards/elements reflow or resize
+    const ro = new ResizeObserver(calculateRange);
+    if (topRowRef.current) ro.observe(topRowRef.current);
+    if (sectionRef.current) ro.observe(sectionRef.current);
+
+    const mediaQuery = window.matchMedia("(max-width: 767px)");
+    const handleMediaChange = () => {
+      setIsMobile(mediaQuery.matches);
+      calculateRange();
+    };
+    handleMediaChange();
+    mediaQuery.addEventListener("change", handleMediaChange);
+
+    window.addEventListener("resize", calculateRange);
+
+    return () => {
+      cancelAnimationFrame(rafId);
+      ro.disconnect();
+      mediaQuery.removeEventListener("change", handleMediaChange);
+      window.removeEventListener("resize", calculateRange);
+    };
+  }, [isMobile]);
+
   const xTop = useTransform(
-    smoothProgress, 
-    [0, 0.2, 1], 
-    ["20vw", "0vw", `-${scrollRange * 2.5}px`]
+    smoothProgress,
+    isMobile ? [0, 1] : [0, 0.2, 1],
+    isMobile
+      ? ["0px", `-${scrollRange}px`]
+      : ["20vw", "0vw", `-${scrollRange * 2.5}px`]
   );
   
-  // Lower row: LEFT -> RIGHT
   const xBottom = useTransform(
-    smoothProgress, 
-    [0, 0.2, 1], 
-    ["-20vw", "0vw", `${scrollRange * 2.8}px`]
+    smoothProgress,
+    isMobile ? [0, 1] : [0, 0.2, 1],
+    isMobile
+      ? [`-${scrollRange}px`, "0px"]
+      : ["-20vw", "0vw", `${scrollRange * 2.8}px`]
   );
   
   // Reveal content as it enters the screen
@@ -88,7 +125,8 @@ export const Alliance = ({ containerRef }: { containerRef: React.RefObject<HTMLD
   return (
     <section 
       ref={sectionRef} 
-      className="bg-[#1f2547] relative h-[250vh]"
+      className="bg-[#1f2547] relative h-[250vh] alliance-section"
+      style={isMobile && sectionHeight ? { height: `${sectionHeight}px` } : undefined}
     >
       <div className="sticky top-0 h-screen w-full flex flex-col justify-center py-8 md:py-12">
         <div className="w-full h-full flex flex-col justify-center">
@@ -129,12 +167,12 @@ export const Alliance = ({ containerRef }: { containerRef: React.RefObject<HTMLD
         </Layout>
 
         {/* Partners Animated Tracks */}
-        <div className="flex flex-col gap-4 relative w-full translate-z-0 will-change-transform overflow-hidden shrink-0">
+        <div className="alliance-row-container flex flex-col gap-4 relative w-full translate-z-0 will-change-transform overflow-hidden shrink-0">
           {/* Upper Row: RIGHT -> LEFT */}
           <motion.div 
             ref={topRowRef}
             style={{ x: xTop }}
-            className="flex gap-4 px-[10vw]"
+            className="alliance-row flex gap-4 px-[10vw]"
           >
             {upperRow.map((partner, i) => (
               <PartnerCard key={partner.name + i} partner={partner} i={i} />
@@ -145,7 +183,7 @@ export const Alliance = ({ containerRef }: { containerRef: React.RefObject<HTMLD
           <motion.div 
             ref={bottomRowRef}
             style={{ x: xBottom }}
-            className="flex gap-4 px-[10vw]"
+            className="alliance-row flex gap-4 px-[10vw]"
           >
             {lowerRow.map((partner, i) => (
               <PartnerCard key={partner.name + i} partner={partner} i={i + 4} />
@@ -171,7 +209,7 @@ const PartnerCard = ({ partner, i }: PartnerProps) => (
     viewport={{ once: true }}
     transition={{ delay: (i % 4) * 0.1 }}
     whileHover="hover"
-    className="w-[45vw] md:w-[26vw] lg:w-[18vw] shrink-0 aspect-video bg-white/[0.03] border border-white/5 rounded-2xl flex flex-col items-center justify-center p-4 md:p-6 relative group cursor-crosshair overflow-hidden transform-gpu translate-z-0 transition-transform duration-300 hover:scale-[1.02]"
+    className="alliance-card w-[45vw] md:w-[26vw] lg:w-[18vw] shrink-0 aspect-video bg-white/[0.03] border border-white/5 rounded-2xl flex flex-col items-center justify-center p-4 md:p-6 relative group cursor-crosshair overflow-hidden transform-gpu translate-z-0 transition-transform duration-300 hover:scale-[1.02]"
   >
     <span className="text-white text-xs md:text-base lg:text-xl font-display font-black tracking-[-0.04em] uppercase opacity-80 group-hover:opacity-100 transition-opacity text-center px-4">
       {partner.name}

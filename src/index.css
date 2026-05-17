@@ -101,9 +101,9 @@
   }
 
   /* 2. TABLE RESPONSIVENESS & SCROLL */
-  /* Enable horizontal scroll on any container wrapping a table */
-  section.overflow-hidden,
-  .overflow-hidden {
+  /* Enable horizontal scroll on any container explicitly wrapping a table */
+  .table-responsive-wrapper,
+  div.overflow-x-auto {
     overflow-x: auto !important;
     -webkit-overflow-scrolling: touch;
   }
@@ -352,5 +352,412 @@
   div.lg\:w-\[65\%\] button.rounded-full svg {
     width: 18px !important;
     height: 18px !important;
+  }
+
+  /* --- CREATIVE ALLIANCE SECTION --- */
+  .alliance-section {
+    padding-top: 60px !important;
+    padding-bottom: 60px !important;
+  }
+
+  .alliance-section > div.sticky.top-0.h-screen {
+    position: sticky !important;
+    top: 0 !important;
+    height: 100dvh !important;
+    padding: 0 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+  }
+
+  .alliance-section .alliance-row-container {
+    overflow: hidden !important;
+    gap: 16px !important;
+  }
+
+  .alliance-section .alliance-row {
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+    position: relative !important;
+    width: max-content !important;
+    padding: 0 24px !important;
+    gap: 16px !important;
+    will-change: transform !important;
+  }
+
+  .alliance-section .alliance-row::-webkit-scrollbar {
+    display: none !important;
+  }
+
+  .alliance-section .alliance-card {
+    width: 45vw !important;
+    min-width: 45vw !important;
+    max-width: 280px !important;
+    height: auto !important;
+  }
+}
+
+/* ========================================================
+   6. HOMEPAGE RESPONSIVENESS SYSTEM (MOBILE & TABLET)
+   ======================================================== */
+
+@media (max-width: 1023px) {
+  /* --- HERO SECTION --- */
+  /* Reduce excessive top margins and padding for hero CTA elements */
+  div.md\:col-span-12.lg\:col-span-4.flex.items-center.md\:items-end.pointer-events-none.h-\[220px\] {
+    height: 40px !important;
+    justify-content: center !important;
+    align-items: center !important;
+  }
+  
+  /* Shrink large descriptive paragraphs slightly and improve text alignment */
+  main p.text-white\/50,
+  p.text-white\/50 {
+    font-size: 11px !important;
+    text-align: center !important;
+    margin: 0 auto !important;
+    max-width: 90% !important;
+  }
+
+  /* Center hero latest project action block on tablet/mobile */
+  .col-span-12.md\:col-start-6.md\:col-span-10 {
+    align-items: center !important;
+    text-align: center !important;
+  }
+
+  /* Reduce padding on the outer container so that we don't squeeze space */
+  .py-32 {
+    padding-top: 60px !important;
+    padding-bottom: 60px !important;
+  }
+
+  /* --- SELECTED PROJECTS (RECENT WORK) --- */
+  /* Convert sticky stacked project cards into a smooth horizontal snap slider */
+  section.relative.w-full.bg-\[\#1f2547\].h-\[350vh\] {
+    height: auto !important;
+    padding-bottom: 60px !important;
+  }
+  
+  /* Select and style the card track */
+  div.relative.mx-auto.flex.flex-col.items-center.justify-center.pt-\[10vh\] {
+    flex-direction: row !important;
+    overflow-x: auto !important;
+    scroll-snap-type: x mandatory !important;
+    width: 100vw !important;
+    margin-left: -50vw !important;
+    left: 50% !important;
+    justify-content: flex-start !important;
+    align-items: stretch !important;
+    padding: 0 40px 40px 40px !important;
+    gap: 20px !important;
+    -webkit-overflow-scrolling: touch !important;
+    scrollbar-width: none !important;
+  }
+  
+  div.relative.mx-auto.flex.flex-col.items-center.justify-center.pt-\[10vh\]::-webkit-scrollbar {
+    display: none !important;
+  }
+
+  /* Make individual cards sit relative in the row with scroll-snap */
+  div.sticky.top-0.flex.items-center.justify-center {
+    position: relative !important;
+    top: auto !important;
+    height: auto !important;
+    flex-shrink: 0 !important;
+    scroll-snap-align: center !important;
+  }
+
+  /* Scale the actual card bounds cleanly to fit mobile and tablet touch viewports */
+  div.rounded-4xl.relative.flex.h-\[400px\].w-\[600px\] {
+    position: relative !important;
+    top: auto !important;
+    transform: none !important; /* Disable scroll scale transforms on mobile */
+    width: 75vw !important;
+    max-width: 440px !important;
+    height: 300px !important;
+  }
+
+  /* Hide the horizontal scroll indicator line at the bottom on mobile/tablet */
+  div.absolute.bottom-12.left-1\/2.-translate-x-1\/2.w-48.h-px {
+    display: none !important;
+  }
+
+  /* --- PRINCIPLES SECTION --- */
+  /* Use dynamic viewport height units so sticky works correctly with mobile browser chrome */
+  section.relative.h-\[600vh\].bg-\[\#1f2547\] {
+    height: 600dvh !important;
+  }
+
+  section.relative.h-\[600vh\].bg-\[\#1f2547\] > div.sticky.top-0.h-screen {
+    height: 100dvh !important;
+  }
+
+
+
+
+
+  /* --- MILESTONES (VISION) SECTION --- */
+  /* Scale down the rising backdrop letters so they fit fully on mobile viewports */
+  .relative.text-\[25vw\].md\:text-\[22vw\] {
+    font-size: 18vw !important;
+  }
+
+  /* Make milestone chronological posters look neat and clear */
+  div.relative.w-\[32vw\].md\:w-\[18vw\].lg\:w-\[12vw\] {
+    width: 28vw !important;
+    max-width: 140px !important;
+  }
+}
+
+@media (max-width: 767px) {
+  /* --- HERO SECTION MOBILE OPTIMIZATIONS (<768px) --- */
+  /* Lock the mobile hero section to a snug dynamic viewport height so it fits perfectly on a single screen without scroll */
+  section.h-full.relative.flex.flex-col.overflow-visible.shrink-0 {
+    height: calc(100vh - 80px) !important;
+    height: calc(100dvh - 80px) !important;
+    min-height: unset !important;
+    justify-content: space-between !important;
+    gap: 8px !important;
+    padding-bottom: 16px !important; /* Elegant vertical padding for absolute bottom alignment */
+  }
+
+  /* Snug spacing for the hero header brand label, pushing it below the glass nav bar */
+  div.px-6.md\:px-12.lg\:px-16.pt-8.md\:pt-12.pb-6 {
+    padding-top: 16px !important;
+    padding-bottom: 8px !important;
+    margin-top: 60px !important;
+  }
+
+  /* Centered, perfectly scaled Kinetic Hero Typography */
+  main h1.font-display,
+  main span.font-display {
+    font-size: 13vw !important; /* Scaled down slightly to perfectly prevent letter clipping */
+    line-height: 0.95 !important;
+    letter-spacing: -0.04em !important;
+    margin: 6px 0 !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    text-align: center !important;
+    width: 100% !important;
+  }
+
+  /* Precision center and opacity scale for the Globe background behind text */
+  div.absolute.left-1\/2.top-\[66\%\] {
+    top: 50% !important;
+    width: 65vw !important;
+    max-width: 240px !important;
+    opacity: 0.45 !important;
+    z-index: 5 !important; /* Positioned safely underneath z-20 text */
+  }
+
+  /* Collapse the h-[220px] scroll gap wrapper on mobile screens to reclaim 180px of vertical space */
+  section div.h-\[220px\] {
+    height: 40px !important;
+    margin-top: 16px !important;
+    margin-bottom: 8px !important;
+  }
+
+  /* Override Layout px-12 padding on mobile viewports to reclaim 56px of screen width */
+  .px-12 {
+    padding-left: 20px !important;
+    padding-right: 20px !important;
+  }
+
+  /* Snug, centered layout for the LATEST PROJECT CTA button, utilizing full viewport width up to 320px */
+  div.col-span-12.md\:col-start-6.md\:col-span-10 > div.group.cursor-pointer {
+    width: 100% !important;
+    max-width: 320px !important;
+    margin: 0 auto 16px auto !important;
+    padding: 14px 20px !important;
+    justify-content: center !important;
+  }
+
+  /* Proportional formatting for the Hero description text to prevent single-word columns */
+  div.col-span-12.md\:col-start-6.md\:col-span-10 > p.text-\[10px\] {
+    font-size: 11px !important; /* Sized perfectly for high-end readability */
+    line-height: 1.6 !important;
+    letter-spacing: 0.08em !important;
+    max-width: 90% !important;
+    margin: 0 auto !important;
+    text-align: center !important;
+    white-space: normal !important;
+  }
+
+  /* Reduce logo and settings bar spacing to keep it fully aligned and visible */
+  div.px-6.md\:px-12.lg\:px-16.py-8.md\:py-12 {
+    padding: 16px 20px !important;
+  }
+
+  /* --- SELECTED PROJECTS (RECENT WORK) --- */
+  /* Sized smaller for phone snap sliders */
+  div.relative.mx-auto.flex.flex-col.items-center.justify-center.pt-\[10vh\] {
+    padding: 0 24px 24px 24px !important;
+    gap: 16px !important;
+  }
+
+  div.rounded-4xl.relative.flex.h-\[400px\].w-\[600px\] {
+    width: 80vw !important;
+    max-width: 290px !important;
+    height: 220px !important;
+  }
+
+  /* --- PRINCIPLES SECTION --- */
+  /* Use dynamic viewport height on phones so sticky tracks correctly with browser chrome shifts */
+  section.relative.h-\[600vh\].bg-\[\#1f2547\] {
+    height: 600dvh !important;
+  }
+
+  section.relative.h-\[600vh\].bg-\[\#1f2547\] > div.sticky.top-0.h-screen {
+    height: 100dvh !important;
+  }
+
+  /* --- WAVE MENU --- */
+  /* Fix Wave overlay menu height and convert to dynamic vertical link column */
+  div.absolute.inset-0.z-\[1000\].flex.flex-col {
+    position: fixed !important;
+    height: 100vh !important;
+    max-height: 100vh !important;
+    overflow: hidden !important;
+  }
+
+  div.relative.w-full.h-\[240px\] {
+    height: 100px !important;
+  }
+
+  nav.flex.items-center.gap-3.md\:gap-6.lg\:gap-8 {
+    flex-direction: column !important;
+    gap: 16px !important;
+    margin: 32px 0 !important;
+  }
+
+  /* Hide raw dots inside horizontal lists on phone vertical drawer menu */
+  nav.flex.items-center.gap-3.md\:gap-6.lg\:gap-8 > svg,
+  nav.flex.items-center.gap-3.md\:gap-6.lg\:gap-8 > div > svg.w-1\.5 {
+    display: none !important;
+  }
+
+  nav.flex.items-center.gap-3.md\:gap-6.lg\:gap-8 span.text-xl {
+    font-size: 28px !important;
+    padding: 6px 12px !important;
+  }
+
+  div.flex-1.pointer-events-auto.px-6.md\:px-16 {
+    padding-top: 10px !important;
+    padding-bottom: 32px !important;
+    justify-content: space-between !important;
+  }
+
+  /* --- FOOTER SECTION --- */
+  /* Un-grid footer components and stack beautifully for comfortable phone view */
+  footer .grid.grid-cols-12 {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    text-align: center !important;
+    gap: 28px !important;
+  }
+
+  footer .grid.grid-cols-12 > div {
+    width: 100% !important;
+    align-items: center !important;
+    justify-content: center !important;
+    text-align: center !important;
+  }
+
+  /* Target specific links row to left-align Studio and right-align Services on mobile */
+  footer .footer-links-row {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 28px !important;
+  }
+
+  footer .footer-links-row > div {
+    width: 100% !important;
+  }
+
+  /* Left-align STUDIO block on mobile */
+  footer .footer-links-row > div:nth-child(1) {
+    align-items: flex-start !important;
+    justify-content: flex-start !important;
+    text-align: left !important;
+  }
+
+  /* Right-align Services List on mobile */
+  footer .footer-links-row .col-start-5.col-span-4.flex-col {
+    align-items: flex-end !important;
+    justify-content: flex-end !important;
+    text-align: right !important;
+  }
+  footer .footer-links-row .col-start-5.col-span-4.flex-col span {
+    text-align: right !important;
+  }
+
+  /* Right-align SERVICES block on mobile */
+  footer .footer-links-row .col-start-9.col-span-4.flex {
+    align-items: flex-end !important;
+    justify-content: flex-end !important;
+    text-align: right !important;
+  }
+
+  footer .col-start-5.col-span-4.flex-col {
+    align-items: center !important;
+  }
+
+  footer .col-start-5.col-span-4.flex-col span {
+    text-align: center !important;
+  }
+
+  footer .grid.grid-cols-12 > div.col-span-4 {
+    max-width: 290px !important;
+  }
+
+  footer .col-start-5.col-span-4.flex-col.items-center.gap-4 {
+    order: 3 !important; /* Move copyright & logo brand block under social links */
+  }
+
+  footer .col-start-9.col-span-4.flex {
+    justify-content: center !important;
+    flex-wrap: wrap !important;
+    gap: 12px !important;
+  }
+
+  footer h2.text-5xl,
+  footer h2.text-8xl {
+    font-size: 11vw !important;
+  }
+
+  /* --- MILESTONES (VISION) SECTION --- */
+  .relative.text-\[25vw\].md\:text-\[22vw\] {
+    font-size: 26vw !important;
+  }
+
+  div.relative.w-\[32vw\].md\:w-\[18vw\].lg\:w-\[12vw\] {
+    width: 22vw !important;
+    max-width: 95px !important;
+  }
+
+  /* --- STICKY MOBILE NAVIGATION BAR GLASSMORPHISM --- */
+  /* Converts the floating transparent logo header into a premium glass bar, completely shielding content overlap */
+  div.sticky.top-0.left-0.right-0.z-\[200\] {
+    height: 60px !important;
+    background: rgba(31, 37, 71, 0.85) !important;
+    backdrop-filter: blur(12px) !important;
+    -webkit-backdrop-filter: blur(12px) !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
+    pointer-events: auto !important;
+  }
+  
+  div.sticky.top-0.left-0.right-0.z-\[200\] > div {
+    padding-top: 12px !important;
+    padding-bottom: 12px !important;
+  }
+
+  /* Force viewport bounds on root and body only (NOT the scroll container, as overflow:hidden breaks sticky) */
+  #root, 
+  body {
+    overflow-x: hidden !important;
   }
 }

@@ -115,14 +115,28 @@ export const Principles = ({ containerRef }: { containerRef: React.RefObject<HTM
   useEffect(() => {
     const computeMaxScroll = () => {
       if (trackRef.current) {
-        // Scroll the entire width of the track so all cards disappear off the left
         setMaxScroll(trackRef.current.scrollWidth);
       }
     };
 
-    computeMaxScroll();
+    // Use RAF to guarantee layout is complete before measuring — critical on mobile
+    // where scrollWidth can be 0 on synchronous first render.
+    const rafId = requestAnimationFrame(() => {
+      computeMaxScroll();
+      // Second RAF pass for browsers that need two frames to finish flex layout
+      requestAnimationFrame(computeMaxScroll);
+    });
+
+    // ResizeObserver keeps maxScroll accurate when cards reflow (orientation changes etc.)
+    const ro = new ResizeObserver(computeMaxScroll);
+    if (trackRef.current) ro.observe(trackRef.current);
+
     window.addEventListener("resize", computeMaxScroll);
-    return () => window.removeEventListener("resize", computeMaxScroll);
+    return () => {
+      cancelAnimationFrame(rafId);
+      ro.disconnect();
+      window.removeEventListener("resize", computeMaxScroll);
+    };
   }, []);
 
   // Step 1 & 2: Horizontal scroll + Exit to Left (0.0 to 0.85)
@@ -131,7 +145,7 @@ export const Principles = ({ containerRef }: { containerRef: React.RefObject<HTM
 
   return (
     <section ref={targetRef} className="relative h-[600vh] bg-[#1f2547]">
-      <div className="sticky top-0 h-screen flex flex-col justify-center overflow-hidden">
+      <div className="sticky top-0 h-screen flex flex-col justify-center overflow-clip">
 
         {/* Background Typography - Constrained between logo and settings icon */}
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none select-none overflow-hidden">
@@ -184,7 +198,7 @@ export const Principles = ({ containerRef }: { containerRef: React.RefObject<HTM
                   <div
                     key={p.title}
                     className={cn(
-                      "principle-card flex-shrink-0 w-[85vw] md:w-[400px] min-h-[400px] md:h-[500px] rounded-[24px] bg-[#1f2547] p-8 md:p-12 flex flex-col gap-6 shadow-2xl border border-white/5 transition-transform duration-500 transform-gpu will-change-transform",
+                      "principle-card flex-shrink-0 w-[80vw] md:w-[400px] h-[400px] md:h-[500px] rounded-[24px] bg-[#1f2547] p-8 md:p-12 flex flex-col gap-6 shadow-2xl border border-white/5 transition-transform duration-500 transform-gpu will-change-transform",
                       shiftClass
                     )}
                   >

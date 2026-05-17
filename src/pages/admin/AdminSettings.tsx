@@ -64,11 +64,16 @@ export default function AdminSettings() {
         
         {/* Header Section */}
         <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8">
-          <div>
-            <span className="text-[10px] font-black tracking-[0.5em] uppercase opacity-40 mb-4 block">[ CONFIGURATION ]</span>
-            <h1 className="font-display text-[8vw] leading-[0.8] tracking-[-0.06em] uppercase font-black">
-              SETTINGS
-            </h1>
+          <div className="flex items-center gap-6 sm:gap-8">
+            <div className="w-16 h-16 sm:w-20 sm:h-20 bg-[#1f2547] border border-black/15 flex items-center justify-center p-3 rounded-2xl shadow-xl shrink-0">
+              <img src="/W2C Studios.png" alt="W2C Studios Logo" className="w-full h-full object-contain" />
+            </div>
+            <div>
+              <span className="text-[10px] font-black tracking-[0.5em] uppercase opacity-40 mb-2 block">[ CONFIGURATION ]</span>
+              <h1 className="font-display text-[8vw] sm:text-[5vw] leading-[0.8] tracking-[-0.06em] uppercase font-black">
+                SETTINGS
+              </h1>
+            </div>
           </div>
         </div>
 
@@ -122,6 +127,21 @@ export default function AdminSettings() {
                     onChange={(e) => setStudioEmail(e.target.value)}
                     className="w-full bg-transparent border-b border-black/10 py-4 px-0 text-lg font-display uppercase outline-none focus:border-black transition-colors" 
                   />
+                </div>
+                <div className="space-y-4 md:col-span-2">
+                  <label className="text-[10px] font-black tracking-[0.2em] uppercase opacity-40">STUDIO LOGO</label>
+                  <div className="flex items-center gap-6 p-6 bg-black/[0.02] border border-black/5 rounded-xl w-full sm:w-fit mt-2">
+                    <div className="w-16 h-16 bg-[#1f2547] border border-black/10 flex items-center justify-center p-3 rounded-xl shadow-lg shrink-0">
+                      <img src="/W2C Studios.png" alt="W2C Studios Logo" className="w-full h-full object-contain" />
+                    </div>
+                    <div>
+                      <h4 className="text-xs font-black uppercase tracking-tight">W2C Studios Brand Mark</h4>
+                      <p className="text-[9px] font-black uppercase opacity-40 tracking-wider mt-1 block">w2c studios.png</p>
+                      <span className="inline-block mt-3 px-2.5 py-1 bg-green-500/10 text-green-600 text-[8px] font-black tracking-widest uppercase rounded-full">
+                        ACTIVE BRAND ASSET
+                      </span>
+                    </div>
+                  </div>
                 </div>
                 <div className="space-y-4 md:col-span-2">
                   <div className="h-px bg-black/5 w-full my-8" />

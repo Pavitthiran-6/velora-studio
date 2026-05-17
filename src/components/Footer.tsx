@@ -44,7 +44,7 @@ const BlueprintLine = ({ isLight }: { isLight?: boolean }) => (
 );
 
 export const Footer = ({ isLight = false }: { isLight?: boolean }) => {
-  const { triggerPageTransition } = useTransition();
+  const { triggerPageTransition, triggerLogoTransition } = useTransition();
   const [email, setEmail] = useState("");
 
   const textColor = isLight ? "text-[#050505]" : "text-white";
@@ -95,7 +95,7 @@ export const Footer = ({ isLight = false }: { isLight?: boolean }) => {
         <BlueprintLine isLight={isLight} />
 
         {/* ── ROW 2: STUDIO | Services List | SERVICES ── */}
-        <div className="grid grid-cols-12 gap-4 items-start">
+        <div className="grid grid-cols-12 gap-4 items-start footer-links-row">
           {/* STUDIO */}
           <div className="col-span-4 flex flex-col items-start">
             <motion.div

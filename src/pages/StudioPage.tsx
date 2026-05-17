@@ -62,7 +62,7 @@ const HeroSection = () => {
   }, [isAnimating]);
 
   return (
-    <section ref={container} className="relative h-full flex flex-col justify-center overflow-hidden shrink-0">
+    <section ref={container} className="relative h-auto min-h-[80vh] md:h-full flex flex-col justify-center overflow-hidden shrink-0 pb-12 md:pb-0">
       {/* Hex Grid Background */}
       <div className="absolute inset-0 pointer-events-none opacity-20 z-0">
         <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
@@ -76,7 +76,7 @@ const HeroSection = () => {
       </div>
 
       {/* Breadcrumb Nav */}
-      <div className="absolute top-[10%] left-20 md:left-32 lg:left-40 z-20 flex items-center gap-4 pointer-events-auto">
+      <div className="absolute top-[10%] left-8 sm:left-12 md:left-32 lg:left-40 z-20 flex items-center gap-4 pointer-events-auto">
         <button
           onClick={() => triggerLogoTransition()}
           className="flex items-center gap-2 hover:opacity-80 transition-opacity cursor-pointer group"
@@ -93,14 +93,14 @@ const HeroSection = () => {
       </div>
 
       <Layout className="relative z-10 h-full flex flex-col">
-        <div className="w-full flex flex-col pt-24 md:pt-30">
+        <div className="w-full flex flex-col pt-28 md:pt-30">
           <div className="flex flex-col w-full">
             {/* Row 1: Rotating Title */}
-            <div className="overflow-hidden h-[11vw] md:h-[9vw] flex justify-start">
+            <div className="overflow-hidden h-[23vw] md:h-[9vw] flex items-center justify-start">
               <AnimatePresence mode="wait">
                 <motion.h1
                   key={index}
-                  className="text-[10vw] md:text-[9vw] font-display font-black tracking-[-0.04em] uppercase leading-[0.8] text-[#ef4444] flex overflow-hidden"
+                  className="text-[14vw] md:text-[9vw] font-display font-black tracking-[-0.04em] uppercase leading-[0.8] text-[#ef4444] flex overflow-hidden scale-y-[1.5] md:scale-y-100 origin-center"
                 >
                   {ROTATING_STUDIO_TITLES[index].split("").map((char, i) => (
                     <motion.span
@@ -124,19 +124,19 @@ const HeroSection = () => {
 
             {/* Row 2: Static Word */}
             <div className="flex items-center gap-6 md:gap-10 pl-[5vw] md:pl-[10vw]">
-              <div className="overflow-hidden h-[11vw] md:h-[9vw]">
-                <h1 className="text-[10vw] md:text-[9vw] font-display font-black tracking-[-0.04em] uppercase leading-[0.8] text-white whitespace-nowrap">
+              <div className="overflow-hidden h-[23vw] md:h-[9vw] flex items-center">
+                <h1 className="text-[14vw] md:text-[9vw] font-display font-black tracking-[-0.04em] uppercase leading-[0.8] text-white whitespace-nowrap scale-y-[1.5] md:scale-y-100 origin-center">
                   AND MAGIC
                 </h1>
               </div>
             </div>
 
             {/* Row 3: Rotating Title (Right-to-Left Blend) */}
-            <div className="overflow-hidden h-[11vw] md:h-[9vw] flex justify-center">
+            <div className="overflow-hidden h-[23vw] md:h-[9vw] flex items-center justify-center">
               <AnimatePresence mode="wait">
                 <motion.h1
                   key={`blended-${index}`}
-                  className="text-[10vw] md:text-[9vw] font-display font-black tracking-[-0.04em] uppercase leading-[0.8] text-[#ef4444] flex overflow-hidden"
+                  className="text-[14vw] md:text-[9vw] font-display font-black tracking-[-0.04em] uppercase leading-[0.8] text-[#ef4444] flex overflow-hidden scale-y-[1.5] md:scale-y-100 origin-center"
                 >
                   {ROTATING_BLENDED_TITLES[index].split("").map((char, i) => (
                     <motion.span
@@ -159,8 +159,8 @@ const HeroSection = () => {
             </div>
 
             {/* Row 4: Static Word */}
-            <div className="overflow-hidden h-[11vw] md:h-[9vw] flex justify-end">
-              <h1 className="text-[10vw] md:text-[9vw] font-display font-black tracking-[-0.04em] uppercase leading-[0.8] text-white whitespace-nowrap">
+            <div className="overflow-hidden h-[23vw] md:h-[9vw] flex items-center justify-end">
+              <h1 className="text-[14vw] md:text-[9vw] font-display font-black tracking-[-0.04em] uppercase leading-[0.8] text-white whitespace-nowrap scale-y-[1.5] md:scale-y-100 origin-center">
                 IN HARMONY
               </h1>
             </div>
@@ -198,7 +198,7 @@ const CreativeStudioSection = () => {
   }, []);
 
   return (
-    <section ref={container} className="py-40 bg-[#1f2547]">
+    <section ref={container} className="pt-10 pb-20 md:py-40 bg-[#1f2547]">
       <Layout className="grid grid-cols-1 md:grid-cols-12 gap-12 md:gap-20 items-center">
         <div className="md:col-span-5 space-y-8 order-2 md:order-1">
           <div className="flex items-center gap-4">
@@ -240,7 +240,7 @@ const CreativeStudioSection = () => {
 
 const TeamGridSection = () => {
   return (
-    <section className="py-40 bg-[#1f2547]">
+    <section className="py-20 md:py-40 bg-[#1f2547]">
       <Layout className="max-w-[1800px] px-12 md:px-20 lg:px-24">
         <div className="flex flex-col items-center gap-8 mb-24 text-center">
           <div className="flex items-center gap-4">
@@ -318,7 +318,7 @@ const TeamGridSection = () => {
 
 const ManifestoSection = () => {
   return (
-    <section className="py-40 bg-[#1f2547] border-y border-white/5">
+    <section className="py-20 md:py-40 bg-[#1f2547] border-y border-white/5">
       <Layout>
         <div className="grid grid-cols-1 md:grid-cols-12 gap-16 md:gap-20 items-start">
           <div className="md:col-span-9 flex flex-col items-end justify-center text-right">
@@ -397,7 +397,7 @@ const VisionJourneySection = () => {
   }, []);
 
   return (
-    <section ref={sectionRef} className="py-60 bg-[#1f2547] relative overflow-hidden">
+    <section ref={sectionRef} className="pt-24 pb-10 md:py-60 bg-[#1f2547] relative overflow-hidden">
       {/* Background Ambience */}
       <div className="absolute inset-0 opacity-20 pointer-events-none">
         <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-[#232b5c] blur-[100px] rounded-full" />
@@ -407,9 +407,9 @@ const VisionJourneySection = () => {
       <div className="absolute inset-0 opacity-[0.03] pointer-events-none bg-[url('https://grainy-gradients.vercel.app/noise.svg')] bg-repeat" />
 
       <Layout>
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-0 items-start">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-16 md:gap-0 items-start">
           {/* Left Side: Headline */}
-          <div className="md:col-span-7 sticky top-40 flex flex-col items-end">
+          <div className="md:col-span-7 md:sticky md:top-40 flex flex-col items-end">
             <div className="space-y-4 mb-12 w-full max-w-4xl">
               <div className="flex items-center gap-4">
                 <div className="w-6 h-6 border border-[#ef4444] rotate-45 flex items-center justify-center">
@@ -419,8 +419,9 @@ const VisionJourneySection = () => {
               </div>
             </div>
 
-            <CinematicText as="h2" intensity={-0.8} className="text-[10vw] md:text-[8.5vw] font-black uppercase leading-[0.8] text-white tracking-[-0.05em] select-none w-full text-left">
-              STARTING{"\n"}SMALL.{"\n"}
+            <CinematicText as="h2" intensity={-0.8} className="text-[10vw] md:text-[8.5vw] font-black uppercase leading-[1.15] md:leading-[0.8] text-white tracking-[-0.05em] select-none w-full text-left">
+              STARTING{"\n"}
+              <span className="text-[#ef4444]">SMALL.</span>{"\n"}
               <span className="text-[#ef4444]">THINKING</span>{"\n"}
               MASSIVE.
             </CinematicText>
@@ -483,7 +484,7 @@ const CircleSection = () => {
   }, []);
 
   return (
-    <section ref={container} className="h-screen bg-[#1f2547] relative flex items-center justify-center overflow-hidden">
+    <section ref={container} className="h-[60vh] md:h-screen bg-[#1f2547] relative flex items-center justify-center overflow-hidden">
       <div ref={circle1} className="absolute w-[80vw] h-[80vw] md:w-[50vw] md:h-[50vw] border border-[#ef4444]/20 rounded-full flex items-center justify-center">
         <div className="w-[10px] h-[10px] bg-[#ef4444] rounded-full absolute top-0 left-1/2 -translate-x-1/2 blur-[2px]" />
       </div>

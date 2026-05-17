@@ -85,12 +85,9 @@ export const WaveMenu: React.FC<WaveMenuProps> = ({
               onClose();
               triggerLogoTransition();
             }}
-            className="w-10 h-10 md:w-14 md:h-14 rounded-full flex items-center justify-center p-2.5 md:p-3.5 hover:scale-110 transition-transform cursor-pointer"
-            style={{ backgroundColor: closeBtnColor }}
+            className="w-10 h-10 md:w-14 md:h-14 bg-transparent flex items-center justify-center hover:scale-110 transition-transform cursor-pointer shrink-0"
           >
-             <svg viewBox="0 0 24 24" className="w-full h-full fill-white" xmlns="http://www.w3.org/2000/svg">
-                <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" />
-             </svg>
+             <img src="/W2C Studios.png" alt="W2C Studios Logo" className="w-full h-full object-contain" />
           </button>
           <nav className="flex items-center gap-3 md:gap-6 lg:gap-8 flex-1 justify-center min-w-0">
             {navItems.map((item, index) => (
